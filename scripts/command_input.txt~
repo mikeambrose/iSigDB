@@ -1,0 +1,1 @@
+python Sig_Avg_Matrix_Derm.Rank.py -t rnacount_arjun_time_norm.txt -s ./SigGenes.txt --group ./SIGS/abbrevs.txt -n 50 -v rank_avg -z matrix -j 0 -l -r euclidean -c euclidean -i checked

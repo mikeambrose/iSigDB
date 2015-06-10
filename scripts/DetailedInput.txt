@@ -1,0 +1,1 @@
+python scripts/sig_heatmapV4.cgi -i ./scripts/scratch/output.txt.full.txt -o output/HighChartsDetailHeatmap.html -s LL2 -v True -r euclidean -c euclidean

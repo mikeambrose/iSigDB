@@ -1,0 +1,26 @@
+def generateAbbrevs(abbrev):
+    """Generates a dictionary of abbreviation : full name
+    abbrev is a two-column, tab-delimited file of abbreviation\tfull name
+    returns the dictionary of abbrev : full name
+    """
+    abbrevs = dict()
+    with open(abbrev) as all_lines:
+        for line in all_lines.read().split('\n'):
+            if line:
+                abbrev,full = line.replace('\r','').split('\t')
+                abbrevs[full] = abbrev
+    return abbrevs
+import os
+a = generateAbbrevs('../SIGS/abbrevs.txt')
+print sorted(list(a.keys()))
+g = './groups/'
+files = os.listdir(g)
+gnew = './groupsnew/'
+#import pdb;pdb.set_trace()
+for n in files:
+    print n
+    f = open(g+n).read().split('\n')
+    new_f = open(gnew+n,'w')
+    for line in f[:-1]:
+        new_f.write(a[line])
+    new_f.close()

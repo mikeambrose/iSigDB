@@ -1,0 +1,376 @@
+<!doctype html>
+<html>
+<head>
+<title>DermDB -- Tissue Deconvolution</title>
+
+<script type="text/javascript">
+
+function toggleVisibility(section) {
+    var section = document.getElementById(section);
+    if (section.style.display == 'block' || section.style.display == ''){
+        section.style.display = 'none';
+    } else {
+        section.style.display = 'block';
+    }
+}
+
+function changeCount(count, checkbox){
+    var current_value = parseInt(document.getElementById(count).innerHTML);
+    if (checkbox.checked){
+        document.getElementById(count).innerHTML = current_value+1;
+    } else{
+        document.getElementById(count).innerHTML = current_value-1;
+    }
+}
+
+function resetVal(count, m, checkbox){
+    if (checkbox.checked){
+        document.getElementById(count).innerHTML = m;
+    } else{
+        document.getElementById(count).innerHTML = 0;
+    }
+}
+
+function toggleCheckboxes(group, checkbox) {
+    var newState = checkbox.checked;
+    var groups = {"Skin Conditions": ["NS", "PS", "BU", "WA", "WPO", "SJS", "RR", "LLP", "TLP", "ENL", "ACD", "ICD", "ATD", "MF", "SCC", "BCC", "MEL", "SAR", "CHA", "ALO", "DLE", "ACN", "NLA"], "KC cytokine experiments": ["IFNg_24h_NHEK_2", "IFNg_24h_NHEK_3", "IL22_20ng_4d_NHEK_9", "IFNg_10ng_4d_NHEK_12", "IFNg_20ng_24h_NHEK_23", "IGNg_TNF_24h_HaCaT_27", "IL17A_TNF_1ng_24h_NHEK_32", "IL17A_TNF_10ng_2h_NHEK_33", "TNF_20ng_4h_HaCaT_43", "IFNg_20ng_24h_NHEK_45", "IL17A_20ng_24h_NHEK_49", "IFNg_10ng_24h_NHEK_55"], "TLR and Interferon (Purified M-CSF derived macrophages)": ["IFNB_2", "IFNB_6", "IFNB_24", "IFNG_2", "IFNG_6", "IFNG_24", "TLR_2", "TLR_6", "TLR_24"], "GM-CSF": ["GMT3", "GMT12"], "IL-6 (Monocyte-derived macrophages)": ["IL6_justRMA"], "IL 4-10-15 vs time 0": ["IL4_6", "IL4_24", "IL10_6", "IL10_24", "IL15_6", "IL15_24"], "Swindell": ["B_cell", "CD138plus_plasma_cell", "CD34plus_cell", "CD3plus_T-cell", "CD4plus_T-cell", "CD8plus_T-cell", "Dendritic_cell", "Dermis", "Eosinophil", "Epidermis", "Fibrobast", "Gamma_Delta_T-cell", "Keratinocyte", "Lymph_endothel_cell", "Macrophage", "Monocyte", "NK_T-cell", "NK_cell", "Neutrophil", "Platelet", "Regulatory_T-cell", "Reticulocyte", "Subcutan_adipose", "Vasc_endothel_cell", "IL26d"], "NOD2L and TLR2 (Adherent PBMCs)": ["NOD2L_6", "NOD2L_24", "TLR2_6", "TLR2_24", "NT_6", "NT_24"], "Nov2013": ["ENL2", "LL2", "RR2", "TL2"], "Th": ["Th17", "Th1_Harvard", "Th1_rankRelative", "Th2_Harvard", "Th2_rankRelative"], "Vitamin D (Monocytes)": ["VD_ATRA", "VD_125D"], "IL 4-10-15 vs media": ["IL4_6", "IL4_24", "IL10_6", "IL10_24", "IL15_6", "IL15_24"], "Mouse Body Atlas": ["3T3-L1", "B-cells_marginal_zone", "Baf3", "C2C12", "C3H_10T1_2", "NK_cells", "RAW_264_7", "T-cells_CD4+", "T-cells_CD8+", "T-cells_foxP3+", "adipose_brown", "adipose_white", "adrenal_gland", "amygdala", "bladder", "bone", "bone_marrow", "cerebellum", "cerebral_cortex", "cerebral_cortex_prefrontal", "ciliary_bodies", "common_myeloid_progenitor", "cornea", "dendritic_cells_lymphoid_CD8a+", "dendritic_cells_myeloid_CD8a-_", "dendritic_plasmacytoid_B220+", "dorsal_root_ganglia", "dorsal_striatum", "embryonic_stem_line_Bruce4_p13", "embryonic_stem_line_V26_2_p16", "epidermis", "eyecup", "follicular_B-cells", "granulo_mono_progenitor", "granulocytes_mac1+gr1+", "heart", "hippocampus", "hypothalamus", "intestine_large", "intestine_small", "iris", "kidney", "lacrimal_gland", "lens", "liver", "lung", "lymph_nodes", "mIMCD-3", "macrophage_bone_marrow_0hr", "macrophage_bone_marrow_24h_LPS", "macrophage_bone_marrow_2hr_LPS", "macrophage_bone_marrow_6hr_LPS", "macrophage_peri_LPS_thio_0hrs", "macrophage_peri_LPS_thio_1hrs", "macrophage_peri_LPS_thio_7hrs", "mammary_gland__lact", "mammary_gland_non-lactating", "mast_cells", "mast_cells_IgE", "mast_cells_IgE+antigen_1hr", "mast_cells_IgE+antigen_6hr", "mega_erythrocyte_progenitor", "microglia", "min6", "neuro2a", "nih_3T3", "nucleus_accumbens", "olfactory_bulb", "osteoblast_day14", "osteoblast_day21", "osteoblast_day5", "osteoclasts", "ovary", "pancreas", "pituitary", "placenta", "prostate", "retina", "retinal_pigment_epithelium", "salivary_gland", "skeletal_muscle", "spinal_cord", "spleen", "stem_cells__HSC", "stomach", "testis", "thymocyte_DP_CD4+CD8+", "thymocyte_SP_CD4+", "thymocyte_SP_CD8+", "umbilical_cord", "uterus"]};
+    var toggleList = groups[group]
+    for (var i = 0; i < toggleList.length ; i++) {
+        document.getElementById(toggleList[i]).checked = newState;
+    }
+}
+
+function genesChanged(dropdown) {
+  if (dropdown.selectedIndex > 2) {
+    var disableList = ['Th17', 'Th1_rankRelative', 'Th2_Harvard', 'Th2_rankRelative'];
+    for (var i = 0; i < disableList.length; i++) {
+      document.getElementById(disableList[i]).checked = false;
+      document.getElementById(disableList[i]).disabled = true;
+    }
+  }
+  else {
+    var disableList = ['Th17', 'Th1_rankRelative', 'Th2_Harvard', 'Th2_rankRelative'];
+    for (var i = 0; i < disableList.length; i++) {
+      document.getElementById(disableList[i]).disabled = false;
+    }
+  }
+
+  if (dropdown.selectedIndex > 3) {
+    var disableList = ['Th1_Harvard', "IFNg_24h_NHEK_2", "IFNg_24h_NHEK_3", "IL22_20ng_4d_NHEK_9", "IFNg_10ng_4d_NHEK_12", "IFNg_20ng_24h_NHEK_23", "IGNg_TNF_24h_HaCaT_27", "IL17A_TNF_1ng_24h_NHEK_32", "IL17A_TNF_10ng_2h_NHEK_33", "TNF_20ng_4h_HaCaT_43", "IFNg_20ng_24h_NHEK_45", "IL17A_20ng_24h_NHEK_49", "IFNg_10ng_24h_NHEK_55"];
+    for (var i = 0; i < disableList.length; i++) {
+      document.getElementById(disableList[i]).checked = false;
+      document.getElementById(disableList[i]).disabled = true;
+    }
+  }
+  else {
+    var disableList = ['Th1_Harvard', "IFNg_24h_NHEK_2", "IFNg_24h_NHEK_3", "IL22_20ng_4d_NHEK_9", "IFNg_10ng_4d_NHEK_12", "IFNg_20ng_24h_NHEK_23", "IGNg_TNF_24h_HaCaT_27", "IL17A_TNF_1ng_24h_NHEK_32", "IL17A_TNF_10ng_2h_NHEK_33", "TNF_20ng_4h_HaCaT_43", "IFNg_20ng_24h_NHEK_45", "IL17A_20ng_24h_NHEK_49", "IFNg_10ng_24h_NHEK_55"];
+    for (var i = 0; i < disableList.length; i++) {
+      document.getElementById(disableList[i]).disabled = false;
+    }
+  }
+}
+</script>
+
+
+</head>
+<body>
+<form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/tissueDeconvolutionByRank.cgi" ENCTYPE="multipart/form-data">
+
+<strong>Submit a file:</strong><br /><br />
+File: <input type="file" name="matrix_file" size="30">
+<hr>
+
+<strong>Choose heatmap options:</strong><br /><br />
+Compute heatmap based on:&nbsp;
+<select id="heatmap_metric" name="heatmap_metric">
+<option value="rank_avg">Rank Average</option>
+<option value="rank_delta">Rank Delta</option>
+<option value="log">Log10-Transformed Values</option>
+<option value="absolute">Values (Do Not Log-Transform)</option>
+</select>
+
+<br /><br />
+
+<input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
+checked> Scale heatmap
+
+<br /><br />
+
+<input type="checkbox" name="invert" id="invert" value="unchecked"> Signatures on vertical axis
+
+<br /><br />
+
+Metric for row (sample) clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select><br />
+
+Metric for column (signature) clustering: &nbsp;
+<select id="col_metric" name="col_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select><br />
+
+
+<br />
+
+Number of genes per signature:&nbsp;<select
+name="num_genes" onchange="genesChanged(this);"><option value="10">10</option><option
+value="25">25</option><option value="50" selected="selected">50</option><option
+value="100">100</option><option value="250">250</option><option
+value="500">500</option><option value="1000">1000</option></select>
+<hr>
+<strong>Select signatures:</strong><br />
+Click on a category to select specific signatures within that category <br /><br />
+<input type="checkbox" name="toggleSkin Conditions" id="toggleSkin Conditions" value="checked" checked onchange="toggleCheckboxes('Skin Conditions',this);resetVal('Skin ConditionsCount',23,this);"> <input type="button" onclick="toggleVisibility('Skin ConditionsSection')" value="Skin Conditions"> (<span id="Skin ConditionsCount">23</span>/23 signatures selected)<br>
+
+<span id="Skin ConditionsSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="NS" id="NS" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Normal skin <br>
+<input type="checkbox" name="PS" id="PS" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Psoriasis <br>
+<input type="checkbox" name="BU" id="BU" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Burn <br>
+<input type="checkbox" name="WA" id="WA" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Acute wound (0h after injury) <br>
+<input type="checkbox" name="WPO" id="WPO" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Post-operative wound (3, 7 days after injury) <br>
+<input type="checkbox" name="SJS" id="SJS" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Stevens Johnson syndrome (blister cells) <br>
+<input type="checkbox" name="RR" id="RR" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Reversal reaction (leprosy) <br>
+<input type="checkbox" name="LLP" id="LLP" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Lepromatous leprosy <br>
+<input type="checkbox" name="TLP" id="TLP" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Tuberculoid leprosy <br>
+<input type="checkbox" name="ENL" id="ENL" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Erythema nodosum leprosum <br>
+<input type="checkbox" name="ACD" id="ACD" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Allergic contact dermatitis <br>
+<input type="checkbox" name="ICD" id="ICD" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Irritant contact dermatitis <br>
+<input type="checkbox" name="ATD" id="ATD" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Atopic dermatitis <br>
+<input type="checkbox" name="MF" id="MF" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Mycosis fungoides <br>
+<input type="checkbox" name="SCC" id="SCC" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Squamous cell carcinoma <br>
+<input type="checkbox" name="BCC" id="BCC" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Basal cell carcinoma <br>
+<input type="checkbox" name="MEL" id="MEL" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Melanoma <br>
+<input type="checkbox" name="SAR" id="SAR" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Cutaneous sarcoidosis <br>
+<input type="checkbox" name="CHA" id="CHA" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Chancroid <br>
+<input type="checkbox" name="ALO" id="ALO" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Alopecia areata <br>
+<input type="checkbox" name="DLE" id="DLE" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Discoid Lupus Erythematosus <br>
+<input type="checkbox" name="ACN" id="ACN" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Acne <br>
+<input type="checkbox" name="NLA" id="NLA" onclick="changeCount('Skin ConditionsCount',this)" value="checked" checked> Non-lesional Acne <br>
+</span>
+<br><input type="checkbox" name="toggleKC cytokine experiments" id="toggleKC cytokine experiments" value="checked" checked onchange="toggleCheckboxes('KC cytokine experiments',this);resetVal('KC cytokine experimentsCount',12,this);"> <input type="button" onclick="toggleVisibility('KC cytokine experimentsSection')" value="KC cytokine experiments"> (<span id="KC cytokine experimentsCount">12</span>/12 signatures selected)<br>
+
+<span id="KC cytokine experimentsSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="IFNg_24h_NHEK_2" id="IFNg_24h_NHEK_2" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IFNg_24h_NHEK_2 <br>
+<input type="checkbox" name="IFNg_24h_NHEK_3" id="IFNg_24h_NHEK_3" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IFNg_24h_NHEK_3 <br>
+<input type="checkbox" name="IL22_20ng_4d_NHEK_9" id="IL22_20ng_4d_NHEK_9" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IL22_20ng_4d_NHEK_9 <br>
+<input type="checkbox" name="IFNg_10ng_4d_NHEK_12" id="IFNg_10ng_4d_NHEK_12" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IFNg_10ng_4d_NHEK_12 <br>
+<input type="checkbox" name="IFNg_20ng_24h_NHEK_23" id="IFNg_20ng_24h_NHEK_23" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IFNg_20ng_24h_NHEK_23 <br>
+<input type="checkbox" name="IGNg_TNF_24h_HaCaT_27" id="IGNg_TNF_24h_HaCaT_27" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IGNg_TNF_24h_HaCaT_27 <br>
+<input type="checkbox" name="IL17A_TNF_1ng_24h_NHEK_32" id="IL17A_TNF_1ng_24h_NHEK_32" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IL17A_TNF_1ng_24h_NHEK_32 <br>
+<input type="checkbox" name="IL17A_TNF_10ng_2h_NHEK_33" id="IL17A_TNF_10ng_2h_NHEK_33" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IL17A_TNF_10ng_2h_NHEK_33 <br>
+<input type="checkbox" name="TNF_20ng_4h_HaCaT_43" id="TNF_20ng_4h_HaCaT_43" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> TNF_20ng_4h_HaCaT_43 <br>
+<input type="checkbox" name="IFNg_20ng_24h_NHEK_45" id="IFNg_20ng_24h_NHEK_45" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IFNg_20ng_24h_NHEK_45 <br>
+<input type="checkbox" name="IL17A_20ng_24h_NHEK_49" id="IL17A_20ng_24h_NHEK_49" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IL17A_20ng_24h_NHEK_49 <br>
+<input type="checkbox" name="IFNg_10ng_24h_NHEK_55" id="IFNg_10ng_24h_NHEK_55" onclick="changeCount('KC cytokine experimentsCount',this)" value="checked" checked> IFNg_10ng_24h_NHEK_55 <br>
+</span>
+<br><input type="checkbox" name="toggleTLR and Interferon (Purified M-CSF derived macrophages)" id="toggleTLR and Interferon (Purified M-CSF derived macrophages)" value="checked" checked onchange="toggleCheckboxes('TLR and Interferon (Purified M-CSF derived macrophages)',this);resetVal('TLR and Interferon (Purified M-CSF derived macrophages)Count',9,this);"> <input type="button" onclick="toggleVisibility('TLR and Interferon (Purified M-CSF derived macrophages)Section')" value="TLR and Interferon (Purified M-CSF derived macrophages)"> (<span id="TLR and Interferon (Purified M-CSF derived macrophages)Count">9</span>/9 signatures selected)<br>
+
+<span id="TLR and Interferon (Purified M-CSF derived macrophages)Section" style="display:none;padding-left:2em">
+<input type="checkbox" name="IFNB_2" id="IFNB_2" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> Interferon beta (2h) <br>
+<input type="checkbox" name="IFNB_6" id="IFNB_6" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> Interferon beta (6h) <br>
+<input type="checkbox" name="IFNB_24" id="IFNB_24" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> Interferon beta (24h) <br>
+<input type="checkbox" name="IFNG_2" id="IFNG_2" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> Interferon gamma (2h) <br>
+<input type="checkbox" name="IFNG_6" id="IFNG_6" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> Interferon gamma (6h) <br>
+<input type="checkbox" name="IFNG_24" id="IFNG_24" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> Interferon gamma (24h) <br>
+<input type="checkbox" name="TLR_2" id="TLR_2" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> TLR (2h) <br>
+<input type="checkbox" name="TLR_6" id="TLR_6" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> TLR (6h) <br>
+<input type="checkbox" name="TLR_24" id="TLR_24" onclick="changeCount('TLR and Interferon (Purified M-CSF derived macrophages)Count',this)" value="checked" checked> TLR (24h) <br>
+</span>
+<br><input type="checkbox" name="toggleGM-CSF" id="toggleGM-CSF" value="checked" checked onchange="toggleCheckboxes('GM-CSF',this);resetVal('GM-CSFCount',2,this);"> <input type="button" onclick="toggleVisibility('GM-CSFSection')" value="GM-CSF"> (<span id="GM-CSFCount">2</span>/2 signatures selected)<br>
+
+<span id="GM-CSFSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="GMT3" id="GMT3" onclick="changeCount('GM-CSFCount',this)" value="checked" checked> GMT3 <br>
+<input type="checkbox" name="GMT12" id="GMT12" onclick="changeCount('GM-CSFCount',this)" value="checked" checked> GMT12 <br>
+</span>
+<br><input type="checkbox" name="toggleIL-6 (Monocyte-derived macrophages)" id="toggleIL-6 (Monocyte-derived macrophages)" value="checked" checked onchange="toggleCheckboxes('IL-6 (Monocyte-derived macrophages)',this);resetVal('IL-6 (Monocyte-derived macrophages)Count',1,this);"> <input type="button" onclick="toggleVisibility('IL-6 (Monocyte-derived macrophages)Section')" value="IL-6 (Monocyte-derived macrophages)"> (<span id="IL-6 (Monocyte-derived macrophages)Count">1</span>/1 signatures selected)<br>
+
+<span id="IL-6 (Monocyte-derived macrophages)Section" style="display:none;padding-left:2em">
+<input type="checkbox" name="IL6_justRMA" id="IL6_justRMA" onclick="changeCount('IL-6 (Monocyte-derived macrophages)Count',this)" value="checked" checked> IL6_justRMA <br>
+</span>
+<br><input type="checkbox" name="toggleIL 4-10-15 vs time 0" id="toggleIL 4-10-15 vs time 0" value="checked" checked onchange="toggleCheckboxes('IL 4-10-15 vs time 0',this);resetVal('IL 4-10-15 vs time 0Count',6,this);"> <input type="button" onclick="toggleVisibility('IL 4-10-15 vs time 0Section')" value="IL 4-10-15 vs time 0"> (<span id="IL 4-10-15 vs time 0Count">6</span>/6 signatures selected)<br>
+
+<span id="IL 4-10-15 vs time 0Section" style="display:none;padding-left:2em">
+<input type="checkbox" name="IL4_6" id="IL4_6" onclick="changeCount('IL 4-10-15 vs time 0Count',this)" value="checked" checked> IL-4 (6h) <br>
+<input type="checkbox" name="IL4_24" id="IL4_24" onclick="changeCount('IL 4-10-15 vs time 0Count',this)" value="checked" checked> IL-4 (24h) <br>
+<input type="checkbox" name="IL10_6" id="IL10_6" onclick="changeCount('IL 4-10-15 vs time 0Count',this)" value="checked" checked> IL-10 (6h) <br>
+<input type="checkbox" name="IL10_24" id="IL10_24" onclick="changeCount('IL 4-10-15 vs time 0Count',this)" value="checked" checked> IL-10 (24h) <br>
+<input type="checkbox" name="IL15_6" id="IL15_6" onclick="changeCount('IL 4-10-15 vs time 0Count',this)" value="checked" checked> IL-15 (6h) <br>
+<input type="checkbox" name="IL15_24" id="IL15_24" onclick="changeCount('IL 4-10-15 vs time 0Count',this)" value="checked" checked> IL-15 (24h) <br>
+</span>
+<br><input type="checkbox" name="toggleSwindell" id="toggleSwindell" value="checked" checked onchange="toggleCheckboxes('Swindell',this);resetVal('SwindellCount',25,this);"> <input type="button" onclick="toggleVisibility('SwindellSection')" value="Swindell"> (<span id="SwindellCount">25</span>/25 signatures selected)<br>
+
+<span id="SwindellSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="B_cell" id="B_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> B_cell <br>
+<input type="checkbox" name="CD138plus_plasma_cell" id="CD138plus_plasma_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> CD138plus_plasma_cell <br>
+<input type="checkbox" name="CD34plus_cell" id="CD34plus_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> CD34plus_cell <br>
+<input type="checkbox" name="CD3plus_T-cell" id="CD3plus_T-cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> CD3plus_T-cell <br>
+<input type="checkbox" name="CD4plus_T-cell" id="CD4plus_T-cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> CD4plus_T-cell <br>
+<input type="checkbox" name="CD8plus_T-cell" id="CD8plus_T-cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> CD8plus_T-cell <br>
+<input type="checkbox" name="Dendritic_cell" id="Dendritic_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> Dendritic_cell <br>
+<input type="checkbox" name="Dermis" id="Dermis" onclick="changeCount('SwindellCount',this)" value="checked" checked> Dermis <br>
+<input type="checkbox" name="Eosinophil" id="Eosinophil" onclick="changeCount('SwindellCount',this)" value="checked" checked> Eosinophil <br>
+<input type="checkbox" name="Epidermis" id="Epidermis" onclick="changeCount('SwindellCount',this)" value="checked" checked> Epidermis <br>
+<input type="checkbox" name="Fibrobast" id="Fibrobast" onclick="changeCount('SwindellCount',this)" value="checked" checked> Fibrobast <br>
+<input type="checkbox" name="Gamma_Delta_T-cell" id="Gamma_Delta_T-cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> Gamma_Delta_T-cell <br>
+<input type="checkbox" name="Keratinocyte" id="Keratinocyte" onclick="changeCount('SwindellCount',this)" value="checked" checked> Keratinocyte <br>
+<input type="checkbox" name="Lymph_endothel_cell" id="Lymph_endothel_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> Lymph_endothel_cell <br>
+<input type="checkbox" name="Macrophage" id="Macrophage" onclick="changeCount('SwindellCount',this)" value="checked" checked> Macrophage <br>
+<input type="checkbox" name="Monocyte" id="Monocyte" onclick="changeCount('SwindellCount',this)" value="checked" checked> Monocyte <br>
+<input type="checkbox" name="NK_T-cell" id="NK_T-cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> NK_T-cell <br>
+<input type="checkbox" name="NK_cell" id="NK_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> NK_cell <br>
+<input type="checkbox" name="Neutrophil" id="Neutrophil" onclick="changeCount('SwindellCount',this)" value="checked" checked> Neutrophil <br>
+<input type="checkbox" name="Platelet" id="Platelet" onclick="changeCount('SwindellCount',this)" value="checked" checked> Platelet <br>
+<input type="checkbox" name="Regulatory_T-cell" id="Regulatory_T-cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> Regulatory_T-cell <br>
+<input type="checkbox" name="Reticulocyte" id="Reticulocyte" onclick="changeCount('SwindellCount',this)" value="checked" checked> Reticulocyte <br>
+<input type="checkbox" name="Subcutan_adipose" id="Subcutan_adipose" onclick="changeCount('SwindellCount',this)" value="checked" checked> Subcutan_adipose <br>
+<input type="checkbox" name="Vasc_endothel_cell" id="Vasc_endothel_cell" onclick="changeCount('SwindellCount',this)" value="checked" checked> Vasc_endothel_cell <br>
+<input type="checkbox" name="IL26d" id="IL26d" onclick="changeCount('SwindellCount',this)" value="checked" checked> IL26d <br>
+</span>
+<br><input type="checkbox" name="toggleNOD2L and TLR2 (Adherent PBMCs)" id="toggleNOD2L and TLR2 (Adherent PBMCs)" value="checked" checked onchange="toggleCheckboxes('NOD2L and TLR2 (Adherent PBMCs)',this);resetVal('NOD2L and TLR2 (Adherent PBMCs)Count',6,this);"> <input type="button" onclick="toggleVisibility('NOD2L and TLR2 (Adherent PBMCs)Section')" value="NOD2L and TLR2 (Adherent PBMCs)"> (<span id="NOD2L and TLR2 (Adherent PBMCs)Count">6</span>/6 signatures selected)<br>
+
+<span id="NOD2L and TLR2 (Adherent PBMCs)Section" style="display:none;padding-left:2em">
+<input type="checkbox" name="NOD2L_6" id="NOD2L_6" onclick="changeCount('NOD2L and TLR2 (Adherent PBMCs)Count',this)" value="checked" checked> NOD2L (6h) <br>
+<input type="checkbox" name="NOD2L_24" id="NOD2L_24" onclick="changeCount('NOD2L and TLR2 (Adherent PBMCs)Count',this)" value="checked" checked> NOD2L (24h) <br>
+<input type="checkbox" name="TLR2_6" id="TLR2_6" onclick="changeCount('NOD2L and TLR2 (Adherent PBMCs)Count',this)" value="checked" checked> TLR2 (6h) <br>
+<input type="checkbox" name="TLR2_24" id="TLR2_24" onclick="changeCount('NOD2L and TLR2 (Adherent PBMCs)Count',this)" value="checked" checked> TLR2 (24h) <br>
+<input type="checkbox" name="NT_6" id="NT_6" onclick="changeCount('NOD2L and TLR2 (Adherent PBMCs)Count',this)" value="checked" checked> NOD2L/TLR2 (6h) <br>
+<input type="checkbox" name="NT_24" id="NT_24" onclick="changeCount('NOD2L and TLR2 (Adherent PBMCs)Count',this)" value="checked" checked> NOD2L/TLR2 (24h) <br>
+</span>
+<br><input type="checkbox" name="toggleNov2013" id="toggleNov2013" value="checked" checked onchange="toggleCheckboxes('Nov2013',this);resetVal('Nov2013Count',4,this);"> <input type="button" onclick="toggleVisibility('Nov2013Section')" value="Nov2013"> (<span id="Nov2013Count">4</span>/4 signatures selected)<br>
+
+<span id="Nov2013Section" style="display:none;padding-left:2em">
+<input type="checkbox" name="ENL2" id="ENL2" onclick="changeCount('Nov2013Count',this)" value="checked" checked> ENL2 <br>
+<input type="checkbox" name="LL2" id="LL2" onclick="changeCount('Nov2013Count',this)" value="checked" checked> LL2 <br>
+<input type="checkbox" name="RR2" id="RR2" onclick="changeCount('Nov2013Count',this)" value="checked" checked> RR2 <br>
+<input type="checkbox" name="TL2" id="TL2" onclick="changeCount('Nov2013Count',this)" value="checked" checked> TL2 <br>
+</span>
+<br><input type="checkbox" name="toggleTh" id="toggleTh" value="checked" checked onchange="toggleCheckboxes('Th',this);resetVal('ThCount',5,this);"> <input type="button" onclick="toggleVisibility('ThSection')" value="Th"> (<span id="ThCount">5</span>/5 signatures selected)<br>
+
+<span id="ThSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="Th17" id="Th17" onclick="changeCount('ThCount',this)" value="checked" checked> Th17 <br>
+<input type="checkbox" name="Th1_Harvard" id="Th1_Harvard" onclick="changeCount('ThCount',this)" value="checked" checked> Th1_Harvard <br>
+<input type="checkbox" name="Th1_rankRelative" id="Th1_rankRelative" onclick="changeCount('ThCount',this)" value="checked" checked> Th1_rankRelative <br>
+<input type="checkbox" name="Th2_Harvard" id="Th2_Harvard" onclick="changeCount('ThCount',this)" value="checked" checked> Th2_Harvard <br>
+<input type="checkbox" name="Th2_rankRelative" id="Th2_rankRelative" onclick="changeCount('ThCount',this)" value="checked" checked> Th2_rankRelative <br>
+</span>
+<br><input type="checkbox" name="toggleVitamin D (Monocytes)" id="toggleVitamin D (Monocytes)" value="checked" checked onchange="toggleCheckboxes('Vitamin D (Monocytes)',this);resetVal('Vitamin D (Monocytes)Count',2,this);"> <input type="button" onclick="toggleVisibility('Vitamin D (Monocytes)Section')" value="Vitamin D (Monocytes)"> (<span id="Vitamin D (Monocytes)Count">2</span>/2 signatures selected)<br>
+
+<span id="Vitamin D (Monocytes)Section" style="display:none;padding-left:2em">
+<input type="checkbox" name="VD_ATRA" id="VD_ATRA" onclick="changeCount('Vitamin D (Monocytes)Count',this)" value="checked" checked> Vitamin D - ATRA <br>
+<input type="checkbox" name="VD_125D" id="VD_125D" onclick="changeCount('Vitamin D (Monocytes)Count',this)" value="checked" checked> Vitamin D - 1,25D <br>
+</span>
+<br><input type="checkbox" name="toggleIL 4-10-15 vs media" id="toggleIL 4-10-15 vs media" value="checked" checked onchange="toggleCheckboxes('IL 4-10-15 vs media',this);resetVal('IL 4-10-15 vs mediaCount',6,this);"> <input type="button" onclick="toggleVisibility('IL 4-10-15 vs mediaSection')" value="IL 4-10-15 vs media"> (<span id="IL 4-10-15 vs mediaCount">6</span>/6 signatures selected)<br>
+
+<span id="IL 4-10-15 vs mediaSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="IL4_6" id="IL4_6" onclick="changeCount('IL 4-10-15 vs mediaCount',this)" value="checked" checked> IL-4 (6h) <br>
+<input type="checkbox" name="IL4_24" id="IL4_24" onclick="changeCount('IL 4-10-15 vs mediaCount',this)" value="checked" checked> IL-4 (24h) <br>
+<input type="checkbox" name="IL10_6" id="IL10_6" onclick="changeCount('IL 4-10-15 vs mediaCount',this)" value="checked" checked> IL-10 (6h) <br>
+<input type="checkbox" name="IL10_24" id="IL10_24" onclick="changeCount('IL 4-10-15 vs mediaCount',this)" value="checked" checked> IL-10 (24h) <br>
+<input type="checkbox" name="IL15_6" id="IL15_6" onclick="changeCount('IL 4-10-15 vs mediaCount',this)" value="checked" checked> IL-15 (6h) <br>
+<input type="checkbox" name="IL15_24" id="IL15_24" onclick="changeCount('IL 4-10-15 vs mediaCount',this)" value="checked" checked> IL-15 (24h) <br>
+</span>
+<br><input type="checkbox" name="toggleMouse Body Atlas" id="toggleMouse Body Atlas" value="checked" checked onchange="toggleCheckboxes('Mouse Body Atlas',this);resetVal('Mouse Body AtlasCount',91,this);"> <input type="button" onclick="toggleVisibility('Mouse Body AtlasSection')" value="Mouse Body Atlas"> (<span id="Mouse Body AtlasCount">91</span>/91 signatures selected)<br>
+
+<span id="Mouse Body AtlasSection" style="display:none;padding-left:2em">
+<input type="checkbox" name="3T3-L1" id="3T3-L1" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> 3T3-L1 <br>
+<input type="checkbox" name="B-cells_marginal_zone" id="B-cells_marginal_zone" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> B-cells_marginal_zone <br>
+<input type="checkbox" name="Baf3" id="Baf3" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> Baf3 <br>
+<input type="checkbox" name="C2C12" id="C2C12" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> C2C12 <br>
+<input type="checkbox" name="C3H_10T1_2" id="C3H_10T1_2" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> C3H_10T1_2 <br>
+<input type="checkbox" name="NK_cells" id="NK_cells" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> NK_cells <br>
+<input type="checkbox" name="RAW_264_7" id="RAW_264_7" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> RAW_264_7 <br>
+<input type="checkbox" name="T-cells_CD4+" id="T-cells_CD4+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> T-cells_CD4+ <br>
+<input type="checkbox" name="T-cells_CD8+" id="T-cells_CD8+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> T-cells_CD8+ <br>
+<input type="checkbox" name="T-cells_foxP3+" id="T-cells_foxP3+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> T-cells_foxP3+ <br>
+<input type="checkbox" name="adipose_brown" id="adipose_brown" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> adipose_brown <br>
+<input type="checkbox" name="adipose_white" id="adipose_white" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> adipose_white <br>
+<input type="checkbox" name="adrenal_gland" id="adrenal_gland" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> adrenal_gland <br>
+<input type="checkbox" name="amygdala" id="amygdala" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> amygdala <br>
+<input type="checkbox" name="bladder" id="bladder" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> bladder <br>
+<input type="checkbox" name="bone" id="bone" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> bone <br>
+<input type="checkbox" name="bone_marrow" id="bone_marrow" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> bone_marrow <br>
+<input type="checkbox" name="cerebellum" id="cerebellum" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> cerebellum <br>
+<input type="checkbox" name="cerebral_cortex" id="cerebral_cortex" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> cerebral_cortex <br>
+<input type="checkbox" name="cerebral_cortex_prefrontal" id="cerebral_cortex_prefrontal" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> cerebral_cortex_prefrontal <br>
+<input type="checkbox" name="ciliary_bodies" id="ciliary_bodies" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> ciliary_bodies <br>
+<input type="checkbox" name="common_myeloid_progenitor" id="common_myeloid_progenitor" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> common_myeloid_progenitor <br>
+<input type="checkbox" name="cornea" id="cornea" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> cornea <br>
+<input type="checkbox" name="dendritic_cells_lymphoid_CD8a+" id="dendritic_cells_lymphoid_CD8a+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> dendritic_cells_lymphoid_CD8a+ <br>
+<input type="checkbox" name="dendritic_cells_myeloid_CD8a-_" id="dendritic_cells_myeloid_CD8a-_" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> dendritic_cells_myeloid_CD8a-_ <br>
+<input type="checkbox" name="dendritic_plasmacytoid_B220+" id="dendritic_plasmacytoid_B220+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> dendritic_plasmacytoid_B220+ <br>
+<input type="checkbox" name="dorsal_root_ganglia" id="dorsal_root_ganglia" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> dorsal_root_ganglia <br>
+<input type="checkbox" name="dorsal_striatum" id="dorsal_striatum" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> dorsal_striatum <br>
+<input type="checkbox" name="embryonic_stem_line_Bruce4_p13" id="embryonic_stem_line_Bruce4_p13" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> embryonic_stem_line_Bruce4_p13 <br>
+<input type="checkbox" name="embryonic_stem_line_V26_2_p16" id="embryonic_stem_line_V26_2_p16" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> embryonic_stem_line_V26_2_p16 <br>
+<input type="checkbox" name="epidermis" id="epidermis" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> epidermis <br>
+<input type="checkbox" name="eyecup" id="eyecup" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> eyecup <br>
+<input type="checkbox" name="follicular_B-cells" id="follicular_B-cells" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> follicular_B-cells <br>
+<input type="checkbox" name="granulo_mono_progenitor" id="granulo_mono_progenitor" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> granulo_mono_progenitor <br>
+<input type="checkbox" name="granulocytes_mac1+gr1+" id="granulocytes_mac1+gr1+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> granulocytes_mac1+gr1+ <br>
+<input type="checkbox" name="heart" id="heart" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> heart <br>
+<input type="checkbox" name="hippocampus" id="hippocampus" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> hippocampus <br>
+<input type="checkbox" name="hypothalamus" id="hypothalamus" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> hypothalamus <br>
+<input type="checkbox" name="intestine_large" id="intestine_large" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> intestine_large <br>
+<input type="checkbox" name="intestine_small" id="intestine_small" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> intestine_small <br>
+<input type="checkbox" name="iris" id="iris" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> iris <br>
+<input type="checkbox" name="kidney" id="kidney" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> kidney <br>
+<input type="checkbox" name="lacrimal_gland" id="lacrimal_gland" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> lacrimal_gland <br>
+<input type="checkbox" name="lens" id="lens" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> lens <br>
+<input type="checkbox" name="liver" id="liver" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> liver <br>
+<input type="checkbox" name="lung" id="lung" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> lung <br>
+<input type="checkbox" name="lymph_nodes" id="lymph_nodes" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> lymph_nodes <br>
+<input type="checkbox" name="mIMCD-3" id="mIMCD-3" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mIMCD-3 <br>
+<input type="checkbox" name="macrophage_bone_marrow_0hr" id="macrophage_bone_marrow_0hr" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_bone_marrow_0hr <br>
+<input type="checkbox" name="macrophage_bone_marrow_24h_LPS" id="macrophage_bone_marrow_24h_LPS" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_bone_marrow_24h_LPS <br>
+<input type="checkbox" name="macrophage_bone_marrow_2hr_LPS" id="macrophage_bone_marrow_2hr_LPS" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_bone_marrow_2hr_LPS <br>
+<input type="checkbox" name="macrophage_bone_marrow_6hr_LPS" id="macrophage_bone_marrow_6hr_LPS" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_bone_marrow_6hr_LPS <br>
+<input type="checkbox" name="macrophage_peri_LPS_thio_0hrs" id="macrophage_peri_LPS_thio_0hrs" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_peri_LPS_thio_0hrs <br>
+<input type="checkbox" name="macrophage_peri_LPS_thio_1hrs" id="macrophage_peri_LPS_thio_1hrs" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_peri_LPS_thio_1hrs <br>
+<input type="checkbox" name="macrophage_peri_LPS_thio_7hrs" id="macrophage_peri_LPS_thio_7hrs" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> macrophage_peri_LPS_thio_7hrs <br>
+<input type="checkbox" name="mammary_gland__lact" id="mammary_gland__lact" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mammary_gland__lact <br>
+<input type="checkbox" name="mammary_gland_non-lactating" id="mammary_gland_non-lactating" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mammary_gland_non-lactating <br>
+<input type="checkbox" name="mast_cells" id="mast_cells" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mast_cells <br>
+<input type="checkbox" name="mast_cells_IgE" id="mast_cells_IgE" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mast_cells_IgE <br>
+<input type="checkbox" name="mast_cells_IgE+antigen_1hr" id="mast_cells_IgE+antigen_1hr" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mast_cells_IgE+antigen_1hr <br>
+<input type="checkbox" name="mast_cells_IgE+antigen_6hr" id="mast_cells_IgE+antigen_6hr" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mast_cells_IgE+antigen_6hr <br>
+<input type="checkbox" name="mega_erythrocyte_progenitor" id="mega_erythrocyte_progenitor" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> mega_erythrocyte_progenitor <br>
+<input type="checkbox" name="microglia" id="microglia" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> microglia <br>
+<input type="checkbox" name="min6" id="min6" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> min6 <br>
+<input type="checkbox" name="neuro2a" id="neuro2a" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> neuro2a <br>
+<input type="checkbox" name="nih_3T3" id="nih_3T3" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> nih_3T3 <br>
+<input type="checkbox" name="nucleus_accumbens" id="nucleus_accumbens" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> nucleus_accumbens <br>
+<input type="checkbox" name="olfactory_bulb" id="olfactory_bulb" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> olfactory_bulb <br>
+<input type="checkbox" name="osteoblast_day14" id="osteoblast_day14" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> osteoblast_day14 <br>
+<input type="checkbox" name="osteoblast_day21" id="osteoblast_day21" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> osteoblast_day21 <br>
+<input type="checkbox" name="osteoblast_day5" id="osteoblast_day5" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> osteoblast_day5 <br>
+<input type="checkbox" name="osteoclasts" id="osteoclasts" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> osteoclasts <br>
+<input type="checkbox" name="ovary" id="ovary" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> ovary <br>
+<input type="checkbox" name="pancreas" id="pancreas" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> pancreas <br>
+<input type="checkbox" name="pituitary" id="pituitary" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> pituitary <br>
+<input type="checkbox" name="placenta" id="placenta" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> placenta <br>
+<input type="checkbox" name="prostate" id="prostate" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> prostate <br>
+<input type="checkbox" name="retina" id="retina" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> retina <br>
+<input type="checkbox" name="retinal_pigment_epithelium" id="retinal_pigment_epithelium" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> retinal_pigment_epithelium <br>
+<input type="checkbox" name="salivary_gland" id="salivary_gland" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> salivary_gland <br>
+<input type="checkbox" name="skeletal_muscle" id="skeletal_muscle" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> skeletal_muscle <br>
+<input type="checkbox" name="spinal_cord" id="spinal_cord" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> spinal_cord <br>
+<input type="checkbox" name="spleen" id="spleen" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> spleen <br>
+<input type="checkbox" name="stem_cells__HSC" id="stem_cells__HSC" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> stem_cells__HSC <br>
+<input type="checkbox" name="stomach" id="stomach" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> stomach <br>
+<input type="checkbox" name="testis" id="testis" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> testis <br>
+<input type="checkbox" name="thymocyte_DP_CD4+CD8+" id="thymocyte_DP_CD4+CD8+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> thymocyte_DP_CD4+CD8+ <br>
+<input type="checkbox" name="thymocyte_SP_CD4+" id="thymocyte_SP_CD4+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> thymocyte_SP_CD4+ <br>
+<input type="checkbox" name="thymocyte_SP_CD8+" id="thymocyte_SP_CD8+" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> thymocyte_SP_CD8+ <br>
+<input type="checkbox" name="umbilical_cord" id="umbilical_cord" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> umbilical_cord <br>
+<input type="checkbox" name="uterus" id="uterus" onclick="changeCount('Mouse Body AtlasCount',this)" value="checked" checked> uterus <br>
+</span>
+<br><input type="submit" id="tissueDeconvolutionSubmit" name="tissueDeconvolutionSubmit" value="Submit" />
+
+</form>
+</body>
+</html>

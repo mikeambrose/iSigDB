@@ -1,0 +1,3 @@
+nickname	hash
+<input type=checkbox>	2567a765017f874507adf745505fd3a6
+&ltinput type=checkbox&gt	f75b3a5cbb1d92f40c798de41382c851

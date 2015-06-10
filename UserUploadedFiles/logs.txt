@@ -1,0 +1,3 @@
+IP	nickname	size
+1.2.3.4	<input type=checkbox>	32
+1.2.3.4	&ltinput type=checkbox&gt	32

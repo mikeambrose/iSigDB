@@ -1,3 +1,4 @@
+"""Tool for comparing signatures to each other as well as running spearman analysis"""
 import glob,os,subprocess
 from optparse import OptionParser
 
@@ -65,8 +66,8 @@ def getRanksMemoize(f):
             ret = self[key] = f(key)
             return ret
     return memodict().__getitem__
-
-@getRanksMemoize
+#Uncomment when not comparing signatures
+#@getRanksMemoize
 def getRanks(lst):
     """Returns a dictionary of entry : rank
     This is memoized and thus must be called with a tuple"""
@@ -203,40 +204,86 @@ def loadSigDictionary(strPathToGroupFile):
 def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,strColMetric,invert,fixed):
     #print strMatrixFile
     #print strOutFile
-    strTxtOutFile = 'routput.txt'
-    strDend1OutFile = 'dend1.pdf'
-    strDend2OutFile = 'dend2.pdf'
-    subprocess.call(["Rscript",'heatsig.R',strMatrixFile,strOutFile,strColumnZ,strRowMetric,strColMetric,strTxtOutFile, strDend1OutFile, strDend2OutFile])
-    import make_heatmap
+    strTxtOutFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/spearROutput.txt'
+    subprocess.call(["Rscript",'/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R',strMatrixFile,strOutFile,strColumnZ,strRowMetric,strColMetric,strTxtOutFile])
+    import make_heatmapV4
     centerAroundZero = True
-    maxVal,minVal = 1,-1
-    make_heatmap.generateCanvas(strTxtOutFile,'heatmapoutput.html','Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',
+    #maxVal,minVal = 1,-1
+    maxVal,minVal = None,None
+    make_heatmapV4.generateCanvas(strTxtOutFile,'/home/mike/workspace/PellegriniResearch/output/heatmapoutput.html','Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',
                                     invert,centerAroundZero,minVal,maxVal)
-                                    
+
+def compareSignatures(sigs,outFile,sigNames):
+    with open(outFile,"w") as basicOut:
+        #write header
+        basicOut.write("SAMPLE")
+        for sig in sigs:
+            #use the full name if it exists, otherwise use the abbreviation
+            basicOut.write("\t"+(sigNames[sig] if sig in sigNames else sig))
+        basicOut.write("\n")
+        for sig1 in sigs:
+            basicOut.write(sigNames[sig1] if sig1 in sigNames else sig1)
+            for sig2 in sigs:
+                commonGenes = getSpearmanGenes({sig1:sigs[sig1]},{sig2:sigs[sig2]},'all',None)
+                if len(commonGenes) <= 1:
+                    basicOut.write("\t0")
+                    continue
+                spearmanDicts = getSpearmanDict({sig1:sigs[sig1],sig2:sigs[sig2]},commonGenes)
+                spearSig1,spearSig2 = spearmanDicts[sig1],spearmanDicts[sig2]
+                i = 0
+                if sig1 != sig2:
+                    while i < len(spearSig1):
+                        if spearSig1[i] == 0 or spearSig2[i] == 0:
+                            del spearSig1[i]; del spearSig2[i]
+                        else:
+                            i += 1
+                else:
+                    spearSig1 = spearSig2 = filter(lambda x:x!=0,spearSig2)
+                if not any(s < 0 for s in spearSig1):
+                    spearSig1 = [math.log(s,10) for s in spearSig1]
+                if not any(s < 0 for s in spearSig2):
+                    spearSig2 = [math.log(s,10) for s in spearSig2]
+                val,_ = getPearsonVals(spearSig1,spearSig2)
+
+                basicOut.write("\t"+str(val))
+            basicOut.write("\n")
+
+def countGeneOverlap(outFile,sigNames,n):
+    sigs = {}
+    with open('/home/mike/workspace/PellegriniResearch/sigdir/SigGenes.txt') as fullSigs:
+        for line in fullSigs:
+            line = line.replace("\n","").split('\t')
+            sig = line[0]
+            if len(line) < n:
+                continue
+            sigs[sig] = set(line[1:n+1])
+    with open(outFile,'w') as basicOut:
+        basicOut.write("SAMPLE")
+        for sig in sigs:
+            basicOut.write("\t"+(sigNames[sig] if sig in sigNames else sig))
+        basicOut.write("\n")
+        for sig1 in sigs:
+            basicOut.write(sigNames[sig1] if sig1 in sigNames else sig1)
+            for sig2 in sigs:
+                nOverlap = len(sigs[sig1].intersection(sigs[sig2]))
+                basicOut.write("\t"+str(nOverlap))
+            basicOut.write("\n")
 
 if __name__ == "__main__":
     parser = OptionParser()
-    parser.add_option("-t", "--gene_count", dest="gene_count", help="table of gene counts", metavar="TAB", default="")
     parser.add_option("-s", "--sig", dest="sig", help="signature directory", metavar="LIST", default="")
     parser.add_option("-g", "--group", dest="group", help="path to group files", metavar="PATH", default="")
     parser.add_option("-r", "--row_metric", dest="row_metric", help="metric for clustering rows (samples)", default="pear_cor")
     parser.add_option("-c", "--col_metric", dest="col_metric", help="metric for clustering columns (signatures)", default="pear_cor")
     parser.add_option("-i", "--invert",default=True,dest="invert",help="heatmap columns inverted")
-    parser.add_option("-f", "--fixed", dest="fixed", default="none", help="use fixed color axis")
     (options, args) = parser.parse_args()
     #check that it's in the form we expect and replace non-unix line endings
-    strOutMatrixTxt = 'spearMatrix.txt'  
+    strOutMatrixTxt = '/home/mike/workspace/PellegriniResearch/scripts/scratch/spearMatrix.txt'  
     selSigs = getSelSigs(options.group)
     #print selSigs[70:100]
-    selSigs = selSigs[:70] + selSigs[95:]
-    #selSigs = ['IL10_6h_05-15','IL10_24h_05-15','IL15_6h_05-15','IL15_24h_05-15','IFNB_2','IFNB_6','IFNB_24',
-	#			'IFNG_2','IFNG_6','IFNG_24','TLP','LLP']
+    #selSigs = selSigs[:50]
     #load dictionaries for sigs
     sigs = getSigDict(options.sig,selSigs)
-    #load dictionary for samples
-    sams = getSamDict(options.gene_count)
-    genes = getSpearmanGenes(sams,sigs,'top',50)
-    spearmanSams, spearmanSigs = getSpearmanDict(sams,genes),getSpearmanDict(sigs,genes)
-    spearmanRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group))
-    #generate heatmap pdf
-    createHeatMap(strOutMatrixTxt,'spearHeatmap.pdf','spearman','none',options.row_metric,options.col_metric,False if options.invert=='none' else True,False if options.fixed=='none' else True)
+    compareSignatures(sigs,strOutMatrixTxt,loadSigDictionary(options.group))
+    #countGeneOverlap(strOutMatrixTxt,loadSigDictionary(options.group),50)
+    createHeatMap(strOutMatrixTxt,'/home/mike/workspace/PellegriniResearch/scripts/scratch/spearHeatmap.pdf','spearman','none',options.row_metric,options.col_metric,False if options.invert=='none' else True,False)

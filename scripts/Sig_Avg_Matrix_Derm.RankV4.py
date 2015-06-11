@@ -7,6 +7,7 @@ import glob
 import os
 import gzip
 import subprocess
+import math
 S_GENE_COUNT = '50'
 S_VERSION = 'rank_delta'
 S_ZSCORE = 'column'
@@ -289,6 +290,208 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
             fout.write(strRow+'\n')
         fout.close()
 
+#------SPEARMAN/PEARSON CORRELATION
+def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):
+    """Uses the spearman/pearson coefficient to evaluate the similarity between signatures and samples
+    sigs is a dictionary where each entry has the n genes chosen for analysis
+    sams is in the same format as sigDict, but has samples as keys instead of signatures
+    geneNames is a list of gene names in the same order as they appear in sigs and sams
+    sigNames is a dictionary of sig abbreviation : full name
+    Similar to other functions, writes to two files:
+        strOutFile contains the basic information used by the R script
+        strOutFile + ".matrix.txt" has the detailed information used in generating the detailed heatmaps
+    No value is returned"""
+    #stored as a dictionary of (sig,sam):coef
+    sigSamCoefficient = {}
+    #dictionary of signature:gene:list of d values corresponding to (sig,gene,sam)
+    geneDetail = {}
+    for sig in sigs:
+        geneDetail[sig] = {}
+        for gene in geneNames:
+            geneDetail[sig][gene] = []
+    for sig in sigs:
+        for sam in sams:
+            coef,rankDiffs = getSpearmanVals(sigs[sig],sams[sam]) if version=="spearman"\
+                                    else getPearsonVals(sigs[sig],sams[sam])
+            for i in range(len(geneNames)):
+                geneDetail[sig][geneNames[i]].append(rankDiffs[i])
+            sigSamCoefficient[(sig,sam)] = coef
+    #write detailed output
+    with open(strOutFile+".matrix.txt","w") as detailedOut:
+        for sig in sigs:
+            detailedOut.write('# Signature: ' + (sigNames[sig] if sig in sigNames else sig)+'\n')
+            #write sample names
+            for sam in sams:
+                detailedOut.write('\t'+sam)
+            detailedOut.write('\n')
+            #write gene detail
+            for gene in geneNames:
+                detailedOut.write(gene)
+                samVals = geneDetail[sig][gene]
+                assert len(samVals) == len(sams)
+                for val in samVals:
+                    detailedOut.write('\t'+str(val))
+                detailedOut.write('\n')
+            detailedOut.write('\n')
+    #write regular output
+    with open(strOutFile,"w") as basicOut:
+        #write header
+        basicOut.write("SAMPLE")
+        for sig in sigs:
+            #use the full name if it exists, otherwise use the abbreviation
+            basicOut.write("\t"+(sigNames[sig] if sig in sigNames else sig))
+        basicOut.write("\n")
+        for sam in sams:
+            basicOut.write(sam)
+            for sig in sigs:
+                basicOut.write("\t"+str(sigSamCoefficient[(sig,sam)]))
+            basicOut.write("\n")
+
+
+def getRanksMemoize(f):
+    """fast memoization decorator for getRanks"""
+    class memodict(dict):
+        def __missing__(self,key):
+            ret = self[key] = f(key)
+            return ret
+    return memodict().__getitem__
+
+@getRanksMemoize
+def getRanks(lst):
+    """Returns a dictionary of entry : rank
+    This is memoized and thus must be called with a tuple"""
+    ranks = {}
+    sorted_lst = sorted(lst)
+    n = len(lst)
+    i = 0
+    while i < n:
+        #detect if there is a run
+        if i+1<n and sorted_lst[i+1] == sorted_lst[i]:
+            run_length = 2
+            j = i+1
+            while j+1<n and sorted_lst[j+1] == sorted_lst[j]:
+                run_length += 1
+                j += 1
+            rankVal = i+(run_length-1)/2.0
+            for k in range(i,j+1):
+                ranks[sorted_lst[k]] = rankVal
+            i = i+run_length
+        else:
+            ranks[sorted_lst[i]] = i
+            i += 1
+    return ranks
+
+def getSpearmanVals(v1,v2):
+    """Returns the spearman correlation coefficient between v1 and v2
+    as well as the list of rank differentials between v1 and v2"""
+    n = len(v1)
+    v1Ranks,v2Ranks = getRanks(tuple(v1)),getRanks(tuple(v2))
+    d = [v1Ranks[v1[i]] - v2Ranks[v2[i]] for i in range(n)]
+    rho = 1 - 6*sum(x**2 for x in d)/float(n*(n**2-1))
+    return rho,d
+
+def getPearsonVals(v1,v2):
+    """Returns the pearson correlation coefficient between v1 and v2 as well as the list
+    of differentials between v1 and v2"""
+    n = len(v1)
+    d = [v1[i] - v2[i] for i in range(n)]
+    rho = (n * sum(v1[i]*v2[i] for i in range(n)) - sum(v1)*sum(v2))/\
+            math.sqrt((n*sum(x**2 for x in v1) - sum(v1)**2)*(n*sum(x**2 for x in v2)-sum(v2)**2))
+    return rho,d
+
+def getSpearmanGenes(sams,sigs,compType,sigFile=None,n=50):
+    """compType determines if all genes will be accessed or only the top genes
+    if 'all' is passed in, computes the set of genes which are common to all samples and signatures
+    if 'top' is passed in, takes the top n genes from each signature (as determined by the signature
+    file) and computes the intersection of all those top genes, and then selects the subset of those
+    which are present in all samples and signatures"""
+    if compType=='all':
+        commonGenes = set()
+        sam = sams[sams.keys()[0]]
+        for gene in sam:
+            if all(gene in sigs[sig] for sig in sigs):
+                commonGenes.add(gene)
+        return list(commonGenes)
+    elif compType=='top':
+        candGenes = set()
+        #generates a set of candidate genes by picking the top n genes for each sig
+        with open(sigFile) as fullSigs:
+            for line in fullSigs:
+                line = line.split('\t')
+                sig = line[0]
+                if sig in sigs:
+                    candGenes = candGenes.union(set(line[1:n+1]))
+        commonGenes = set()
+        allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
+        for gene in candGenes:
+            if all(gene in s for s in allSets):
+                commonGenes.add(gene)
+        return list(commonGenes)
+
+def getSpearmanDict(inputDict,genes):
+    """Contructs a matrix of key : values for each gene"""
+    returnDict = {}
+    for line in inputDict:
+        returnDict[line] = []
+        for gene in genes:
+            returnDict[line].append(inputDict[line][gene])
+    for line in inputDict:
+        assert len(returnDict[line]) == len(genes)
+    return returnDict
+
+def getSamDict(f):
+    """returns a dictionary of sample:gene:value for each gene in genes"""
+    samDict = {}
+    f = open(f).read().split('\n')
+    sams = f[0].replace("\n","").replace("\r","").split('\t')[1:]
+    for sam in sams:
+        samDict[sam] = {}
+    for line in f[1:-1]:
+        line = line.split('\t')
+        gene = line[0].upper()
+        vals = [float(x) for x in line[1:]]
+        for i in range(len(sams)):
+            samDict[sams[i]][gene] = vals[i]
+    return samDict
+
+def getSigDict(dirSigs,selSigs):
+    """returns a dictionary of signature:gene:value for each signature in selSigs"""
+    #get all signature files
+    allSigs = glob.glob(dirSigs+'/*--*')
+    sigDict = {}
+    for sigPath in allSigs:
+        _,sig = os.path.split(sigPath)
+        sig =  sig.split('--')[0]
+        if sig not in selSigs:
+            continue
+        sigDict[sig] = {}
+        sigFile = open(sigPath).read().split('\n')
+        for line in sigFile:
+            if not line:    continue
+            line = line.split('\t')
+            gene = line[0].upper()
+            sigDict[sig][gene] = float(line[1])
+    return sigDict
+
+def getSelSigs(group):
+    selSigs = []
+    abbrevs = open(group).read().split('\n')
+    for abbrev in abbrevs[:-1]:
+        selSigs.append(abbrev.split('\t')[0])
+    return selSigs
+
+def loadSigDictionary(strPathToGroupFile):
+    returnDict = {}
+    f = open(strPathToGroupFile,'r')
+    for line in f:
+        abbrev, real = line.split('\t')
+        returnDict[abbrev] = real[:-2]
+    return returnDict
+
+
+#------END SPEARMAN/PEARSON CORRELATION
+
+
 def loadGroupInfo(strPathToGroupFile):
     dGroupToLTisDesc = {}
     strGroup = strPathToGroupFile.split('.')[0]
@@ -311,8 +514,6 @@ def loadSigDictionary(strPathToGroupFile):
     return returnDict
 
 def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,strColMetric,jobID,invert,fixed,isClient):
-    #print strMatrixFile
-    #print strOutFile
     if not isClient:
         strTxtOutFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+jobID+'/'+jobID+'.matrixForHC.txt'
         strHeatmapOutFile = strOutFile+'Rheatmap.pdf'
@@ -335,12 +536,12 @@ def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,st
             elif strVersion == "rank_avg":
                 maxVal = 30000
                 minVal = 0
-            elif strVersion == "log":
+            elif strVersion == "log": #TODO: fix version names
                 maxVal = 10
                 minVal = 0
-            else:
-                maxVal = 30
-                minVal = 0
+            elif strVersion in ['pearson','spearman']:
+                maxVal = 1
+                minVal = -1
     import make_heatmapV4 as make_heatmap
     out = '/home/mike/workspace/PellegriniResearch/output/HighChartsHeatmap.html' if isClient else None
     make_heatmap.generateCanvas(strTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,strOutFile)
@@ -352,6 +553,7 @@ if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-t", "--gene_count", dest="gene_count", help="table of gene counts", metavar="TAB", default="")
     parser.add_option("-s", "--sig", dest="sig", help="path to pm ratio list", metavar="LIST", default="")
+    parser.add_option("-x","--sigfile",dest="sigfile",help="path to precomputed signatures")
     parser.add_option("-g", "--group", dest="group", help="path to group files", metavar="PATH", default="")
     parser.add_option("-n", "--ngene_count", dest="ngene_count", help="number of genes to use", metavar="NUM", default=S_GENE_COUNT)
     parser.add_option("-v", "--version", dest="version", help="metric version (rank_avg,rank_delta,log)", metavar="VER", default=S_VERSION)
@@ -369,25 +571,36 @@ if __name__ == "__main__":
 
     replaceLineEndings(options.gene_count)
     checkForErrors(options.gene_count)
-    #load categories
-    dGroupToLTisDesc = loadGroupInfo(options.group)
 
-    #list signatures
-    lTis = []
-    for strGroup in sorted(dGroupToLTisDesc.keys()):
-        for strTis,strDes in dGroupToLTisDesc[strGroup]:
-            lTis.append(strTis)
-
-    #load list of genes
-    dGroupSigToGene = getSigGenes(options.sig,int(options.ngene_count))
     if options.client:
         strOutMatrixTxt = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt'
     else:
         strOutMatrixTxt = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+options.job_id+'/'+options.job_id+'.matrix.txt'
 
-    #process gene count matrix
-    procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,loadSigDictionary(options.group))
+    if options.version not in ['spearman','pearson']:
+        #load categories
+        dGroupToLTisDesc = loadGroupInfo(options.group)
 
+        #list signature
+        lTis = []
+        for strGroup in sorted(dGroupToLTisDesc.keys()):
+            for strTis,strDes in dGroupToLTisDesc[strGroup]:
+                lTis.append(strTis)
+
+        #load list of genes
+        dGroupSigToGene = getSigGenes(options.sigfile,int(options.ngene_count))
+
+        #process gene count matrix
+        procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,loadSigDictionary(options.group))
+    else: #spearman or pearson
+        selSigs = getSelSigs(options.group)
+        selSigs = selSigs[:70] + selSigs[110:]
+        sigs = getSigDict(options.sig,selSigs)
+        sams = getSamDict(options.gene_count)
+        genes = getSpearmanGenes(sams,sigs,'top',options.sigfile,int(options.ngene_count))
+        print len(genes)
+        spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)
+        corrRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group),options.version)
     #generate heatmap pdf
     RHeatmapOut = '/home/mike/workspace/PellegriniResearch/scripts/scratch/' if options.client else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id
     createHeatMap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client)

@@ -1,3 +1,9 @@
 sigdir/
 .goutputstream-J0DYYX
-
+exampleInputs/
+*~
+output/
+scripts/scratch/
+*.pyc
+*.swp
+*.swo

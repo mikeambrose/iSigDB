@@ -109,7 +109,9 @@ Compute heatmap based on:&nbsp;
 <option value="rank_delta">Rank Delta</option>
 <option value="log">Log10-Transformed Values</option>
 <option value="absolute">Values (Do Not Log-Transform)</option>
-</select> <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span><strong>Rank Average</strong> computes similarity between genes based on ordering them by importance<br><strong>Rank Delta</strong> computes similarity using the difference between a gene's rank in one sample and its mean rank across all samples<br><strong>Log10-Transformed Values</strong> uses log-transformed raw expression values instead of gene rank<br><strong>Values (Do Not Log-Transform)</strong> uses non-log-transformed raw values instead of gene rank</span></a>
+<option value="pearson">Pearson Correlation</option>
+<option value="spearman">Spearman Correlation</option>
+</select> <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span><strong>Rank Average</strong> computes similarity between genes based on ordering them by importance<br><strong>Rank Delta</strong> computes similarity using the difference between a gene's rank in one sample and its mean rank across all samples<br><strong>Log10-Transformed Values</strong> uses log-transformed raw expression values instead of gene rank<br><strong>Values (Do Not Log-Transform)</strong> uses non-log-transformed raw values instead of gene rank<br><strong>Pearson Correlation</strong> ranks each signature/sample pair by the similarity as calculated by the Pearson correlation<br><strong>Spearman Correlation</strong> uses Spearman's rank-based correlation instead of Pearson's value-based correlation</span></a>
 
 <br /><br />
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
@@ -139,7 +141,6 @@ Metric for signature clustering: &nbsp;
 <option value="pear_cor">Pearson Correlation</option>
 <option value="none">None (Do Not Cluster)</option>
 </select><br />
-
 
 <br />
 

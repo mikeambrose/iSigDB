@@ -82,7 +82,6 @@ open my $ABBREV_LIST, '>', $local_abbrev_list_path or die $!;
 
 
 my %abbrevs_and_desns;
-#TODO: fix location
 open my $abbrevs_file, '<', '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/abbrevs.txt' or die "file not found$!";
 while (my $line = <$abbrevs_file>) {
     chomp $line;
@@ -121,7 +120,9 @@ my $exec_path = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank';
 my %acceptable_heatmap_metrics = ('rank_avg' => undef,
                                   'rank_delta' => undef,
                                   'log' => undef,
-                                  'absolute' => undef);
+                                  'absolute' => undef,
+                                  'pearson' => undef,
+                                  'spearman' => undef);
 
 my $heatmap_metric_argument = $raw_user_input{'heatmap_metric'};
 if (!exists $acceptable_heatmap_metrics{$heatmap_metric_argument}) {
@@ -157,10 +158,10 @@ if ((!exists $acceptable_metrics{$row_metric}) || (!exists $acceptable_metrics{$
 }
 
 #ThrowInternalError("python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument");
-my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument`;
+my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SIGS -x $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument -f $fixed_argument --server`;
 
-$python_out =~ s/null device \n          1 //;
-$python_out =~ s/pdf \n  2 //;
+#$python_out =~ s/null device \n          1 //;
+#$python_out =~ s/pdf \n  2 //;
 
 # display output
 

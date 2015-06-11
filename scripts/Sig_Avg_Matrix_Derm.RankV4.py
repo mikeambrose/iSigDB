@@ -522,7 +522,8 @@ def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,st
         strHeatmapOutFile = '/home/mike/workspace/PellegriniResearch/output/RHeatmap.pdf'
     rscriptPath = "Rscript" if isClient else "/UCSC/Pathways-Auxiliary/UCLApathways-R-3.1.1/R-3.1.1/bin/Rscript"
     heatsigPath = "/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R" if isClient else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatsigV4.R'
-    subprocess.call([rscriptPath,heatsigPath,strMatrixFile,strHeatmapOutFile,strColumnZ,strRowMetric,strColMetric,strTxtOutFile])
+    FNULL = open(os.devnull, 'w')
+    subprocess.call([rscriptPath,heatsigPath,strMatrixFile,strHeatmapOutFile,strColumnZ,strRowMetric,strColMetric,strTxtOutFile],stdout=FNULL,stderr=FNULL)
     centerAroundZero = (strColumnZ == 'matrix') or (strVersion == "rank_delta")
     maxVal,minVal = None,None
     if fixed:

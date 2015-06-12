@@ -171,7 +171,7 @@ rowArg = form["row_metric"].value
 colArg = form["col_metric"].value
 seed = form["seed"].value
 fileSource = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_" + seed + '/' + seed + ".matrix.txt.full.txt"
-generateCanvas(fileSource,None,signature,invertArg,scaleArg,"none",rowArg,colArg,seed)"""
+generateCanvas(fileSource,None,signature,invertArg,rowArg,colArg,seed,False)"""
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-i", "--input", dest="input")

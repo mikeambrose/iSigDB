@@ -55,9 +55,9 @@ If you can't see the heatmap, make sure adblock is disabled and try again.<br>
     #add links and hidden file location
     baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(baseFile)
     seed = baseFile[-18:]
-    htmlText += '"' + baseFile+'''heatmap.pdf">R heatmap output</a> <br />
+    htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />
 Look in more detail at one signature:
-<form id="detailedHeatmap" name="detailedHeatmap" method="post" action="/cgi-bin/goTeles/sig_heatmap.cgi" ENCTYPE="multipart/form-data">
+<form id="detailedHeatmap" name="detailedHeatmap" method="post" action="/cgi-bin/goTeles/sig_heatmapV4.cgi" ENCTYPE="multipart/form-data">
 <input type="hidden" id="seed" name="seed" value="''' + seed + '''">
 <select name="signatureName" id="signatureName">'''
     #add values for option

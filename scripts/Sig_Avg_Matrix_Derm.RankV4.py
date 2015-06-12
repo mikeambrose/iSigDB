@@ -317,7 +317,7 @@ def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):
                 geneDetail[sig][geneNames[i]].append(rankDiffs[i])
             sigSamCoefficient[(sig,sam)] = coef
     #write detailed output
-    with open(strOutFile+".matrix.txt","w") as detailedOut:
+    with open(strOutFile+".full.txt","w") as detailedOut:
         for sig in sigs:
             detailedOut.write('# Signature: ' + (sigNames[sig] if sig in sigNames else sig)+'\n')
             #write sample names

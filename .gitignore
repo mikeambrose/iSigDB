@@ -1,4 +1,6 @@
 sigdir/
+!sigdir/abbrevs.txt
+!sigdir/JSTreeAbbrevs.txt
 .goutputstream-J0DYYX
 exampleInputs/
 *~

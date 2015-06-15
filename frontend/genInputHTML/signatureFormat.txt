@@ -116,3 +116,18 @@ Human
         Discoid Lupus Erythematosus
         Acne
         Non-lesional acne
+    IL-4/10/15
+        vs media
+             IL-4 (6h)
+             IL-4 (24h)
+             IL-10 (6h)
+             IL-10 (24h)
+             IL-15 (6h)
+             IL-15 (24h)
+        vs time 0
+            IL-4 (6h)
+            IL-4 (24h)
+            IL-10 (6h)
+            IL-10 (24h)
+            IL-15 (6h)
+            IL-15 (24h)

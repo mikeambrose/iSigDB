@@ -142,9 +142,9 @@ if ($raw_user_input{'scale_columns'} ne 'checked') {
   $scale_columns_argument = 'none';
 }
 
-my $invert_argument = $raw_user_input{'invert'} eq 'checked' ? 'scale' : 'none';
+my $invert_argument = $raw_user_input{'invert'} eq 'checked' ? 'checked' : 'none';
 
-my $fixed_argument = $raw_user_input{'fixed'} eq 'checked' ? 'fix' : 'none';
+my $fixed_argument = $raw_user_input{'fixed'} eq 'checked' ? 'checked' : 'none';
 
 my %acceptable_metrics = ('pear_cor' => undef,
                           'euclidean' => undef,

@@ -23,7 +23,7 @@ HTML_BASE = """<!DOCTYPE HTML>
 
 
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile=''):
+def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True):
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
@@ -55,15 +55,17 @@ If you can't see the heatmap, make sure adblock is disabled and try again.<br>
     #add links and hidden file location
     baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(baseFile)
     seed = baseFile[-18:]
-    htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />
+    htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />'''
+    if includeDetailed:
+        htmlText += '''
 Look in more detail at one signature:
 <form id="detailedHeatmap" name="detailedHeatmap" method="post" action="/cgi-bin/goTeles/sig_heatmapV4.cgi" ENCTYPE="multipart/form-data">
 <input type="hidden" id="seed" name="seed" value="''' + seed + '''">
 <select name="signatureName" id="signatureName">'''
-    #add values for option
-    for label in sorted(xLabels, key=lambda s: s.lower()):
-        htmlText += "<option value=" + label + ">" + label.replace('"','') + "</option>\n"
-    htmlText += """</select> <br/>
+        #add values for option
+        for label in sorted(xLabels, key=lambda s: s.lower()):
+            htmlText += "<option value=" + label + ">" + label.replace('"','') + "</option>\n"
+        htmlText += """</select> <br/>
 <input type="checkbox" name="invert" id="invert" value="invert"> Invert output <br/>
 
 Metric for row (sample) clustering: &nbsp;
@@ -82,6 +84,8 @@ Metric for column (signature) clustering: &nbsp;
 <input type="submit" value="Go">
     </body>
 </form>
+"""
+    htmlText += """
 </html>
 <pre id="csv" style="display: none">
 ignored line

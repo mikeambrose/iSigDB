@@ -563,7 +563,8 @@ def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,st
                 minVal = -1
     import make_heatmapV4 as make_heatmap
     out = '/home/mike/workspace/PellegriniResearch/output/HighChartsHeatmap.html' if isClient else None
-    make_heatmap.generateCanvas(strTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,strOutFile)
+    includeDetailed = strVersion not in ['pearson','spearman']
+    make_heatmap.generateCanvas(strTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,strOutFile,includeDetailed)
 
 #----------------------------------------------------------------------------
 # main function call
@@ -621,7 +622,7 @@ if __name__ == "__main__":
             errorMessage("There are no genes which are in common between yor samples and all signatures. Make sure the gene name in your sample is in the first column")
         spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)
         corrRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group),options.version)
-        print "Based on " + len(genes) + " genes"
+        print "Based on " + str(len(genes)) + " genes"
     #generate heatmap pdf
     RHeatmapOut = '/home/mike/workspace/PellegriniResearch/scripts/scratch/' if options.client else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id
     createHeatMap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client)

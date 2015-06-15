@@ -106,7 +106,7 @@ def generateCanvas(dataFile,outFile,signature,invert,rowClustMethod,colClustMeth
     else:
         base_loc = ''
     htmlText += """
-        <script src="""+'"'+base_loc+"""/heatmap_canvas.js">
+        <script src="""+'"'+base_loc+"""/heatmap_canvasV4.js">
     </script>
     </head>
     <body>

@@ -3,7 +3,7 @@ sigdir/
 exampleInputs/
 *~
 output/*
-!output/heatmap_canvas.js
+!output/heatmap_canvas*.js
 scripts/scratch/*
 *.pyc
 *.swp

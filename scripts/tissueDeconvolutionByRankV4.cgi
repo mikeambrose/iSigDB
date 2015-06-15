@@ -76,6 +76,7 @@ else {
 
 close $SUBMISSION_DEST;
 
+my $subheadings = qw(Mouse Human Tissue Cell type Perturbation);
 
 my $local_abbrev_list_path = "${local_work_dir}/abbrevs.txt";
 open my $ABBREV_LIST, '>', $local_abbrev_list_path or die $!;

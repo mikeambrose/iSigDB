@@ -44,6 +44,9 @@ def checkForErrors(f):
     f = open(f).read().split('\n')
     if len(f) <= 1:
         errorMessage("Formatting error: Only one line detected")
+    names = f[0].split('\t')
+    if len(set(names)) != len(names):
+        errorMessage("Some of your samples have the same name (maybe duplicates?)")
     numTabs = f[0].count('\t')
     if numTabs == 0:
         errorMessage("Not a tab-separated file")

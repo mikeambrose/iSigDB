@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""script written by Mike Ambrose, mikeambrose@berkeley.edu
-typical usage of this script might look something like
-python -g ./groups -a  ./SIGS/abbrevs.txt -o TissueDeconv.html"""
+"""script written by Mike Ambrose, mikeambrose@berkeley.edu"""
 import os.path
 import os
 from optparse import OptionParser
@@ -70,6 +68,7 @@ def generateGenesChanged(aToLen):
     return baseHTML + "\n}"
     
 def generateJSTree(formatLines,abbrevs,delim="    "):
+    """generates the JSTree portion of the front tree based on the file formatLines"""
     lastInd = 0 #indendation of previous line (number of tabs)
     returnHTML = ''
     for line in formatLines:
@@ -121,7 +120,7 @@ function submitCheckboxes() {
     var checkedIds = $('#sigs').jstree("get_selected");
     document.getElementById('checkedSigs').value = checkedIds.join(",");
 }
-""" + generateGenesChanged(aToLen) + """
+
 </script>
 
 <br>
@@ -133,11 +132,14 @@ function submitCheckboxes() {
 File: <input type="file" name="matrix_file" size="30">
 </div>
 <div id="serverFile" name="serverFile" style="display:none">
-Filename: <input type="text" name="serverFileName"> or <a href="./serverFileUpload.html">upload a file</a>
+Filename: <select id="serverFileName" name="serverFileName">
+{FILES GO HERE}
+</select>
+or <a href="./serverFileUpload.html">upload a file</a>
 </div>
 <hr>
 
-<strong>Heatmap options:</strong><br /><br />
+<strong>Heatmap options<a href="OptionDescriptions.html">[Help]</a>:</strong><br /><br />
 Compute heatmap based on:&nbsp;
 <select id="heatmap_metric" name="heatmap_metric">
 <option value="rank_avg">Rank Average</option>
@@ -156,8 +158,8 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png
 
 <br /><br />
 
-<input type="checkbox" name="fixed" id="fixed" value="checked" checked>Dynamically choose colors
-<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>If checked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to uncheck this option so that their colors correspond to the same values</span></a>
+<input type="checkbox" name="fixed" id="fixed" value="checked"> Keep colors constant
+<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
 <br> <br>
 
 Metric for sample clustering: &nbsp;
@@ -231,6 +233,7 @@ if __name__ == '__main__':
     parser.add_option("-o","--output",dest="output",help="output filename")
     parser.add_option("-s","--sigs",dest="sigs",help="directory of all signatures")
     options,_ = parser.parse_args()
-    abbrevs = generateAbbrevs(options.abbrevs)
-    aToLen = generateAToLen([options.sigs + name for name in os.listdir(options.sigs)])
+    #abbrevs = generateAbbrevs(options.abbrevs)
+    #aToLen = generateAToLen([options.sigs + name for name in os.listdir(options.sigs)])
+    abbrevs,aToLen = None,None
     generateHTML(abbrevs,open(options.format).read().split('\n'),aToLen,options.output)

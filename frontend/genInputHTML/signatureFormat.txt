@@ -1,133 +1,208 @@
 Mouse
-    Mouse Body Atlas
-        3T3-L1
-        B-cells_marginal_zone
-        Baf3
-        C2C12
-        C3H_10T1_2
-        NK_cells
-        RAW_264_7
-        T-cells_CD4+
-        T-cells_CD8+
-        T-cells_foxP3+
-        adipose_brown
-        adipose_white
-        adrenal_gland
-        amygdala
-        bladder
-        bone
-        bone_marrow
-        cerebellum
-        cerebral_cortex
-        cerebral_cortex_prefrontal
-        ciliary_bodies
-        common_myeloid_progenitor
-        cornea
-        dendritic_cells_lymphoid_CD8a+
-        dendritic_cells_myeloid_CD8a-
-        dendritic_plasmacytoid_B220+
-        dorsal_root_ganglia
-        dorsal_striatum
-        embryonic_stem_line_Bruce4_p13
-        embryonic_stem_line_V26_2_p16
-        epidermis
-        eyecup
-        follicular_B-cells
-        granulo_mono_progenitor
-        granulocytes_mac1+gr1+
-        heart
-        hippocampus
-        hypothalamus
-        intestine_large
-        intestine_small
-        iris
-        kidney
-        lacrimal_gland
-        lens
-        liver
-        lung
-        lymph_nodes
-        mIMCD-3
-        macrophage_bone_marrow_0hr
-        macrophage_bone_marrow_24h_LPS
-        macrophage_bone_marrow_2hr_LPS
-        macrophage_bone_marrow_6hr_LPS
-        macrophage_peri_LPS_thio_0hrs
-        macrophage_peri_LPS_thio_1hrs
-        macrophage_peri_LPS_thio_7hrs
-        mammary_gland__lact
-        mammary_gland_non-lactating
-        mast_cells
-        mast_cells_IgE
-        mast_cells_IgE+antigen_1hr
-        mast_cells_IgE+antigen_6hr
-        mega_erythrocyte_progenitor
-        microglia
-        min6
-        neuro2a
-        nih_3T3
-        nucleus_accumbens
-        olfactory_bulb
-        osteoblast_day14
-        osteoblast_day21
-        osteoblast_day5
-        osteoclasts
-        ovary
-        pancreas
-        pituitary
-        placenta
-        prostate
-        retina
-        retinal_pigment_epithelium
-        salivary_gland
-        skeletal_muscle
-        spinal_cord
-        spleen
-        stem_cells__HSC
-        stomach
-        testis
-        thymocyte_DP_CD4+CD8+
-        thymocyte_SP_CD4+
-        thymocyte_SP_CD8+
-        umbilical_cord
-        uterus
+    Tissue
+        MBA_adipose_brown
+        MBA_adipose_white
+        MBA_adrenal_gland
+        MBA_amygdala
+        MBA_bladder
+        MBA_bone
+        MBA_bone_marrow
+        MBA_cerebellum
+        MBA_cerebral_cortex
+        MBA_cerebral_cortex_prefrontal
+        MBA_ciliary_bodies
+        MBA_common_myeloid_progenitor
+        MBA_cornea
+        MBA_dorsal_root_ganglia
+        MBA_dorsal_striatum
+        MBA_epidermis
+        MBA_eyecup
+        MBA_heart
+        MBA_hippocampus
+        MBA_hypothalamus
+        MBA_intestine_large
+        MBA_intestine_small
+        MBA_iris
+        MBA_kidney
+        MBA_lacrimal_gland
+        MBA_lens
+        MBA_liver
+        MBA_lung
+        MBA_lymph_nodes
+        MBA_mammary_gland__lact
+        MBA_mammary_gland_non-lactating
+        MBA_nucleus_accumbens
+        MBA_olfactory_bulb
+        MBA_ovary
+        MBA_pancreas
+        MBA_pituitary
+        MBA_placenta
+        MBA_prostate
+        MBA_retina
+        MBA_retinal_pigment_epithelium
+        MBA_salivary_gland
+        MBA_skeletal_muscle
+        MBA_spinal_cord
+        MBA_spleen
+        MBA_stomach
+        MBA_testis
+        MBA_umbilical_cord
+        MBA_uterus
+    Cell type
+        MBA_3T3-L1
+        MBA_B-cells_marginal_zone
+        MBA_Baf3
+        MBA_C2C12
+        MBA_C3H_10T1_2
+        MBA_NK_cells
+        MBA_RAW_264_7
+        MBA_T-cells_CD4+
+        MBA_T-cells_CD8+
+        MBA_T-cells_foxP3+
+        MBA_dendritic_cells_lymphoid_CD8a+
+        MBA_dendritic_cells_myeloid_CD8a-
+        MBA_dendritic_plasmacytoid_B220+
+        MBA_embryonic_stem_line_Bruce4_p13
+        MBA_embryonic_stem_line_V26_2_p16
+        MBA_follicular_B-cells
+        MBA_granulo_mono_progenitor
+        MBA_granulocytes_mac1+gr1+
+        MBA_mIMCD-3
+        MBA_macrophage_bone_marrow_0hr
+        MBA_macrophage_peri_LPS_thio_0hrs
+        MBA_mast_cells
+        MBA_mast_cells_IgE
+        MBA_mega_erythrocyte_progenitor
+        MBA_microglia
+        MBA_min6
+        MBA_neuro2a
+        MBA_nih_3T3
+        MBA_osteoblast_day14
+        MBA_osteoblast_day21
+        MBA_osteoblast_day5
+        MBA_osteoclasts
+        MBA_stem_cells__HSC
+        MBA_thymocyte_DP_CD4+CD8+
+        MBA_thymocyte_SP_CD4+
+        MBA_thymocyte_SP_CD8+
+    Perturbation
+        MBA_macrophage_bone_marrow_0hr
+        MBA_macrophage_bone_marrow_24h_LPS
+        MBA_macrophage_bone_marrow_2hr_LPS
+        MBA_macrophage_bone_marrow_6hr_LPS
+        MBA_macrophage_peri_LPS_thio_0hrs
+        MBA_macrophage_peri_LPS_thio_1hrs
+        MBA_macrophage_peri_LPS_thio_7hrs
+        MBA_mast_cells_IgE
+        MBA_mast_cells_IgE+antigen_1hr
+        MBA_mast_cells_IgE+antigen_6hr
 Human
-    Skin Conditions
-        Normal skin
-        Psoriasis
-        Burn
-        Acute wound (0h after injury)
-        Post-operative wound (3 and 7 days after injury)
-        Stevens Johnson syndrome (blister cells)
-        Reversal reaction (leprosy)
-        Lepromatous leprosy
-        Tuberculoid leprosy
-        Erythema nodosum leprosum
-        Allergic contact dermatitis
-        Irritant contact dermatitis
-        Atopic dermatitis
-        Mycosis fungoides
-        Squamous cell carcinoma
-        Basal cell carcinoma
-        Melanoma
-        Cutaneous sarcoidosis
-        Chancroid
-        Alopecia areata
-        Discoid Lupus Erythematosus
-        Acne
-        Non-lesional acne
-    IL-4/10/15
-        vs media
-             IL-4 (6h)
-             IL-4 (24h)
-             IL-10 (6h)
-             IL-10 (24h)
-             IL-15 (6h)
-             IL-15 (24h)
-        vs time 0
-            IL-4 (6h)
-            IL-4 (24h)
-            IL-10 (6h)
-            IL-10 (24h)
-            IL-15 (6h)
-            IL-15 (24h)
+    Tissue
+        DermDB_Normal skin
+        DermDB_Psoriasis
+        DermDB_Burn
+        DermDB_Acute wound (0h after injury)
+        DermDB_Post-operative wound (3, 7 days after injury)
+        DermDB_Stevens Johnson syndrome (blister cells)
+        DermDB_Reversal reaction (leprosy)
+        DermDB_Lepromatous leprosy
+        DermDB_Tuberculoid leprosy
+        DermDB_Erythema nodosum leprosum 
+        DermDB_Allergic contact dermatitis
+        DermDB_Irritant contact dermatitis
+        DermDB_Atopic dermatitis
+        DermDB_Mycosis fungoides
+        DermDB_Squamous cell carcinoma
+        DermDB_Basal cell carcinoma
+        DermDB_Melanoma
+        DermDB_Cutaneous sarcoidosis
+        DermDB_Chancroid
+        DermDB_Alopecia areata
+        DermDB_Discoid Lupus Erythematosus
+        DermDB_Acne
+        DermDB_Non-lesional acne
+        RTLEP_ENL2
+        RTLEP_LL2
+        RTLEP_RR2
+        RTLEP_TL2
+        WRS_Dermis
+        WRS_Subcutaneous_adipose
+    Cell type
+        WRS_B_cell
+        WRS_CD138+Plasma_Cell
+        WRS_CD34+cell
+        WRS_CD3+T-cell
+        WRS_CD4+T-cell
+        WRS_CD8+T-cell
+        WRS_Dendritic_cell
+        WRS_Eosinophil
+        WRS_Epidermis
+        WRS_Fibroblast
+        WRS_Gamma_Delta_T-cell
+        WRS_Keratinocyte
+        WRS_Lymph_endothelial_cell
+        WRS_Macrophage
+        WRS_Monocyte
+        WRS_NK_T-cell
+        WRS_NK_cell
+        WRS_Neutrophil
+        WRS_Platelet
+        WRS_Regulatory_T-cell
+        WRS_Reticulocyte
+        WRS_Vascular_endothelial_cell
+        TH_Th17
+        TH_Th1_Harvard
+        TH_Th1_Rank_Relative
+        TH_Th2_Harvard
+        TH_Th2_Rank_Relative
+    Perturbation
+        MacCyto_adPBMC_IL4_6h
+        MacCyto_adPBMC_IL4_24h
+        MacCyto_adPBMC_IL10_6h
+        MacCyto_adPBMC_IL10_24h
+        MacCyto_adPBMC_IL15_6h
+        MacCyto_adPBMC_IL15_24h
+        MacCytoT0_adPBMC_IL4_6h
+        MacCytoT0_adPBMC_IL4_24h
+        MacCytoT0_adPBMC_IL10_6h
+        MacCytoT0_adPBMC_IL10_24h
+        MacCytoT0_adPBMC_IL15_6h
+        MacCytoT0_adPBMC_IL15_24h
+        IL-6_MDMd7_IL6_4h
+        NOD_adPBMC_NOD2L_6h
+        NOD_adPBMC_NOD2L_24h
+        NOD_adPBMC_TLR2L_6h
+        NOD_adPBMC_TLR2L_24h
+        NOD_adPBMC_NOD2L+TLR2L_6h
+        NOD_adPBMC_NOD2L+TLR2L_24h
+        INF_MDMd5_IFNB_2h
+        INF_MDMd5_IFNB_6h
+        INF_MDMd5_IFNB_24h
+        INF_MDMd5_IFNG_2h
+        INF_MDMd5_IFNG_6h
+        INF_MDMd5_IFNG_24h
+        INF_MDMd5_TLR2L_2h
+        INF_MDMd5_TLR2L_6h
+        INF_MDMd5_TLR2L_24h
+        VITD_adPBMC_ATRA_18h
+        VITD_adPBMC_1,25D_18h
+        NHEK_IL26
+        TH_Th17
+        TH_Th1_Harvard
+        TH_Th1_Rank_Relative
+        TH_Th2_Harvard
+        TH_Th2_Rank_Relative
+        KC_NHEK_IFNG_24hA
+        KC_NHEK_IFNG_24hB
+        KC_NHEK_IL22_4d
+        KC_NHEK_IFNG10_4d
+        KC_NHEK_IFNG20_24h
+        KC_HaCaT_IFNG+TNF_24h
+        KC_NHEK_IL17A+TNF1_24h
+        KC_NHEK_IL17A+TNF10_24h
+        KC_HaCaT_TNF10_4h
+        KC_NHEK_IFNG20_24h
+        KC_NHEK_IL17A_24h
+        KC_NHEK_IFNG10_24h
+        GM_mono_GMCSF_3h
+        GM_mono_GMCSF_12h

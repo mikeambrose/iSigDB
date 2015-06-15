@@ -180,6 +180,9 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
                 numGenes[strCurGene] = 1"""
             #if strCurGene in dSamToGeneToCount[dColIDToColLbl[1]]:
             #        errorMessage("Multiple copies of the same gene are in the input")
+            #process zeros
+            if all(float(lcols[i])==0 for i in range(1,len(lcols))):
+                continue
             for i in range(1,len(lcols)):
                 if strCurGene not in dSamToGeneToCount[dColIDToColLbl[i]]:
                     dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = float(lcols[i])
@@ -461,6 +464,8 @@ def getSamDict(f):
         samDict[sam] = {}
     for line in f[1:-1]:
         line = line.split('\t')
+        if all(float(line[i])==0 for i in range(1,len(line))):
+            continue
         gene = line[0].upper()
         vals = [float(x) for x in line[1:]]
         for i in range(len(sams)):

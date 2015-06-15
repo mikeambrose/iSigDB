@@ -16,6 +16,7 @@ def replaceLineEndings(f):
     s = open(f).read()
     unix = '\n' in s
     dos = '\r' in s
+    comma = ',' in s
     doubleSpaced = -1 <= s.count('\n\n')*2-s.count('\n') <= 1
     if unix and dos:
         s = s.replace('\r\n','\n')
@@ -25,7 +26,9 @@ def replaceLineEndings(f):
         s = s.replace('\r','\n')
     if doubleSpaced:
         s = s.replace('\n\n','\n')
-    if dos or doubleSpaced:
+    if comma:
+        s = s.replace(',',';')
+    if dos or doubleSpaced or comma:
         with open(f,'w') as fout:
             fout.write(s)
 

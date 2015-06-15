@@ -16,13 +16,16 @@ def replaceLineEndings(f):
     s = open(f).read()
     unix = '\n' in s
     dos = '\r' in s
+    doubleSpaced = -1 <= s.count('\n\n')*2-s.count('\n') <= 1
     if unix and dos:
         s = s.replace('\r\n','\n')
         if '\r' in s: #we didn't successfully rid ourselves
             errorMessage("File has non-standard line endings")
     elif dos:
         s = s.replace('\r','\n')
-    if dos:
+    if doubleSpaced:
+        s = s.replace('\n\n','\n')
+    if dos or doubleSpaced:
         with open(f,'w') as fout:
             fout.write(s)
 
@@ -152,11 +155,7 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
     lGlobalAvg = []
 
     #load Sample To Gene To Count
-    fopen = None
-    if strGeneCount.endswith('.gz'):
-        fopen = gzip.open(strGeneCount,'rb')
-    else:
-        fopen = open(strGeneCount,'r')
+    fopen = open(strGeneCount,'r')
 
     for strLine in fopen:
         lcols = strLine.rstrip().split('\t')
@@ -171,11 +170,21 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
         else:
             strCurGene = lcols[0]
             strCurGene = strCurGene.upper()
+            #for averaging
+            """if strCurGene in numGenes:
+                numGenes[strCurGene] += 1
+            else:
+                numGenes[strCurGene] = 1"""
+            #if strCurGene in dSamToGeneToCount[dColIDToColLbl[1]]:
+            #        errorMessage("Multiple copies of the same gene are in the input")
             for i in range(1,len(lcols)):
-                dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = float(lcols[i])
-                if dSamToCountToGene[dColIDToColLbl[i]].has_key(float(lcols[i])) == False:
-                    dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])] = []
-                dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])].append(strCurGene)
+                if strCurGene not in dSamToGeneToCount[dColIDToColLbl[i]]:
+                    dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = float(lcols[i])
+                    if dSamToCountToGene[dColIDToColLbl[i]].has_key(float(lcols[i])) == False:
+                        dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])] = []
+                    dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])].append(strCurGene)
+                else:
+                    dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = max(float(lcols[i]),dSamToGeneToCount[dColIDToColLbl[i]][strCurGene])
     fopen.close()
 
     #qc print gene
@@ -223,6 +232,8 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
             strRow = strSam
             for j in range(len(lSigs)):
                 strCurSig = lSigs[j]
+                if len(dSamToSigToLVals[strSam][strCurSig]) == 0:
+                    errorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
                 strRow += '\t%f'%np.average(dSamToSigToLVals[strSam][strCurSig])
             fout.write(strRow+'\n')
         fout.close()
@@ -282,10 +293,9 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
             strRow = strSam
             for j in range(len(lSigs)):
                 strCurSig = lSigs[j]
-                if strVersion.endswith('_z'):
-                    fMetric = (np.average(dSamToSigToLVals[strSam][strCurSig]) - np.average(lGlobalAvg))/np.std(lGlobalAvg)
-                else:
-                    fMetric = np.average(dSamToSigToLVals[strSam][strCurSig])
+                if len(dSamToSigToLVals[strSam][strCurSig]) == 0:
+                    errorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
+                fMetric = np.average(dSamToSigToLVals[strSam][strCurSig])
                 strRow += '\t%f'%fMetric
             fout.write(strRow+'\n')
         fout.close()

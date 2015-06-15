@@ -617,9 +617,11 @@ if __name__ == "__main__":
         sigs = getSigDict(options.sig,selSigs)
         sams = getSamDict(options.gene_count)
         genes = getSpearmanGenes(sams,sigs,'top',options.sigfile,int(options.ngene_count))
-        print len(genes)
+        if len(genes) == 0:
+            errorMessage("There are no genes which are in common between yor samples and all signatures. Make sure the gene name in your sample is in the first column")
         spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)
         corrRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group),options.version)
+        print "Based on " + len(genes) + " genes"
     #generate heatmap pdf
     RHeatmapOut = '/home/mike/workspace/PellegriniResearch/scripts/scratch/' if options.client else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id
     createHeatMap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client)

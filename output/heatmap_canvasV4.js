@@ -132,11 +132,11 @@ ylabels = document.getElementById('ylabels').innerHTML.split(',');
                 min: parseFloat(document.getElementById('min').innerHTML),
                 max: parseFloat(document.getElementById('max').innerHTML),
                 stops: [
-                    [0,'#00005C'],
-                    [0.25, '#3060cf'],
-                    [0.5, '#ffffff'],
-                    [0.75, '#c4463a'],
-                    [1,'#800000']
+                    [0,document.getElementById('color0').innerHTML],
+                    [0.25, document.getElementById('color25').innerHTML],
+                    [0.5, document.getElementById('color50').innerHTML],
+                    [0.75,document.getElementById('color75').innerHTML],
+                    [1,document.getElementById('color100').innerHTML]
                 ],
                 //minColor: '#FFFFFF',
                 //maxColor: Highcharts.getOptions().colors[0]

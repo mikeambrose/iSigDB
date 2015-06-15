@@ -105,6 +105,9 @@ ignored line
     if centerAroundZero:
         maxVal = max(abs(maxVal),abs(minVal))
         minVal = -maxVal
+        c0,c25,c50,c75,c100 = '#00005C,#3060cf,#ffffff,#c4463a,#800000'.split(',')
+    else:
+        c0,c25,c50,c75,c100 = '#ffffff,#e7b5b0,#c4463a,#62231d,#800000'.split(',')
     minVal = givenMinVal if (givenMinVal != None) else minVal
     maxVal = givenMaxVal if (givenMaxVal != None) else maxVal
     htmlText += """</pre>
@@ -125,8 +128,13 @@ ignored line
     for label in yLabels if not invertHeatmap else xLabels:
         htmlText += label[1:-1]+","
     htmlText = htmlText[:-1] + """</pre>
+<pre id="color0" style="display:none">{0}</pre>
+<pre id="color25" style="display:none">{1}</pre>
+<pre id="color50" style="display:none">{2}</pre>
+<pre id="color75" style="display:none">{3}</pre>
+<pre id="color100" style="display:none">{4}</pre>
     </body>
-</html>"""
+</html>""".format(c0,c25,c50,c75,c100)
     if outFile:
         with open(outFile,'w') as f_out:
             f_out.write(htmlText)

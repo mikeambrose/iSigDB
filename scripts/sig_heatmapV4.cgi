@@ -152,6 +152,12 @@ def generateCanvas(dataFile,outFile,signature,invert,rowClustMethod,colClustMeth
     for label in yLabels if not invert else xLabels:
         htmlText += label.replace('"','')+','
     htmlText = htmlText[:-1] + """</pre>
+<pre id="color0" style="display:none">#ffffff</pre>
+<pre id="color25" style="display:none">#e7b5b0</pre>
+<pre id="color50" style="display:none">#c4463a</pre>
+<pre id="color75" style="display:none">#62231d</pre>
+<pre id="color100" style="display:none">#800000</pre>
+
 </body>
 </html>"""
     if not outFile:

@@ -542,7 +542,7 @@ def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,st
     heatsigPath = "/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R" if isClient else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatsigV4.R'
     FNULL = open(os.devnull, 'w')
     subprocess.call([rscriptPath,heatsigPath,strMatrixFile,strHeatmapOutFile,strColumnZ,strRowMetric,strColMetric,strTxtOutFile],stdout=FNULL,stderr=FNULL)
-    centerAroundZero = (strColumnZ == 'matrix') or (strVersion == "rank_delta")
+    centerAroundZero = (strColumnZ == 'matrix') or (strVersion in ["rank_delta","pearson","spearman"])
     maxVal,minVal = None,None
     if fixed:
         if strColumnZ == 'matrix':

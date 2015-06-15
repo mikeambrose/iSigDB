@@ -118,10 +118,13 @@ def getSamToGeneToRank(dSamToCountToGene):
     #process rank
     for strCurSam in dSamToCountToGene:
         nRank = 1
+        currentRankVal = None
+        currentRunLength = 0
         dSamToGeneToRank[strCurSam] = {}
         for fCount in sorted(dSamToCountToGene[strCurSam].keys()):
+            meanRank = nRank + len(dSamToCountToGene[strCurSam][fCount])/2.0
             for strCurGene in sorted(dSamToCountToGene[strCurSam][fCount]):
-                dSamToGeneToRank[strCurSam][strCurGene] = nRank
+                dSamToGeneToRank[strCurSam][strCurGene] = meanRank
                 nRank+=1
 
     #process mean gene rank

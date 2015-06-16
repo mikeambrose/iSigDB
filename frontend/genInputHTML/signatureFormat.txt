@@ -1,5 +1,5 @@
 Mouse
-    Tissue
+    Mouse Tissue
         MBA_adipose_brown
         MBA_adipose_white
         MBA_adrenal_gland
@@ -48,7 +48,7 @@ Mouse
         MBA_testis
         MBA_umbilical_cord
         MBA_uterus
-    Cell type
+    Mouse Cell Type
         MBA_3T3-L1
         MBA_B-cells_marginal_zone
         MBA_Baf3
@@ -85,7 +85,7 @@ Mouse
         MBA_thymocyte_DP_CD4+CD8+
         MBA_thymocyte_SP_CD4+
         MBA_thymocyte_SP_CD8+
-    Perturbation
+    Mouse Perturbation
         MBA_macrophage_bone_marrow_0hr
         MBA_macrophage_bone_marrow_24h_LPS
         MBA_macrophage_bone_marrow_2hr_LPS
@@ -97,7 +97,7 @@ Mouse
         MBA_mast_cells_IgE+antigen_1hr
         MBA_mast_cells_IgE+antigen_6hr
 Human
-    Tissue
+    Human Tissue
         DermDB_Normal skin
         DermDB_Psoriasis
         DermDB_Burn
@@ -127,7 +127,7 @@ Human
         RTLEP_TL2
         WRS_Dermis
         WRS_Subcutaneous_adipose
-    Cell type
+    Human Cell type
         WRS_B_cell
         WRS_CD138+Plasma_Cell
         WRS_CD34+cell
@@ -155,7 +155,7 @@ Human
         TH_Th1_Rank_Relative
         TH_Th2_Harvard
         TH_Th2_Rank_Relative
-    Perturbation
+    Human Perturbation
         MacCyto_adPBMC_IL4_6h
         MacCyto_adPBMC_IL4_24h
         MacCyto_adPBMC_IL10_6h

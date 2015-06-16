@@ -83,7 +83,7 @@ def generateJSTree(formatLines,abbrevs,delim="    "):
             returnHTML += "</li>"+"</ul></li>"*spacingDiff + "<li id=\"" + line.replace(delim,'') + "\">"+line.replace(delim,'') + '\n'
         lastInd = currentInd
     #get rid of first </li><li> and last <li> and adding auto-select
-    returnHTML = returnHTML[5:-9]
+    returnHTML = returnHTML[5:-11]
     return returnHTML
 
 def generateHTML(abbrevs, formatLines, aToLen, output):

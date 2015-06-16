@@ -217,9 +217,14 @@ Click on a category to select specific signatures within that category <br />
                     }
                 }
             });
-        window.onload = function (){$('#sigs').jstree('close_all');$('#sigs').jstree('check_all');};
+        function checkall(){$('#sigs').jstree('check_all');$('#sigs').jstree('close_all');};
+        window.addEventListener ?
+        window.addEventListener("load",checkall,false) : 
+        window.attachEvent && window.attachEvent("onload",checkall);
+        if (navigator.appName == "Netscape") {
+            setTimeout(checkall,100);
+        }
         });
-
     </script>
 </body>
 </html>"""

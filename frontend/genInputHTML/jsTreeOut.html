@@ -89,6 +89,8 @@ value="500">500</option><option value="1000">1000</option></select>
 <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
 <hr>
 
+<input type="hidden" name="checkedSigs" id="checkedSigs"></input>
+
 <strong>Select signatures:</strong><br />
 Click on a category to select specific signatures within that category <br />
 <div id="sigs">
@@ -193,29 +195,29 @@ Click on a category to select specific signatures within that category <br />
 </li><li id="MBA_mast_cells_IgE+antigen_6hr">MBA_mast_cells_IgE+antigen_6hr
 </li></ul></li></ul></li><li id="Human">Human
 <ul><li id="Tissue">Tissue
-<ul><li id="SkinDis_Normal skin">SkinDis_Normal skin
-</li><li id="SkinDis_Psoriasis">SkinDis_Psoriasis
-</li><li id="SkinDis_Burn">SkinDis_Burn
-</li><li id="SkinDis_Acute wound (0h after injury)">SkinDis_Acute wound (0h after injury)
-</li><li id="SkinDis_Post-operative wound (3, 7 days after injury)">SkinDis_Post-operative wound (3, 7 days after injury)
-</li><li id="SkinDis_Stevens Johnson syndrome (blister cells)">SkinDis_Stevens Johnson syndrome (blister cells)
-</li><li id="SkinDis_Reversal reaction (leprosy)">SkinDis_Reversal reaction (leprosy)
-</li><li id="SkinDis_Lepromatous leprosy">SkinDis_Lepromatous leprosy
-</li><li id="SkinDis_Tuberculoid leprosy">SkinDis_Tuberculoid leprosy
-</li><li id="SkinDis_Erythema nodosum leprosum ">SkinDis_Erythema nodosum leprosum 
-</li><li id="SkinDis_Allergic contact dermatitis">SkinDis_Allergic contact dermatitis
-</li><li id="SkinDis_Irritant contact dermatitis">SkinDis_Irritant contact dermatitis
-</li><li id="SkinDis_Atopic dermatitis">SkinDis_Atopic dermatitis
-</li><li id="SkinDis_Mycosis fungoides">SkinDis_Mycosis fungoides
-</li><li id="SkinDis_Squamous cell carcinoma">SkinDis_Squamous cell carcinoma
-</li><li id="SkinDis_Basal cell carcinoma">SkinDis_Basal cell carcinoma
-</li><li id="SkinDis_Melanoma">SkinDis_Melanoma
-</li><li id="SkinDis_Cutaneous sarcoidosis">SkinDis_Cutaneous sarcoidosis
-</li><li id="SkinDis_Chancroid">SkinDis_Chancroid
-</li><li id="SkinDis_Alopecia areata">SkinDis_Alopecia areata
-</li><li id="SkinDis_Discoid Lupus Erythematosus">SkinDis_Discoid Lupus Erythematosus
-</li><li id="SkinDis_Acne">SkinDis_Acne
-</li><li id="SkinDis_Non-lesional acne">SkinDis_Non-lesional acne
+<ul><li id="DermDB_Normal skin">DermDB_Normal skin
+</li><li id="DermDB_Psoriasis">DermDB_Psoriasis
+</li><li id="DermDB_Burn">DermDB_Burn
+</li><li id="DermDB_Acute wound (0h after injury)">DermDB_Acute wound (0h after injury)
+</li><li id="DermDB_Post-operative wound (3, 7 days after injury)">DermDB_Post-operative wound (3, 7 days after injury)
+</li><li id="DermDB_Stevens Johnson syndrome (blister cells)">DermDB_Stevens Johnson syndrome (blister cells)
+</li><li id="DermDB_Reversal reaction (leprosy)">DermDB_Reversal reaction (leprosy)
+</li><li id="DermDB_Lepromatous leprosy">DermDB_Lepromatous leprosy
+</li><li id="DermDB_Tuberculoid leprosy">DermDB_Tuberculoid leprosy
+</li><li id="DermDB_Erythema nodosum leprosum ">DermDB_Erythema nodosum leprosum 
+</li><li id="DermDB_Allergic contact dermatitis">DermDB_Allergic contact dermatitis
+</li><li id="DermDB_Irritant contact dermatitis">DermDB_Irritant contact dermatitis
+</li><li id="DermDB_Atopic dermatitis">DermDB_Atopic dermatitis
+</li><li id="DermDB_Mycosis fungoides">DermDB_Mycosis fungoides
+</li><li id="DermDB_Squamous cell carcinoma">DermDB_Squamous cell carcinoma
+</li><li id="DermDB_Basal cell carcinoma">DermDB_Basal cell carcinoma
+</li><li id="DermDB_Melanoma">DermDB_Melanoma
+</li><li id="DermDB_Cutaneous sarcoidosis">DermDB_Cutaneous sarcoidosis
+</li><li id="DermDB_Chancroid">DermDB_Chancroid
+</li><li id="DermDB_Alopecia areata">DermDB_Alopecia areata
+</li><li id="DermDB_Discoid Lupus Erythematosus">DermDB_Discoid Lupus Erythematosus
+</li><li id="DermDB_Acne">DermDB_Acne
+</li><li id="DermDB_Non-lesional acne">DermDB_Non-lesional acne
 </li><li id="RTLEP_ENL2">RTLEP_ENL2
 </li><li id="RTLEP_LL2">RTLEP_LL2
 </li><li id="RTLEP_RR2">RTLEP_RR2
@@ -306,13 +308,12 @@ Click on a category to select specific signatures within that category <br />
 
 </form>
 <script src="../js/jquery-1.11.3.min.js"></script>
-    <script src="../vakata-jstree-5bece58/dist/jstree.min.js"></script>
+	<script src="../vakata-jstree-5bece58/dist/jstree.min.js"></script>
     <script>
         $(function () {
             $('#sigs').jstree({
                 "checkbox" : {
-                    "keep_selected_style" : false,
-                    "checked_parent_open" : false
+                    "keep_selected_style" : false
                 },
                 "plugins" : [ "checkbox" ],
                 "core": {
@@ -326,10 +327,9 @@ Click on a category to select specific signatures within that category <br />
         window.addEventListener("load",checkall,false) : 
         window.attachEvent && window.attachEvent("onload",checkall);
         if (navigator.appName == "Netscape") {
-            setTimeout(checkall,500);
+            setTimeout(checkall,100);
         }
         });
-
     </script>
 </body>
 </html>

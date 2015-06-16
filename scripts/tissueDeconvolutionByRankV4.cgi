@@ -76,7 +76,7 @@ else {
 
 close $SUBMISSION_DEST;
 
-my $subheadings = qw(Mouse Human Tissue Cell type Perturbation);
+my @selected_sigs = split(/,/,$raw_user_input{'checkedSigs'});
 
 my $local_abbrev_list_path = "${local_work_dir}/abbrevs.txt";
 open my $ABBREV_LIST, '>', $local_abbrev_list_path or die $!;
@@ -94,7 +94,7 @@ my @sorted_abbrevs_and_desns = keys %abbrevs_and_desns;
 my $num_selected = 0;
 
 foreach my $abbrev (@sorted_abbrevs_and_desns) {
-    if ($raw_user_input{$abbrev} eq 'checked') {
+    if (grep {$_ eq $abbrev} @selected_sigs)) {
         print $ABBREV_LIST $abbrev . "\t" . $abbrevs_and_desns{$abbrev} . "\n";
         $num_selected++;
     }

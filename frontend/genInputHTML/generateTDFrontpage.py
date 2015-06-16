@@ -188,6 +188,8 @@ value="500">500</option><option value="1000">1000</option></select>
 <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
 <hr>
 
+<input type="hidden" name="checkedSigs" id="checkedSigs"></input>
+
 <strong>Select signatures:</strong><br />
 Click on a category to select specific signatures within that category <br />
 <div id="sigs">

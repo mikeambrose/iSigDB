@@ -421,20 +421,25 @@ def getPearsonVals(v1,v2):
             math.sqrt((n*sum(x**2 for x in v1) - sum(v1)**2)*(n*sum(x**2 for x in v2)-sum(v2)**2))
     return rho,d
 
+def getCommonGenes(candGenes,allSets):
+    """Returns the subset of candGenes which occur in every member of allSets"""
+    commonGenes = set()
+    for gene in candGenes:
+        if all(gene in s for s in allSets):
+            commonGenes.add(gene)
+    return commonGenes
+
 def getSpearmanGenes(sams,sigs,compType,sigFile=None,n=50):
     """compType determines if all genes will be accessed or only the top genes
     if 'all' is passed in, computes the set of genes which are common to all samples and signatures
     if 'top' is passed in, takes the top n genes from each signature (as determined by the signature
     file) and computes the intersection of all those top genes, and then selects the subset of those
     which are present in all samples and signatures"""
-    if compType=='all':
+    if compType=='all': #picks all genes in common
         commonGenes = set()
-        sam = sams[sams.keys()[0]]
-        for gene in sam:
-            if all(gene in sigs[sig] for sig in sigs):
-                commonGenes.add(gene)
-        return list(commonGenes)
-    elif compType=='top':
+        candGenes = sams[sams.keys()[0]].keys()
+        return list(getCommonGenes(candGenes,[sigs[sig] for sig in sigs]))
+    elif compType=='top': #picks the top n
         candGenes = set()
         #generates a set of candidate genes by picking the top n genes for each sig
         with open(sigFile) as fullSigs:
@@ -443,12 +448,16 @@ def getSpearmanGenes(sams,sigs,compType,sigFile=None,n=50):
                 sig = line[0]
                 if sig in sigs:
                     candGenes = candGenes.union(set(line[1:n+1]))
-        commonGenes = set()
         allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
-        for gene in candGenes:
-            if all(gene in s for s in allSets):
-                commonGenes.add(gene)
-        return list(commonGenes)
+        return list(getCommonGenes(candGenes,allSets))
+    elif compType=='mag': #picks all genes which are up/downregulated by a factor of n
+        candGenes = set()
+        for sig in sigs:
+            for gene in sigs[sig]:
+                if sigs[sig][gene] >= n:# or sigs[sig][gene] <= 1.0/n:
+                    candGenes.add(gene)
+        allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
+        return list(getCommonGenes(candGenes,allSets))
 
 def getSpearmanDict(inputDict,genes):
     """Contructs a matrix of key : values for each gene"""
@@ -485,6 +494,9 @@ def getSigDict(dirSigs,selSigs):
     sigDict = {}
     for sigPath in allSigs:
         _,sig = os.path.split(sigPath)
+        #removing non-pms
+        if 'PM' not in sig.upper():
+            continue
         sig =  sig.split('--')[0]
         if sig not in selSigs:
             continue
@@ -620,12 +632,19 @@ if __name__ == "__main__":
         procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,loadSigDictionary(options.group))
     else: #spearman or pearson
         selSigs = getSelSigs(options.group)
-        selSigs = selSigs[:70] + selSigs[110:]
         sigs = getSigDict(options.sig,selSigs)
         sams = getSamDict(options.gene_count)
-        genes = getSpearmanGenes(sams,sigs,'top',options.sigfile,int(options.ngene_count))
+        #filter sigs with few genes
+        i = 0
+        while i < len(sigs):
+            sig = sigs.keys()[i]
+            if len(sigs[sig]) < 15000:
+                del sigs[sig]
+            else:
+                i += 1
+        genes = getSpearmanGenes(sams,sigs,'all',options.sigfile,int(options.ngene_count))
         if len(genes) == 0:
-            errorMessage("There are no genes which are in common between yor samples and all signatures. Make sure the gene name in your sample is in the first column")
+            errorMessage("There are no genes which are in common between your samples and all signatures. Make sure the gene name in your sample is in the first column")
         spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)
         corrRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group),options.version)
         print "Based on " + str(len(genes)) + " genes"

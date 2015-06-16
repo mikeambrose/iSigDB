@@ -97,7 +97,7 @@ Click on a category to select specific signatures within that category <br />
 <ul>
 <li id="Mouse">Mouse
 <ul><li id="Mouse Tissue">Mouse Tissue
-<ul><li id="MBA_adipose_brown">MBA_adipose_brown
+<ul><li data-jstree = '{ "type" : "disabled" }' id="MBA_adipose_brown">MBA_adipose_brown
 </li><li id="MBA_adipose_white">MBA_adipose_white
 </li><li id="MBA_adrenal_gland">MBA_adrenal_gland
 </li><li id="MBA_amygdala">MBA_amygdala
@@ -315,7 +315,13 @@ Click on a category to select specific signatures within that category <br />
                 "checkbox" : {
                     "keep_selected_style" : false
                 },
-                "plugins" : [ "checkbox" ],
+                "plugins" : [ "checkbox", "types" ],
+                "types": {
+                    "disabled": {
+                        "check_node": false,
+                        "uncheck_node": false,
+                    }
+                },
                 "core": {
                     "themes":{
                         "icons":false

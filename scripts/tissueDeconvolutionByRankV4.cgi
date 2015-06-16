@@ -82,20 +82,19 @@ my $local_abbrev_list_path = "${local_work_dir}/abbrevs.txt";
 open my $ABBREV_LIST, '>', $local_abbrev_list_path or die $!;
 
 
-my %abbrevs_and_desns;
+my %full_to_abbrev;
 open my $abbrevs_file, '<', '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/abbrevs.txt' or die "file not found$!";
 while (my $line = <$abbrevs_file>) {
     chomp $line;
     my ($abbrev, $full) = split /\t/,$line;
-    $abbrevs_and_desns{$abbrev} = $full;
+    $full_to_abbrev{$full} = $abbrev;
 }
-my @sorted_abbrevs_and_desns = keys %abbrevs_and_desns;
 
 my $num_selected = 0;
 
-foreach my $abbrev (@sorted_abbrevs_and_desns) {
-    if (grep {$_ eq $abbrev} @selected_sigs)) {
-        print $ABBREV_LIST $abbrev . "\t" . $abbrevs_and_desns{$abbrev} . "\n";
+foreach my $long_name (keys %full_to_abbrev) {
+    if (grep {$_ eq $long_name} @selected_sigs)) {
+        print $ABBREV_LIST $full_to_abbrev{$long_name} . "\t" . $long_name . "\n";
         $num_selected++;
     }
 }

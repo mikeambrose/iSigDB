@@ -306,12 +306,13 @@ Click on a category to select specific signatures within that category <br />
 
 </form>
 <script src="../js/jquery-1.11.3.min.js"></script>
-	<script src="../vakata-jstree-5bece58/dist/jstree.min.js"></script>
+    <script src="../vakata-jstree-5bece58/dist/jstree.min.js"></script>
     <script>
         $(function () {
             $('#sigs').jstree({
                 "checkbox" : {
-                    "keep_selected_style" : false
+                    "keep_selected_style" : false,
+                    "checked_parent_open" : false
                 },
                 "plugins" : [ "checkbox" ],
                 "core": {
@@ -320,7 +321,13 @@ Click on a category to select specific signatures within that category <br />
                     }
                 }
             });
-        window.onload = function (){$('#sigs').jstree('close_all');$('#sigs').jstree('check_all');};
+        function checkall(){$('#sigs').jstree('check_all');$('#sigs').jstree('close_all');};
+        window.addEventListener ?
+        window.addEventListener("load",checkall,false) : 
+        window.attachEvent && window.attachEvent("onload",checkall);
+        if (navigator.appName == "Netscape") {
+            setTimeout(checkall,500);
+        }
         });
 
     </script>

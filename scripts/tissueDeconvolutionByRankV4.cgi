@@ -174,6 +174,12 @@ if ($heatmap_chosen) {
     my $gene_argument = $raw_user_input{'spear_gene'};
 }
 
+#logging
+#TODO: fix log path
+my $logpath = '.';
+open(my $log, '>>', $logpath) or die $!;
+say $log "$ENV{'REMOTE_ADDR'}\t$job_id\t$heatmap_metric_argument\t$scale_columns_argument\t$log_argument\t$row_metric\t$col_metric\t$invert_argument\t$fixed_argument\t$gene_argument";
+close $log;
 my $exec_path = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank';
 #ThrowInternalError("python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument");
 my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SIGS -x $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument -f $fixed_argument -o $gene_argument --server`;

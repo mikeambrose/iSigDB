@@ -102,8 +102,25 @@ def generateHTML(abbrevs, formatLines, aToLen, output):
 <head>
     <meta charset="UTF-8">
     <title>iSigDB</title>
+<script src="../js/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" href="../td.css">
 <link rel="stylesheet" href="../vakata-jstree-5bece58/dist/themes/default/style.min.css" />
 <link rel="stylesheet" href="../tooltip.css">
+<script>
+        $(document).ready(function(){
+            
+            $('ul.tabs li').click(function(){
+                var tab_id = $(this).attr('data-tab');
+
+                $('ul.tabs li').removeClass('current');
+                $('.tab-content').removeClass('current');
+
+                $(this).addClass('current');
+                $("#"+tab_id).addClass('current');
+            })
+
+        })
+</script>
 
 <script type="text/javascript">
 
@@ -140,6 +157,11 @@ or <a href="./serverFileUpload.html">upload a file</a>
 <hr>
 
 <strong>Heatmap options<a href="OptionDescriptions.html">[Help]</a>:</strong><br /><br />
+<ul class="tabs">
+    <li class="tab-link current" data-tab="heatmapSection">Visualization/Heatmap</li>
+    <li class="tab-link" data-tab="corrMatrixSection">Correlation Matrix</li>
+</ul>
+<div id="heatmapSection" class="tab-content current">
 Compute heatmap based on:&nbsp;
 <select id="heatmap_metric" name="heatmap_metric">
 <option value="rank_avg">Rank Average</option>
@@ -199,10 +221,64 @@ Click on a category to select specific signatures within that category <br />
     returnHTML += generateJSTree(formatLines,abbrevs)
     #--------small ending section--------------
     returnHTML += """</ul></div>
+</div>
+<div id="corrMatrixSection" class="tab-content">
+Compute matrix based on: <select id="heatmap_metric" name="heatmap_metric">
+<option value="pearson">Pearson Correlation</option>
+<option value="spearman">Spearman Correlation</option>
+</select> <br> <br>
+
+<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br>
+<br>
+
+Metric for sample clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br>
+
+Metric for signature clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br> <br>
+
+Gene selection metric: &nbsp;
+<select id="spear_gene" name="spear_gene">
+<option value="all">Use all genes</option>
+<option value="top">Use top genes from each signature</option>
+<option value="mag">Use all genes upregulated beyond a certain threshold</option>
+</select>
+<br>
+
+Number of genes from each signature: &nbsp;
+<select id="num_genes" id="num_genes">
+<option value="10">10</option>
+<option value="25">25</option>
+<option value="50" selected>50</option>
+<option value="100">100</option>
+<option value="250">250</option>
+</select>
+
+<hr>
+
+<strong> Select signature matrix: </strong> <br>
+<input type="radio" name="matrix" id="matrix" value="DermDB">DermDB<br>
+<input type="radio" name="matrix" id="matrix" value="frozen">Frozen RMA perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="RNA-seq">Frozen RMA perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="mba">Mouse body atlas<br>
+<input type="radio" name="matrix" id="matrix" value="hba">Human body atlas<br>
+<input type="radio" name="matrix" id="matrix" value="immgen">Immgen data<br>
+<input type="radio" name="matrix" id="matrix" value="macrophage">Macrophage perturbation matrix<br>
+<hr>
+</div>
 <input type="submit" id="tissueDeconvolutionSubmit" name="tissueDeconvolutionSubmit" onclick="submitCheckboxes()" value="Submit" />
 
 </form>
-<script src="../js/jquery-1.11.3.min.js"></script>
 	<script src="../vakata-jstree-5bece58/dist/jstree.min.js"></script>
     <script>
         $(function () {

@@ -1,6 +1,6 @@
 body
 		.container{
-			margin: 0 auto;
+			/*margin: 0 auto;*/
 		}
 
 
@@ -31,7 +31,7 @@ body
 
 		.tab-content.current{
 			display: inherit;
-            margin-left: 30px;
+            /*margin-left: 30px;*/
 		}
 table, th, td {
             border: 1px solid black;
@@ -52,3 +52,4 @@ table, th, td {
         h3,ul,h2 {
             text-align: center;
         }
+}

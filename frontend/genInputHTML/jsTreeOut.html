@@ -34,6 +34,19 @@ function toggleVisibility(section) {
     }
 }
 
+function hide(section) {
+    var section = document.getElementById(section);
+    section.style.display = 'none';
+}
+
+function spear_gene_change() {
+    var value = document.getElementById('spear_gene').value;
+    hide('spearGeneTop');
+    hide('spearGeneAll');
+    hide('spearGeneMag');
+    toggleVisibility(value);
+}
+
 function submitCheckboxes() {
     var checkedIds = $('#sigs').jstree("get_selected");
     document.getElementById('checkedSigs').value = checkedIds.join(",");
@@ -353,28 +366,41 @@ Metric for signature clustering: &nbsp;
 <br> <br>
 
 Gene selection metric: &nbsp;
-<select id="spear_gene" name="spear_gene">
-<option value="all">Use all genes</option>
-<option value="top">Use top genes from each signature</option>
-<option value="mag">Use all genes upregulated beyond a certain threshold</option>
+<select id="spear_gene" name="spear_gene" onchange="spear_gene_change()">
+<option value="spearGeneAll">Use all genes</option>
+<option value="spearGeneTop">Use top genes from each signature</option>
+<option value="spearGeneMag">Use all genes upregulated beyond a certain threshold</option>
 </select>
 <br>
 
+<div id="spearGeneAll"> </div>
+
+<div id="spearGeneTop" style = "display:none">
 Number of genes from each signature: &nbsp;
-<select id="num_genes" id="num_genes">
+<select name="num_genes" id="num_genes">
 <option value="10">10</option>
 <option value="25">25</option>
 <option value="50" selected>50</option>
 <option value="100">100</option>
 <option value="250">250</option>
 </select>
+</div>
+
+<div id="spearGeneMag" style = "display:none">
+    Minimum fold change: &nbsp; <select name="num_genes" id="num_genes">
+    <option value="2">2</option>
+    <option value="5" selected>5</option>
+    <option value="10">10</option>
+    <option value="50">50</option>
+    </select>
+</div>
 
 <hr>
 
 <strong> Select signature matrix: </strong> <br>
 <input type="radio" name="matrix" id="matrix" value="DermDB">DermDB<br>
 <input type="radio" name="matrix" id="matrix" value="frozen">Frozen RMA perturbation matrix<br>
-<input type="radio" name="matrix" id="matrix" value="RNA-seq">Frozen RMA perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="RNA-seq">RNA-seq based perturbation matrix<br>
 <input type="radio" name="matrix" id="matrix" value="mba">Mouse body atlas<br>
 <input type="radio" name="matrix" id="matrix" value="hba">Human body atlas<br>
 <input type="radio" name="matrix" id="matrix" value="immgen">Immgen data<br>

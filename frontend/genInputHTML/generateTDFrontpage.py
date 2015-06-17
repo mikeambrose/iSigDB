@@ -236,16 +236,16 @@ Click on a category to select specific signatures within that category <br />
     returnHTML += """</ul></div>
 </div>
 <div id="corrMatrixSection" class="tab-content">
-Compute matrix based on: <select id="heatmap_metric" name="heatmap_metric">
+Compute matrix based on: <select id="matrix_metric" name="matrix_metric">
 <option value="pearson">Pearson Correlation</option>
 <option value="spearman">Spearman Correlation</option>
 </select> <br> <br>
 
-<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br>
+<input type="checkbox" name="matrix_invert" id="matrix_invert" value="checked" checked> Signatures on vertical axis <br>
 <br>
 
 Metric for sample clustering: &nbsp;
-<select id="row_metric" name="row_metric">
+<select id="matrix_row_metric" name="matrix_row_metric">
 <option value="euclidean">Euclidean Distance</option>
 <option value="pear_cor">Pearson Correlation</option>
 <option value="none">None (Do Not Cluster)</option>
@@ -253,7 +253,7 @@ Metric for sample clustering: &nbsp;
 <br>
 
 Metric for signature clustering: &nbsp;
-<select id="row_metric" name="row_metric">
+<select id="matrix_col_metric" name="matrix_col_metric">
 <option value="euclidean">Euclidean Distance</option>
 <option value="pear_cor">Pearson Correlation</option>
 <option value="none">None (Do Not Cluster)</option>
@@ -272,7 +272,7 @@ Gene selection metric: &nbsp;
 
 <div id="spearGeneTop" style = "display:none">
 Number of genes from each signature: &nbsp;
-<select name="num_genes" id="num_genes">
+<select name="matrix_num_genes" id="matrix_num_genes">
 <option value="10">10</option>
 <option value="25">25</option>
 <option value="50" selected>50</option>
@@ -282,7 +282,7 @@ Number of genes from each signature: &nbsp;
 </div>
 
 <div id="spearGeneMag" style = "display:none">
-    Minimum fold change: &nbsp; <select name="num_genes" id="num_genes">
+    Minimum fold change: &nbsp; <select name="matrix_mag" id="matrix_mag">
     <option value="2">2</option>
     <option value="5" selected>5</option>
     <option value="10">10</option>

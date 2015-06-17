@@ -1,1 +1,1 @@
-python scripts/Sig_Avg_Matrix_Derm.RankV4.py -t exampleInputs/rnacount_arjun_time_norm.txt -s sigdir/SIGS -x sigdir/SigGenes.txt -g sigdir/abbrevs_fixed.txt -n 50 -v rank_avg -z matrix -j -1 -a -r euclidean -c euclidean -i checked -f checked --client
+python scripts/Sig_Avg_Matrix_Derm.RankV4.py -t exampleInputs/rnacount_arjun_time_norm.txt -s sigdir/SIGS -x sigdir/SigGenes.txt -g sigdir/abbrevs_fixed.txt -n 50 -v rank_avg -z matrix -j -1 -a -r euclidean -c euclidean -i checked -f checked -o none --client

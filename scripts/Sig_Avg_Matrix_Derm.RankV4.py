@@ -458,6 +458,8 @@ def getSpearmanGenes(sams,sigs,compType,sigFile=None,n=50):
                     candGenes.add(gene)
         allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
         return list(getCommonGenes(candGenes,allSets))
+    else:
+        errorMessage("Not a valid spearman gene selector " + str(compType))
 
 def getSpearmanDict(inputDict,genes):
     """Contructs a matrix of key : values for each gene"""
@@ -603,6 +605,7 @@ if __name__ == "__main__":
     parser.add_option("-c", "--col_metric", dest="col_metric", help="metric for clustering columns (signatures)", default="pear_cor")
     parser.add_option("-i","--invert",default=True,dest="invert",help="heatmap columns/rows swtiched")
     parser.add_option("-f", "--fixed", dest="fixed", default="none", help="use fixed color axis")
+    parser.add_option("-o", "--gene_option", dest="gene_option", help="spearman/pearson gene computation option")
     parser.add_option("--client", dest="client", action="store_true", help="running client-side")
     parser.add_option("--server", dest="client", action="store_false", default=True, help="running server-side")
     (options, args) = parser.parse_args()
@@ -642,7 +645,7 @@ if __name__ == "__main__":
                 del sigs[sig]
             else:
                 i += 1
-        genes = getSpearmanGenes(sams,sigs,'all',options.sigfile,int(options.ngene_count))
+        genes = getSpearmanGenes(sams,sigs,options.gene_option,options.sigfile,int(options.ngene_count))
         if len(genes) == 0:
             errorMessage("There are no genes which are in common between your samples and all signatures. Make sure the gene name in your sample is in the first column")
         spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)

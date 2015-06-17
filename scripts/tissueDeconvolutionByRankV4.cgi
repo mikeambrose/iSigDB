@@ -155,6 +155,7 @@ if ($heatmap_chosen) {
     if ((!exists $acceptable_metrics{$row_metric}) || (!exists $acceptable_metrics{$col_metric})) {
       ThrowInternalError("Invalid clustering metric");
     }
+    my $gene_option = 'none';
 } else {
     my $heatmap_metric_argument = $raw_user_input['matrix_metric'];
     my $invert_argument = $raw_user_input['matrix_invert'];
@@ -170,11 +171,12 @@ if ($heatmap_chosen) {
     my $scale_columns_argument = 'none';
     my $log_argument = '-a';
     my $fixed_argument = 'none';
+    my $gene_argument = $raw_user_input{'spear_gene'};
 }
 
 my $exec_path = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank';
 #ThrowInternalError("python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument");
-my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SIGS -x $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument -f $fixed_argument --server`;
+my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SIGS -x $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument -f $fixed_argument -o $gene_argument --server`;
 
 #$python_out =~ s/null device \n          1 //;
 #$python_out =~ s/pdf \n  2 //;

@@ -8,7 +8,7 @@ def avN(vals,n):
     subset = random.sample(vals,n)
     return sum(subset)/float(n)
 
-def getStatistics(vals,n,imageLoc,num_iter=100000,num_buckets=1000):
+def getStatistics(vals,n,pdf,title,num_iter=100000,num_buckets=1000):
     """Returns the approximate mean, standard deviation, and 95th, 99th, and 99.9th percentile values
     of the distribution created by averaging n values from vals
     Also writes a histogram of the distribution to imageLoc"""
@@ -22,7 +22,8 @@ def getStatistics(vals,n,imageLoc,num_iter=100000,num_buckets=1000):
     p99 = avs[int(num_iter*0.99)]
     p999 = avs[int(num_iter*0.999)]
     plt.hist(avs,num_buckets)
-    plt.savefig(imageLoc,bbox_inches='tight')
+    plt.title(title)
+    pdf.savefig()
     plt.close()
     return mean,std,p95,p99,p999
 

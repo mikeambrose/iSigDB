@@ -9,6 +9,7 @@ import gzip
 import subprocess
 import math
 import nullmodel
+from matplotlib.backends.backend_pdf import PdfPages
 S_GENE_COUNT = '50'
 S_VERSION = 'rank_delta'
 S_ZSCORE = 'column'
@@ -529,11 +530,12 @@ def loadSigDictionary(strPathToGroupFile):
 
 
 #------END SPEARMAN/PEARSON CORRELATION
-def writeNullModelHists(filenames,allValues,n,num_iter=100000,num_buckets=1000):
-    """calls getStatistics for each set of values in allValues, a list of lists
-    Writes to names[i] for allValues[i]"""
-    for i in range(len(allValues)):
-        nullmodel.getStatistics(allValues[i],n,filenames[i],num_iter,num_buckets)
+def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=1000):
+    """Writes each of the histograms to a pdf
+    sigNames[i] should correspond with allValues[i]"""
+    with PdfPages(filename) as pdf:
+        for i in range(len(allValues)):
+            nullmodel.getStatistics(allValues[i],n,pdf,sigNames[i],num_iter,num_buckets)
 
 def loadGroupInfo(strPathToGroupFile):
     dGroupToLTisDesc = {}
@@ -625,14 +627,14 @@ if __name__ == "__main__":
         strOutMatrixTxt = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+options.job_id+'/'+options.job_id+'.matrix.txt'
     if options.null != 'none': #TODO: check to make sure input is 'values'
         sams = getSamDict(options.gene_count)
-        baseFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist/' if options.client\
-                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist'
-        filenames = []
+        baseFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
+                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
+        names = []
         allVals = []
         for sam in sams:
-            filenames.append(baseFilename+sam+".png")
+            names.append(sam)
             allVals.append([sams[sam][gene] for gene in sams[sam]])
-        writeNullModelHists(filenames,allVals,int(options.ngene_count))
+        writeNullModelHists(baseFilename,names,allVals,int(options.ngene_count))
     if options.version not in ['spearman','pearson']:
         #load categories
         dGroupToLTisDesc = loadGroupInfo(options.group)

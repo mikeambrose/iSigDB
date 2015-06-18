@@ -3,23 +3,6 @@ from optparse import OptionParser
 import matplotlib.pyplot as plt
 from math import sqrt,floor
 
-def getAllVals(inFile,rank):
-    f = open(inFile).read().split('\n')
-    samNames = f[0].split('\t')[1:]
-    del f[0]
-    inputs = []
-    if not rank=="checked":
-        for line in f:
-            inputs.append([float(x) for x in line.split('\t')[1:]])
-    else:
-        n = 1
-        for line in f:
-            inputs.append([n])
-            n += 1
-        samNames = [samNames[0]]
-    inputs = filter(lambda x:not all(p==0 for p in x), inputs)
-    return inputs,samNames
-
 def avN(vals,n):
     """Returns the average of a randomly selected n elements of vals"""
     subset = random.sample(vals,n)

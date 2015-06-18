@@ -3,7 +3,7 @@ import os
 from optparse import OptionParser
 import subprocess
 import matplotlib.pyplot as plt
-from math import e
+from math import e,sqrt
 def getAllVals(inFile,rank):
     f = open(inFile).read().split('\n')
     samNames = f[0].split('\t')[1:]
@@ -18,17 +18,31 @@ def getAllVals(inFile,rank):
             inputs.append([n])
             n += 1
         samNames = [samNames[0]]
+    inputs = filter(lambda x:not all(p==0 for p in x), inputs)
     return inputs,samNames
+
+def std(lst):
+    mean = sum(lst)/float(len(lst))
+    EXsquared = sum(x**2 for x in lst)/float(len(lst))
+    return sqrt(EXsquared-mean**2)
 
 def pickN(vals,n):
     subset = random.sample(vals,n)
     av = []
+    stdev = []
+    mn = []
+    mx = []
     for i in range(len(vals[0])):
-        av.append(sum([sub[i] for sub in subset])/float(n))
-    return av
+        vals = [sub[i] for sub in subset]
+        av.append(sum(vals)/float(n))
+        stdev.append(std(vals))
+        mn.append(min(vals))
+        mx.append(max(vals))
+    return av,stdev,mn,mx
 
 def nullRank(N,n,x):
-    """probability that the sum of n uniform(1,N) variables is greater than n*x"""
+    """bound on probability that the sum of n uniform(1,N) variables is greater than n*x
+    derived from a Chernoff bound"""
     t = 1.0/(N+1)
     #inner = (e - 1) / ((e**t - 1)*(e**(t*x))) / float(N)
     inner = (e-1)/(N*(e**t-1)*e**(x*t))
@@ -42,18 +56,25 @@ if __name__ == '__main__':
     parser.add_option("-r", dest="rank")
     parser.add_option("-x", dest="num_iter")
     (options, args) = parser.parse_args()
-    sigMinsMaxes = dict()
-    FNULL = open(os.devnull,'w')
     import time; t = time.time()
     allVals,samNames = getAllVals(options.input,options.rank)
-    samDists = {}
+    avs = {}
+    stdevs = {}
+    mxs = {}
+    mns = {}
     for name in samNames:
-        samDists[name] = []
+        avs[name] = []
+        stdevs[name] = []
+        mxs[name] = []
+        mns[name] = []
     for _ in range(int(options.num_iter)):
-        if _ % 100 == 0:
+        if _ % 10000 == 0:
             print "iteration",_
-        transformedNValues = pickN(allVals,int(options.n))
-        for i in range(len(transformedNValues)):
-            samDists[samNames[i]].append(transformedNValues[i])
+        av, stdev, mn, mx = pickN(allVals,int(options.n))
+        for i in range(len(av)):
+            avs[samNames[i]].append(av[i])
+            stdevs[samNames[i]].append(stdev[i])
+            mxs[samNames[i]].append(mx[i])
+            mns[samNames[i]].append(mn[i])
     print time.time()-t,"seconds elapsed"
     import pdb;pdb.set_trace()

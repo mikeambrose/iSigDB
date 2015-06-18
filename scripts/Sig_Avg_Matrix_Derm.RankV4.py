@@ -558,7 +558,7 @@ def loadSigDictionary(strPathToGroupFile):
         returnDict[abbrev] = real.replace("\n", "")
     return returnDict
 
-def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,strColMetric,jobID,invert,fixed,isClient):
+def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,strColMetric,jobID,invert,fixed,isClient,nullFilename):
     if not isClient:
         strTxtOutFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+jobID+'/'+jobID+'.matrixForHC.txt'
         strHeatmapOutFile = strOutFile+'Rheatmap.pdf'
@@ -591,7 +591,7 @@ def createHeatMap(strMatrixFile,strOutFile,strVersion,strColumnZ,strRowMetric,st
     import make_heatmapV4 as make_heatmap
     out = '/home/mike/workspace/PellegriniResearch/output/HighChartsHeatmap.html' if isClient else None
     includeDetailed = strVersion not in ['pearson','spearman']
-    make_heatmap.generateCanvas(strTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,strOutFile,includeDetailed)
+    make_heatmap.generateCanvas(strTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,strOutFile,includeDetailed,nullFilename)
 
 #----------------------------------------------------------------------------
 # main function call
@@ -613,7 +613,6 @@ if __name__ == "__main__":
     parser.add_option("-i","--invert",default=True,dest="invert",help="heatmap columns/rows swtiched")
     parser.add_option("-f", "--fixed", dest="fixed", default="none", help="use fixed color axis")
     parser.add_option("-o", "--gene_option", dest="gene_option", help="spearman/pearson gene computation option")
-    parser.add_option("-u","--null",dest="null")
     parser.add_option("--client", dest="client", action="store_true", help="running client-side")
     parser.add_option("--server", dest="client", action="store_false", default=True, help="running server-side")
     (options, args) = parser.parse_args()
@@ -625,16 +624,17 @@ if __name__ == "__main__":
         strOutMatrixTxt = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt'
     else:
         strOutMatrixTxt = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+options.job_id+'/'+options.job_id+'.matrix.txt'
-    if options.null != 'none': #TODO: check to make sure input is 'values'
-        sams = getSamDict(options.gene_count)
-        baseFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
-                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
-        names = []
-        allVals = []
-        for sam in sams:
-            names.append(sam)
-            allVals.append([sams[sam][gene] for gene in sams[sam]])
-        writeNullModelHists(baseFilename,names,allVals,int(options.ngene_count))
+    #null model
+    sams = getSamDict(options.gene_count)
+    nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
+                    else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
+    names = []
+    allVals = []
+    for sam in sams:
+        names.append(sam)
+        allVals.append([sams[sam][gene] for gene in sams[sam]])
+    writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
+
     if options.version not in ['spearman','pearson']:
         #load categories
         dGroupToLTisDesc = loadGroupInfo(options.group)
@@ -670,4 +670,4 @@ if __name__ == "__main__":
         print "Based on " + str(len(genes)) + " genes"
     #generate heatmap pdf
     RHeatmapOut = '/home/mike/workspace/PellegriniResearch/scripts/scratch/' if options.client else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id
-    createHeatMap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client)
+    createHeatMap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client,nullFilename)

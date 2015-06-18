@@ -23,7 +23,7 @@ HTML_BASE = """<!DOCTYPE HTML>
 
 
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True):
+def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename=''):
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
@@ -55,7 +55,8 @@ If you can't see the heatmap, make sure adblock is disabled and try again.<br>
     #add links and hidden file location
     baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(baseFile)
     seed = baseFile[-18:]
-    htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />'''
+    htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />
+<a href=''' + nullFilename + ">Null model output</a><br>\n"
     if includeDetailed:
         htmlText += '''
 Look in more detail at one signature:

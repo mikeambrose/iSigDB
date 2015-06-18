@@ -1,9 +1,8 @@
 import random
-import os
 from optparse import OptionParser
-import subprocess
 import matplotlib.pyplot as plt
-from math import e,sqrt
+from math import sqrt,floor
+
 def getAllVals(inFile,rank):
     f = open(inFile).read().split('\n')
     samNames = f[0].split('\t')[1:]
@@ -21,60 +20,39 @@ def getAllVals(inFile,rank):
     inputs = filter(lambda x:not all(p==0 for p in x), inputs)
     return inputs,samNames
 
-def std(lst):
-    mean = sum(lst)/float(len(lst))
-    EXsquared = sum(x**2 for x in lst)/float(len(lst))
-    return sqrt(EXsquared-mean**2)
-
-def pickN(vals,n):
+def avN(vals,n):
+    """Returns the average of a randomly selected n elements of vals"""
     subset = random.sample(vals,n)
-    av = []
-    stdev = []
-    mn = []
-    mx = []
-    for i in range(len(vals[0])):
-        vals = [sub[i] for sub in subset]
-        av.append(sum(vals)/float(n))
-        stdev.append(std(vals))
-        mn.append(min(vals))
-        mx.append(max(vals))
-    return av,stdev,mn,mx
+    return sum(subset)/float(n)
 
-def nullRank(N,n,x):
-    """bound on probability that the sum of n uniform(1,N) variables is greater than n*x
-    derived from a Chernoff bound"""
-    t = 1.0/(N+1)
-    #inner = (e - 1) / ((e**t - 1)*(e**(t*x))) / float(N)
-    inner = (e-1)/(N*(e**t-1)*e**(x*t))
-    return inner**n
-
+def getStatistics(vals,n,imageLoc,num_iter=100000,num_buckets=1000):
+    """Returns the approximate mean, standard deviation, and 95th, 99th, and 99.9th percentile values
+    of the distribution created by averaging n values from vals
+    Also writes a histogram of the distribution to imageLoc"""
+    avs = []
+    for _ in range(num_iter):
+        avs.append(avN(vals,n))
+    mean = sum(avs)/float(num_iter)
+    std = sqrt(sum(x**2 for x in avs)/float(num_iter)-mean**2)
+    avs.sort()
+    p95 = avs[int(num_iter*0.95)]
+    p99 = avs[int(num_iter*0.99)]
+    p999 = avs[int(num_iter*0.999)]
+    plt.hist(avs,num_buckets)
+    plt.savefig(imageLoc,bbox_inches='tight')
+    plt.close()
+    return mean,std,p95,p99,p999
 
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-i", dest="input")
+    parser.add_option("-c", dest="column")
     parser.add_option("-n", dest="n")
-    parser.add_option("-r", dest="rank")
     parser.add_option("-x", dest="num_iter")
+    parser.add_option("-o", dest="imageLoc")
     (options, args) = parser.parse_args()
     import time; t = time.time()
-    allVals,samNames = getAllVals(options.input,options.rank)
-    avs = {}
-    stdevs = {}
-    mxs = {}
-    mns = {}
-    for name in samNames:
-        avs[name] = []
-        stdevs[name] = []
-        mxs[name] = []
-        mns[name] = []
-    for _ in range(int(options.num_iter)):
-        if _ % 10000 == 0:
-            print "iteration",_
-        av, stdev, mn, mx = pickN(allVals,int(options.n))
-        for i in range(len(av)):
-            avs[samNames[i]].append(av[i])
-            stdevs[samNames[i]].append(stdev[i])
-            mxs[samNames[i]].append(mx[i])
-            mns[samNames[i]].append(mn[i])
+    f = open(options.input).read().split('\n')[1:]
+    vals = [float(line.split('\t')[int(options.column)+1]) for line in f]
+    print getStatistics(vals,int(options.n),options.imageLoc,int(options.num_iter))
     print time.time()-t,"seconds elapsed"
-    import pdb;pdb.set_trace()

@@ -613,6 +613,7 @@ if __name__ == "__main__":
     parser.add_option("-i","--invert",default=True,dest="invert",help="heatmap columns/rows swtiched")
     parser.add_option("-f", "--fixed", dest="fixed", default="none", help="use fixed color axis")
     parser.add_option("-o", "--gene_option", dest="gene_option", help="spearman/pearson gene computation option")
+    parser.add_option("-u", "--null", dest="null", help="compute null model")
     parser.add_option("--client", dest="client", action="store_true", help="running client-side")
     parser.add_option("--server", dest="client", action="store_false", default=True, help="running server-side")
     (options, args) = parser.parse_args()
@@ -625,15 +626,36 @@ if __name__ == "__main__":
     else:
         strOutMatrixTxt = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+options.job_id+'/'+options.job_id+'.matrix.txt'
     #null model
-    sams = getSamDict(options.gene_count)
-    nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
-                    else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
-    names = []
-    allVals = []
-    for sam in sams:
-        names.append(sam)
-        allVals.append([sams[sam][gene] for gene in sams[sam]])
-    writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
+    if options.version == 'log' and not options.bIsLog and options.null != 'none':
+        sams = getSamDict(options.gene_count)
+        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
+                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
+        names = []
+        allVals = []
+        for sam in sorted(sams.keys()):
+            names.append(sam)
+            allVals.append([sams[sam][gene] for gene in sams[sam]])
+        writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
+    elif options.version == 'log' and options.bIsLog and options.null != 'none':
+        sams = getSamDict(options.gene_count)
+        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
+                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
+        names = []
+        allVals = []
+        for sam in sams:
+            names.append(sam)
+            allVals.append([math.log(sams[sam][gene]+1,10) for gene in sams[sam]])
+        writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
+    elif options.version == 'rank_avg' and options.null != 'none':
+        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
+                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
+        names = ['All Samples']
+        d = getSamDict(options.gene_count)
+        num_genes = len(d[d.keys()[0]])
+        allVals = [list(range(1,num_genes))]
+        writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
+    else:
+        nullFilename = None
 
     if options.version not in ['spearman','pearson']:
         #load categories

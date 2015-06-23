@@ -10,6 +10,7 @@ import subprocess
 import math
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
+from collections import OrderedDict
 S_GENE_COUNT = '50'
 S_VERSION = 'rank_delta'
 S_ZSCORE = 'column'
@@ -120,7 +121,7 @@ def getSigToGene(dTisToFCToGene,nGeneCount):
     return dSigToGene
 
 def getSamToGeneToRank(dSamToCountToGene):
-    dSamToGeneToRank = {}
+    dSamToGeneToRank = OrderedDict()
     dGeneToMeanRank = {}
 
     #process rank
@@ -160,9 +161,9 @@ def getSamToGeneToRank(dSamToCountToGene):
 
 def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bIsLog,sigNames):
     dColIDToColLbl = {}
-    dSamToGeneToCount = {}
-    dSamToSigToLVals = {}
-    dSamToCountToGene = {}
+    dSamToGeneToCount = OrderedDict()
+    dSamToSigToLVals = OrderedDict()
+    dSamToCountToGene = OrderedDict()
     lGlobalAvg = []
 
     #load Sample To Gene To Count
@@ -476,7 +477,7 @@ def getSpearmanDict(inputDict,genes):
 
 def getSamDict(f):
     """returns a dictionary of sample:gene:value for each gene in genes"""
-    samDict = {}
+    samDict = OrderedDict()
     f = open(f).read().split('\n')
     sams = f[0].replace("\n","").replace("\r","").split('\t')[1:]
     for sam in sams:

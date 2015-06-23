@@ -70,15 +70,15 @@ Look in more detail at one signature:
         htmlText += """</select> <br/>
 <input type="checkbox" name="invert" id="invert" value="invert"> Invert output <br/>
 
-Metric for row (sample) clustering: &nbsp;
-<select id="row_metric" name="row_metric">
+Metric for sample clustering: &nbsp;
+<select id="col_metric" name="col_metric">
 <option value="euclidean">Euclidean Distance</option>
 <option value="pear_cor">Pearson Correlation</option>
 <option value="none">None (Do Not Cluster)</option>
 </select><br />
 
-Metric for column (signature) clustering: &nbsp;
-<select id="col_metric" name="col_metric">
+Metric for gene clustering: &nbsp;
+<select id="row_metric" name="row_metric">
 <option value="euclidean">Euclidean Distance</option>
 <option value="pear_cor">Pearson Correlation</option>
 <option value="none">None (Do Not Cluster)</option>

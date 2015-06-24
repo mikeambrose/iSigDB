@@ -165,43 +165,9 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
                         dSamToSigToLVals[strSam][strSig].append(np.log10(dSamToGeneToCount[strSam][strCurSigGene]+1))
                     else:
                         dSamToSigToLVals[strSam][strSig].append(dSamToGeneToCount[strSam][strCurSigGene])
-
-        fout2 = open(strOutFile+'.full.txt', 'w')
-        for strSig in sorted(dSigToGenes.keys()):
-            fout2.write('# Signature: %s\n' % sigNames[strSig] if strSig in sigNames else strSig)
-            for strSam in sorted(dSamToGeneToCount.keys()):
-                fout2.write('\t%s' % strSam)
-            fout2.write('\n')
-            for strCurSigGene in dSigToGenes[strSig]:
-                fout2.write('%s' % strCurSigGene)
-                for strSam in sorted(dSamToGeneToCount.keys()):
-                    if strCurSigGene in dSamToGeneToCount[strSam]:
-                        if not bIsLog:
-                            fout2.write('\t%f' % (dSamToGeneToCount[strSam][strCurSigGene]))
-                        else:
-                            fout2.write('\t%f' % (np.log10(dSamToGeneToCount[strSam][strCurSigGene]+1)))
-                    else:
-                        fout2.write('\t%N/A')
-                fout2.write('\n')
-            fout2.write('\n')
-
-        #print header
-        fout = open(strOutFile,'w')
-        strHeader = 'SAMPLE'
-        for i in range(len(lSigs)):
-            strHeader+='\t'+(sigNames[lSigs[i]] if lSigs[i] in sigNames else lSigs[i])
-        fout.write(strHeader+'\n')
-        #print sample Row Averages
-        for strSam in sorted(dSamToGeneToCount.keys()):
-            strRow = strSam
-            for j in range(len(lSigs)):
-                strCurSig = lSigs[j]
-                if len(dSamToSigToLVals[strSam][strCurSig]) == 0:
-                    util.displayErrorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
-                strRow += '\t%f'%np.average(dSamToSigToLVals[strSam][strCurSig])
-            fout.write(strRow+'\n')
-        fout.close()
-
+        #write outputs
+        util.writeDetailedOutput(dSigToGenes,dSamToGeneToCount,strOutFile+'.full.txt',sigNames)
+        util.writeRegularOutput(dSamToSigToLVals,strOutFile,sigNames)
     #===================================================================================================================
     #write delta rank metric
     #===================================================================================================================
@@ -214,55 +180,14 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
                 for strSam in dSamToGeneToRank.keys():
                     if(dSamToGeneToRank[strSam].has_key(strCurSigGene) == False):
                         continue
-                    if strVersion.startswith('rank_avg'):
+                    if strVersion == 'rank_avg':
                         dSamToSigToLVals[strSam][strSig].append(dSamToGeneToRank[strSam][strCurSigGene])
                         lGlobalAvg.append(dSamToGeneToRank[strSam][strCurSigGene])
-                    elif strVersion.startswith('rank_delta'):
+                    elif strVersion == 'rank_delta':
                         dSamToSigToLVals[strSam][strSig].append(dSamToGeneToRank[strSam][strCurSigGene] - dGeneToMeanRank[strCurSigGene])
                         lGlobalAvg.append(dSamToGeneToRank[strSam][strCurSigGene] - dGeneToMeanRank[strCurSigGene])
-        #lLoadGlobalAvg
-        '''
-        for strSam in sorted(dSamToGeneToCount.keys()):
-            strRow = strSam
-            for j in range(len(lSigs)):
-                strCurSig = lSigs[j]
-                lGlobalAvg.append(np.average(dSamToSigToLVals[strSam][strCurSig]))
-        '''
-
-        # TODO: extra output here
-        fout2 = open(strOutFile+'.full.txt', 'w')
-        for strSig in sorted(dSigToGenes.keys()):
-            fout2.write('# Signature: %s\n' % (sigNames[strSig] if strSig in sigNames else strSig))
-            for strSam in sorted(dSamToGeneToRank.keys()):
-                fout2.write('\t%s' % strSam)
-            fout2.write('\n')
-            for strCurSigGene in dSigToGenes[strSig]:
-                fout2.write('%s' % strCurSigGene)
-                for strSam in sorted(dSamToGeneToRank.keys()):
-                    if(dSamToGeneToRank[strSam].has_key(strCurSigGene) == False):
-                        fout2.write('\tN/A')
-                    else:
-                        fout2.write('\t%f' % dSamToGeneToRank[strSam][strCurSigGene])
-                fout2.write('\n')
-            fout2.write('\n')
-
-        #find signature gene
-        fout = open(strOutFile,'w')
-        strHeader = 'SAMPLE'
-        for i in range(len(lSigs)):
-            strHeader+='\t'+(sigNames[lSigs[i]] if lSigs[i] in sigNames else lSigs[i])
-        fout.write(strHeader+'\n')
-        #print sample Row Averages
-        for strSam in sorted(dSamToGeneToCount.keys()):
-            strRow = strSam
-            for j in range(len(lSigs)):
-                strCurSig = lSigs[j]
-                if len(dSamToSigToLVals[strSam][strCurSig]) == 0:
-                    util.displayErrorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
-                fMetric = np.average(dSamToSigToLVals[strSam][strCurSig])
-                strRow += '\t%f'%fMetric
-            fout.write(strRow+'\n')
-        fout.close()
+        util.writeDetailedOutput(dSigToGenes,dSamToGeneToRank,strOutFile+'.full.txt',sigNames)
+        util.writeRegularOutput(dSamToSigToLVals,strOutFile,sigNames)
 
 #------SPEARMAN/PEARSON CORRELATION
 def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):

@@ -70,4 +70,50 @@ def checkForErrors(f):
             except:
                 displayErrorMessage("Non-decimal value around line " + str(i+1))
 
-                    
+def writeDetailedOutput(sigGenes,samVals,outFile,fullNames):
+    """Writes detailed output to outFile
+    sigGenes is a dictionary of signature : gene
+    samVals is a dictionary of sample : gene : value
+    fullNames is a dictionary of abbreviation to full name"""
+    with open(outFile,'w') as out:
+        for sig in sigGenes:
+            fullName = fullNames[sig] if sig in fullNames else sig
+            out.write("# Signature: {0}\n".format(fullName))
+            for sam in samVals:
+                out.write('\t'+sam)
+            out.write('\n')
+            for gene in sigGenes[sig]:
+                out.write(gene)
+                for sam in samVals:
+                    if gene not in samVals[sam]:
+                        out.write('\tN/A')
+                    else:
+                        out.write('\t'+str(samVals[sam][gene]))
+                out.write('\n')
+            out.write('\n')
+
+average = lambda lst: sum(lst) / float(len(lst))
+
+def writeRegularOutput(samSigVals,outFile,fullNames):
+    """Writes regular output to outFile
+    samSigVals is a dictionary of sample : signature : value
+        the value can be a list, in which case it is averaged, or a single value
+        if value is an empty list, an error is thrown
+    fullNames is a dictionary of abbreviation to full name"""
+    sigNames = samSigVals[samSigVals.keys()[0]].keys()
+    with open(outFile,'w') as out:
+        out.write('SAMPLE')
+        for sig in sigNames:
+            fullName = fullNames[sig] if sig in fullNames else sig
+            out.write('\t'+fullName)
+        out.write('\n')
+        for sam in samSigVals:
+            out.write(sam)
+            for sig in samSigVals[sam]:
+                if type(samSigVals[sam][sig]) == type([]):
+                    if not samSigVals[sam][sig]:
+                        displayErrorMessage("No genes which intersect with signature "+sig)
+                    out.write(str(average(samSigVals[sam][sig])))
+                else:
+                    out.write(str(samSigVals[sam][sig]))
+            out.write('\n')

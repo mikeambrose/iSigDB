@@ -25,105 +25,27 @@ def getSigGenes(sigFile,selectedSigs,n):
                 sigGenes[sig] = splitLine[1:n+1]
     return sigGenes
 
-def getSamToGeneToRank(dSamToCountToGene):
-    dSamToGeneToRank = OrderedDict()
-    dGeneToMeanRank = {}
+def ranked(sams):
+    """for each sample, replaces the gene's value with its rank"""
+    rankedSams = {}
+    for sam in sams:
+        samvals = [sams[sam][gene] for gene in sams[sam]]
+        ranks = util.getRanks(tuple(samvals))
+        rankedSams[sam] = {gene:ranks[sams[sam][gene]] for gene in sams[sam]}
+    return rankedSams
 
-    #process rank
-    for strCurSam in dSamToCountToGene:
-        nRank = 1
-        currentRankVal = None
-        currentRunLength = 0
-        dSamToGeneToRank[strCurSam] = {}
-        for fCount in sorted(dSamToCountToGene[strCurSam].keys()):
-            meanRank = nRank + len(dSamToCountToGene[strCurSam][fCount])/2.0
-            for strCurGene in sorted(dSamToCountToGene[strCurSam][fCount]):
-                dSamToGeneToRank[strCurSam][strCurGene] = meanRank
-                nRank+=1
+def logall(sams):
+    """for each sample, replace the gene's value with the log of its value"""
+    return {sam:{gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]} for sam in sams}
 
-    #process mean gene rank
-    for strCurGene in sorted(dSamToGeneToRank[dSamToGeneToRank.keys()[0]].keys()):
-        lRowRanks = []
-        for strCurSam in sorted(dSamToGeneToRank.keys()):
-            lRowRanks.append(dSamToGeneToRank[strCurSam][strCurGene])
-            dGeneToMeanRank[strCurGene] = np.average(lRowRanks)
-
-    return dSamToGeneToRank,dGeneToMeanRank
-
-def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bIsLog,sigNames):
-    dColIDToColLbl = {}
-    dSamToGeneToCount = OrderedDict()
-    dSamToSigToLVals = OrderedDict()
-    dSamToCountToGene = OrderedDict()
-    lGlobalAvg = []
-
-    #load Sample To Gene To Count
-    fopen = open(strGeneCount,'r')
-
-    for strLine in fopen:
-        lcols = strLine.rstrip().split('\t')
-        if len(dColIDToColLbl.keys())==0:
-            for i in range(1,len(lcols)):
-                dColIDToColLbl[i] = lcols[i]
-                dSamToGeneToCount[lcols[i]] = {}
-                dSamToSigToLVals[lcols[i]] = {}
-                dSamToCountToGene[lcols[i]] = {}
-                for strSig in dSigToGenes.keys():
-                    dSamToSigToLVals[lcols[i]][strSig] = []
-        else:
-            #processing when more than one gene is in the name (with //)
-            strCurGenes = lcols[0].upper().split('//')
-            strCurGenes = [strCurGene.strip() for strCurGene in strCurGenes]
-            if all(float(val) == 0 for val in lcols[1:]):
-                continue
-            for strCurGene in strCurGenes:
-                for i in range(1,len(lcols)):
-                    if strCurGene not in dSamToGeneToCount[dColIDToColLbl[i]]:
-                        dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = float(lcols[i])
-                        if dSamToCountToGene[dColIDToColLbl[i]].has_key(float(lcols[i])) == False:
-                            dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])] = []
-                        dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])].append(strCurGene)
-                    else:
-                        dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = max(float(lcols[i]),dSamToGeneToCount[dColIDToColLbl[i]][strCurGene])
-    fopen.close()
-
-    #qc print gene
-    #===================================================================================================================
-    #write avg log gene count
-    #===================================================================================================================
-    if strVersion == 'log':
-        for strSig in dSigToGenes.keys():
-            for strCurSigGene in dSigToGenes[strSig]:
-                for strSam in dSamToGeneToCount.keys():
-                    if(dSamToGeneToCount[strSam].has_key(strCurSigGene) == False):
-                        continue
-                    if bIsLog:
-                        dSamToSigToLVals[strSam][strSig].append(np.log10(dSamToGeneToCount[strSam][strCurSigGene]+1))
-                    else:
-                        dSamToSigToLVals[strSam][strSig].append(dSamToGeneToCount[strSam][strCurSigGene])
-        #write outputs
-        util.writeDetailedOutput(dSigToGenes,dSamToGeneToCount,strOutFile+'.full.txt',sigNames)
-        util.writeRegularOutput(dSamToSigToLVals,strOutFile,sigNames)
-    #===================================================================================================================
-    #write delta rank metric
-    #===================================================================================================================
-    else:
-        dSamToGeneToRank,dGeneToMeanRank = getSamToGeneToRank(dSamToCountToGene)
-
-        #dSamToSigToLVals DELTA MEAN MATRIX
-        for strSig in dSigToGenes.keys():
-            for strCurSigGene in dSigToGenes[strSig]:
-                for strSam in dSamToGeneToRank.keys():
-                    if(dSamToGeneToRank[strSam].has_key(strCurSigGene) == False):
-                        continue
-                    if strVersion == 'rank_avg':
-                        dSamToSigToLVals[strSam][strSig].append(dSamToGeneToRank[strSam][strCurSigGene])
-                        lGlobalAvg.append(dSamToGeneToRank[strSam][strCurSigGene])
-                    elif strVersion == 'rank_delta':
-                        dSamToSigToLVals[strSam][strSig].append(dSamToGeneToRank[strSam][strCurSigGene] - dGeneToMeanRank[strCurSigGene])
-                        lGlobalAvg.append(dSamToGeneToRank[strSam][strCurSigGene] - dGeneToMeanRank[strCurSigGene])
-        util.writeDetailedOutput(dSigToGenes,dSamToGeneToRank,strOutFile+'.full.txt',sigNames)
-        util.writeRegularOutput(dSamToSigToLVals,strOutFile,sigNames)
+def delta(samSigVals):
+    """for each signature, replace each samples values with the difference between their value
+    and the average value across all samples"""
+    for sig in samSigVals[samSigVals.keys()[0]]:
+        av = util.average([samSigVals[sam][sig] for sam in samSigVals])
+        for sam in samSigVals:
+            samSigVals[sam][sig] = samSigVals[sam][sig] - av
+    return samSigVals
 
 def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
     """Writes the values after computation by version to compOutput
@@ -185,7 +107,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     isClient - always false when run on server (debug option)
     """
     #matplotlib imports - need to use a writeable directory
-    if not options.client:
+    if not isClient:
         os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
     import matplotlib
     matplotlib.use('Agg')
@@ -201,11 +123,11 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
        else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{0}/{0}.matrix.txt'.format(jobID)
     nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if isClient\
        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/nulldist_' + jobID + '.pdf'
-    RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
+    RHeatmapOut ='/home/mike/workspace/PellegriniResearch/output/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(jobID)
 
     #get sample values
-    sams = readMatrix(inputFile,ordered=True)
+    sams = util.readMatrix(inputFile,ordered=True)
     if 'rank' in version:
         sams = ranked(sams) #TODO: implement ranked
     if 'log' in version:
@@ -217,9 +139,10 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     else:
         nullFilename = None
 
-    abbrevsDict = loadAbbrevs(abbrevs)
+    abbrevsDict = util.loadAbbrevs(abbrevs)
     sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
     writeValues(sams,sigGenes,compOutput,version,abbrevsDict) #TODO: write
+    print RHeatmapOut
     util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,isClient,nullFilename)
         
 #----------------------------------------------------------------------------
@@ -233,12 +156,10 @@ if __name__ == "__main__":
     parser.add_option("--n",dest='n', help="number of genes to use")
     parser.add_option("--version", dest="version", help="metric version with avg, log, rank, delta ", metavar="VER", default=S_VERSION)
     parser.add_option("--zTransform", dest="zTransform", help="how to transform matrix")
-    parser.add_option("--job_id", dest="job_id", help="job id, for output path")
     parser.add_option("--row_metric", dest="row_metric", help="metric for clustering rows (samples)")
     parser.add_option("--col_metric", dest="col_metric", help="metric for clustering columns (signatures)")
     parser.add_option("--invert",default=False,dest="invert",action="store_true",help="heatmap columns/rows swtiched")
-    parser.add_option("-f", "--fixed",default=False, dest="fixed",action="store_true", help="use fixed color axis")
-    parser.add_option("-u", "--null",default=False,action="store_true", dest="null", help="compute null model")
-    parser.add_option("--client", dest="client",default=False, action="store_true", help="running client-side")
+    parser.add_option("--fixed",default=False, dest="fixed",action="store_true", help="use fixed color axis")
+    parser.add_option("--null",default=False,action="store_true", dest="null", help="compute null model")
     (options, args) = parser.parse_args()
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,options.job_id,options.row_metric,options.col_mteric,options.invert,options.fixed,options.null,options.client)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.fixed,options.null,True)

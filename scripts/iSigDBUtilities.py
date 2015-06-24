@@ -155,7 +155,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
         subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
                         rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
     #only center around zero  for certain input types
-    centerAroundZero = (zTransform=="matrix") or (version in ["rank_delta","pearson","spearman"])
+    centerAroundZero = (zTransform=="matrix") or ("delta" in version) or (version in ["pearson","spearman"])
     #if fixed is selected, choose the fixed values
     #TODO: make these reasonable (maybe user-chosen input?)
     maxVal,minVal = None,None
@@ -180,7 +180,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
     #pass control to make_heatmap
     make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename)
 
-def readMatrix(f,filterAllZero=False,ordered=False):
+def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:
     GENE NAME   COL1    COL2    ...
     A           0.1     0.2     ...

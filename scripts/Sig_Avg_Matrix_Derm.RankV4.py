@@ -189,13 +189,6 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
         util.writeDetailedOutput(dSigToGenes,dSamToGeneToRank,strOutFile+'.full.txt',sigNames)
         util.writeRegularOutput(dSamToSigToLVals,strOutFile,sigNames)
 
-def loadSigDictionary(strPathToGroupFile):
-    returnDict = {}
-    f = open(strPathToGroupFile,'r')
-    for line in f:
-        abbrev, real = line.split('\t')
-        returnDict[abbrev] = real[:-2]
-    return returnDict
 
 def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=1000):
     """Writes each of the histograms to a pdf
@@ -217,15 +210,6 @@ def loadGroupInfo(strPathToGroupFile):
         strDesc = lcols[1]
         dGroupToLTisDesc[strGroup].append((strTissue,strDesc))
     return dGroupToLTisDesc
-
-def loadSigDictionary(strPathToGroupFile):
-    returnDict = {}
-    f = open(strPathToGroupFile,'r')
-    for line in f:
-        abbrev, real = line.split('\t')
-        returnDict[abbrev] = real.replace("\n", "")
-    return returnDict
-
 #----------------------------------------------------------------------------
 # main function call
 #----------------------------------------------------------------------------
@@ -294,39 +278,21 @@ if __name__ == "__main__":
     else:
         nullFilename = None
 
-    if options.version not in ['spearman','pearson']:
-        #load categories
-        dGroupToLTisDesc = loadGroupInfo(options.group)
+    #load categories
+    dGroupToLTisDesc = loadGroupInfo(options.group)
 
-        #list signature
-        lTis = []
-        for strGroup in sorted(dGroupToLTisDesc.keys()):
-            for strTis,strDes in dGroupToLTisDesc[strGroup]:
-                lTis.append(strTis)
+    #list signature
+    lTis = []
+    for strGroup in sorted(dGroupToLTisDesc.keys()):
+        for strTis,strDes in dGroupToLTisDesc[strGroup]:
+            lTis.append(strTis)
 
-        #load list of genes
-        dGroupSigToGene = getSigGenes(options.sigfile,int(options.ngene_count))
+    #load list of genes
+    dGroupSigToGene = getSigGenes(options.sigfile,int(options.ngene_count))
 
-        #process gene count matrix
-        procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,loadSigDictionary(options.group))
-    else: #spearman or pearson
-        selSigs = getSelSigs(options.group)
-        sigs = getSigDict(options.sig,selSigs)
-        sams = getSamDict(options.gene_count)
-        #filter sigs with few genes
-        i = 0
-        while i < len(sigs):
-            sig = sigs.keys()[i]
-            if len(sigs[sig]) < 15000:
-                del sigs[sig]
-            else:
-                i += 1
-        genes = getSpearmanGenes(sams,sigs,options.gene_option,options.sigfile,int(options.ngene_count))
-        if len(genes) == 0:
-            util.displayErrorMessage("There are no genes which are in common between your samples and all signatures. Make sure the gene name in your sample is in the first column")
-        spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)
-        corrRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group),options.version)
-        print "Based on " + str(len(genes)) + " genes"
+    #process gene count matrix
+    procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,util.loadAbbrevs(options.group))
+
     #generate heatmap pdf
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if options.client\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(options.job_id)

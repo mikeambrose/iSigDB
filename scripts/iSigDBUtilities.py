@@ -5,6 +5,7 @@ Made by Mike Ambrose, mikeambrose@berkeley.edu
 from collections import OrderedDict
 import subprocess
 import make_heatmapV4 as make_heatmap
+import os
 def reformatFile(f):
     """Automatically changes f to be in the correct format
     Removes carriage returns (either with blank spaces if there are \r\n line endings
@@ -41,9 +42,12 @@ def replaceEmptyLines(s):
         s = s.replace('\n\n','\n')
     return s,True
 
-def displayErrorMessage(message):
+def displayErrorMessage(message,htmlHeader=False):
     """Prints a brief html snippet which corresponds to an error message with context 'message'
+    if htmlHeader is true, also prints the content-type header
     Exits after printing"""
+    if htmlHeader:
+        print "Content-type: text/html\n\n"
     print "<!DOCTYPE html>\n<title>iSigDB Error</title>\n<html>\n<body>"+message+"\n</body>\n</html>"""
     exit()
 
@@ -116,9 +120,9 @@ def writeRegularOutput(samSigVals,outFile,fullNames):
                 if type(samSigVals[sam][sig]) == type([]):
                     if not samSigVals[sam][sig]:
                         displayErrorMessage("No genes which intersect with signature "+sig)
-                    out.write(str(average(samSigVals[sam][sig])))
+                    out.write('\t'+str(average(samSigVals[sam][sig])))
                 else:
-                    out.write(str(samSigVals[sam][sig]))
+                    out.write('\t'+str(samSigVals[sam][sig]))
             out.write('\n')
 
 def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,
@@ -143,16 +147,20 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
     heatsigPath = "/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R" if isClient\
                 else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatsigV4.R'
     #call R and stuff all output
-    FNULL = open(os.devnull, 'w')
-    subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
-                    rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
+    if isClient:
+        subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
+                    rowMetric,colMetric,rTxtOutFile])
+    else:
+        FNULL = open(os.devnull, 'w')
+        subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
+                        rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
     #only center around zero  for certain input types
     centerAroundZero = (zTransform=="matrix") or (version in ["rank_delta","pearson","spearman"])
     #if fixed is selected, choose the fixed values
     #TODO: make these reasonable (maybe user-chosen input?)
     maxVal,minVal = None,None
     if fixed:
-        if strColumnZ == 'matrix':
+        if zTransform == 'matrix':
             minVal = -5
             maxVal = 5
         else:
@@ -170,7 +178,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
         nullFilename="http://pathways-pellegrini.mcdb.ucla.edu//submit/img/" +\
                             os.path.basename(nullFilename)
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename)
+    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename)
 
 def readMatrix(f,filterAllZero=False,ordered=False):
     """accepts file of the form:
@@ -181,6 +189,7 @@ def readMatrix(f,filterAllZero=False,ordered=False):
     and returns a dictionary of the form
     {COL1 : {A : 0.1, B : 1.2}, COL2 : {A : 0.2, B : -0.4}}
     in other words, returns a dictionary of sample:gene:value
+    if it encounters a N/A value, it will skip the line
     if filterAllZero is false, removes any line which is all zeroes
     if ordered is True, uses an OrderedDict() to maintain the order
     otherwise will use a regular dictionary (better for performance, especially with many samples)"""
@@ -192,7 +201,8 @@ def readMatrix(f,filterAllZero=False,ordered=False):
         samDict[sam] = {}
     for line in f[1:-1]:
         line = line.split('\t')
-        if all(float(line[i])==0 for i in range(1,len(line))) and filterAllZero:
+        if any(val == 'N/A' for val in line) or \
+           (all(float(val)==0 for val in line[1:]) and filterAllZero):
             continue
         gene = line[0].upper()
         vals = [float(x) for x in line[1:]]
@@ -228,4 +238,27 @@ def getSelSigs(group):
     for abbrev in abbrevs[:-1]:
         selSigs.append(abbrev.split('\t')[0])
     return selSigs
+
+def loadAbbrevs(abbrevs):
+    returnDict = {}
+    with open(abbrevs) as a:
+        for line in a:
+            abbrev, real = line.replace('\n','').replace('\r','').split('\t')
+            returnDict[abbrev] = real
+    return returnDict
+
+zeroExtend = lambda s,k: s if len(s)==k else zeroExtend("0"+s,k) #pads s with 0s until length k
+def getJobID():
+    """Generates the job id
+    {year}{month}{day}{hour}{minute}{second}xxxx
+    where xxxx is a random four-digit number"""
+    randomSeed = zeroExtend(str(random.randint(0,9999)),4)
+    currentTime = datetime.datetime.now()
+    return "{0}{1}{2}{3}{4}{5}".format(currentTime.year,currentTime.month,currentTime.day,\
+                            currentTime.hour,currentTime.minute,currentTime.second)+randomSeed
+
+def copyFile(f,loc):
+    """Copies the opened file f to loc"""
+    with open(loc,'wb') as out:
+        out.write(f.read())
 

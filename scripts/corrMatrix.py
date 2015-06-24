@@ -8,6 +8,7 @@
 import os
 from optparse import OptionParser
 import iSigDBUtilities as util
+import math
 
 def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):
     """Uses the spearman/pearson coefficient to evaluate the similarity between signatures and samples
@@ -133,7 +134,8 @@ def getSpearmanDict(inputDict,genes):
         assert len(returnDict[line]) == len(genes)
     return returnDict
 
-def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneVal,selMatrix,isClient,job_id):
+def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneVal,selMatrix,\
+                    isClient,job_id,abbrevs):
     """Runs Spearman or Pearson correlation on the inputFile
     inputFile - user-uploaded file
     version - either "pearson" or "spearman"
@@ -144,6 +146,7 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     sigMatrix - which matrix is selected
     isClient- debug flag, always False when run on server
     job_id - number generated to uniquely identify task
+    abbrevs - file of abbreviation\tfull name
     """
     outFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
             else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
@@ -152,17 +155,19 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     matrix = util.readMatrix(selMatrix,True,False)
     sams = util.readMatrix(inputFile,True,True)
     #find set of genes
-    genes = getSpearmanGenes(sams,sigs,geneMetric,geneVal)
+    genes = getSpearmanGenes(sams,matrix,geneMetric,geneVal)
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes
     spearmanSams, spearmanMatrix = getSpearmanDict(sams,genes), getSpearmanDict(matrix,genes)
+    #get full names of signatures
+    abbrevs = util.loadAbbrevs(abbrevs)
     #run correlation on them
-    corrRank(spearmanMatrix,spearmanSams,genes,outFile,version)
+    corrRank(spearmanMatrix,spearmanSams,genes,outFile,abbrevs,version)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(options.job_id)
     #pass computation to R/make_heatmap
-    util.createHeatMap(outFile,RHeatmapOut,version,"none",rowMetric,colMetric,job_id,invert,fixed,isClient,None)
+    util.createHeatmap(outFile,RHeatmapOut,version,"none",rowMetric,colMetric,job_id,invert,True,isClient,None)
 
 #this file should always be imported by the server
 #running from the command line is only for testing
@@ -176,7 +181,7 @@ if __name__ == '__main__':
     parser.add_option("--gene",dest="gene",help="gene metric (all, top, mag)")
     parser.add_option("--gval",dest="geneVal",help="value corresponding with gene metric")
     parser.add_option("--matrix",dest="selMatrix",help="matrix selected")
+    parser.add_option("--abbrev",dest="abbrevs",help="abbreviation file")
     options, _ = parser.parse_args()
-
     runCorrelation(options.inputFile,options.version,options.invert,options.row,options.col,\
-                    options.gene,options.geneVal,options.selMatrix,True,None)
+                    options.gene,options.geneVal,options.selMatrix,True,None,{})

@@ -76,25 +76,25 @@ else {
 
 close $SUBMISSION_DEST;
 
-my @selected_sigs = split(/,/,$raw_user_input{'checkedSigs'});
 
 my $local_abbrev_list_path = "${local_work_dir}/abbrevs.txt";
 open my $ABBREV_LIST, '>', $local_abbrev_list_path or die $!;
 
 
-my %full_to_abbrev;
+my %abbrevs_and_desns;
 open my $abbrevs_file, '<', '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/abbrevs.txt' or die "file not found$!";
 while (my $line = <$abbrevs_file>) {
     chomp $line;
     my ($abbrev, $full) = split /\t/,$line;
-    $full_to_abbrev{$full} = $abbrev;
+    $abbrevs_and_desns{$abbrev} = $full;
 }
+my @sorted_abbrevs_and_desns = keys %abbrevs_and_desns;
 
 my $num_selected = 0;
 
-foreach my $long_name (keys %full_to_abbrev) {
-    if (grep {$_ eq $long_name} @selected_sigs) {
-        print $ABBREV_LIST $full_to_abbrev{$long_name} . "\t" . $long_name . "\n";
+foreach my $abbrev (@sorted_abbrevs_and_desns) {
+    if ($raw_user_input{$abbrev} eq 'checked') {
+        print $ABBREV_LIST $abbrev . "\t" . $abbrevs_and_desns{$abbrev} . "\n";
         $num_selected++;
     }
 }
@@ -112,13 +112,17 @@ my $num_genes = $raw_user_input{'num_genes'};
 if (!exists $acceptable_num_genes{$num_genes}) {
   ThrowInternalError("Invalid number of genes");
 }
+
 # launch python script
 
+my $exec_path = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank';
 
 my %acceptable_heatmap_metrics = ('rank_avg' => undef,
                                   'rank_delta' => undef,
                                   'log' => undef,
-                                  'absolute' => undef);
+                                  'absolute' => undef,
+                                  'pearson' => undef,
+                                  'spearman' => undef);
 
 my $heatmap_metric_argument = $raw_user_input{'heatmap_metric'};
 if (!exists $acceptable_heatmap_metrics{$heatmap_metric_argument}) {
@@ -138,9 +142,9 @@ if ($raw_user_input{'scale_columns'} ne 'checked') {
   $scale_columns_argument = 'none';
 }
 
-my $invert_argument = $raw_user_input{'invert'} eq 'checked' ? 'checked' : 'none';
+my $invert_argument = $raw_user_input{'invert'} eq 'checked' ? 'scale' : 'none';
 
-my $fixed_argument = $raw_user_input{'fixed'} eq 'checked' ? 'checked' : 'none';
+my $fixed_argument = $raw_user_input{'fixed'} eq 'checked' ? 'fix' : 'none';
 
 my %acceptable_metrics = ('pear_cor' => undef,
                           'euclidean' => undef,
@@ -148,22 +152,14 @@ my %acceptable_metrics = ('pear_cor' => undef,
 
 my $row_metric = $raw_user_input{'row_metric'};
 my $col_metric = $raw_user_input{'col_metric'};
-my $null_metric = $raw_user_input{'null'};
 
 if ((!exists $acceptable_metrics{$row_metric}) || (!exists $acceptable_metrics{$col_metric})) {
   ThrowInternalError("Invalid clustering metric");
 }
-my $gene_option = 'none';
 
-#logging
-#TODO: fix log path
-my $logpath = '.';
-open(my $log, '>>', $logpath) or die $!;
-say $log "$ENV{'REMOTE_ADDR'}\t$job_id\t$heatmap_metric_argument\t$scale_columns_argument\t$log_argument\t$row_metric\t$col_metric\t$invert_argument\t$fixed_argument\t$gene_argument";
-close $log;
-my $exec_path = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank';
 #ThrowInternalError("python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument");
-my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SIGS -x $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument -f $fixed_argument -o none -u $null_metric --server`;
+
+my $python_out = `python $exec_path/Sig_Avg_Matrix_Derm.RankV4.py -n $num_genes -t $local_matrix_path -s $exec_path/SIGS -x $exec_path/SigGenes.txt -g ${local_work_dir}/abbrevs.txt -j ${job_id} -v $heatmap_metric_argument -z $scale_columns_argument $log_argument -r $row_metric -c $col_metric -i $invert_argument -f $fixed_argument -o none -u none --server`;
 
 #$python_out =~ s/null device \n          1 //;
 #$python_out =~ s/pdf \n  2 //;

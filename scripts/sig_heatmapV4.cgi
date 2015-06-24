@@ -100,7 +100,7 @@ def generateCanvas(dataFile,outFile,signature,invert,rowClustMethod,colClustMeth
     xLabels = data[0][1:]
     data = data[::-1]
     del data[-1]
-    data.insert(0,'')
+    data.insert(0, '')
     yLabels = [data[x][0] for x in range(1,len(data))]
     htmlText = HTML_BASE
     #add the right location for scripts (use outFile != None to check if we are on server)
@@ -168,7 +168,6 @@ def generateCanvas(dataFile,outFile,signature,invert,rowClustMethod,colClustMeth
     else:
         with open(outFile,'w') as out:
             out.write(htmlText)
-"""
 import cgi
 import cgitb
 cgitb.enable()
@@ -180,7 +179,8 @@ rowArg = form["row_metric"].value
 colArg = form["col_metric"].value
 seed = form["seed"].value
 fileSource = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_" + seed + '/' + seed + ".matrix.txt.full.txt"
-generateCanvas(fileSource,None,signature,invertArg,rowArg,colArg,seed,False)"""
+generateCanvas(fileSource,None,signature,invertArg,rowArg,colArg,seed,False)
+"""
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-i", "--input", dest="input")
@@ -191,4 +191,4 @@ if __name__ == "__main__":
     parser.add_option("-c", "--col", dest="col")
     (options, args) = parser.parse_args()
     generateCanvas(options.input,options.output,options.sig,options.invert!="none",options.row,options.col,'-1',True)
-
+"""

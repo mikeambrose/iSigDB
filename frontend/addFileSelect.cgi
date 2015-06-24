@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import cgi
-basePath = '/home/mike/workspace/PellegriniResearch/frontend/baseSiteV4.html'
-assocPath = '/home/mike/workspace/PellegriniResearch/UserUploadedFiles/associations.txt'
+basePath = '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/goTeles/baseSiteV4.html'
+assocPath = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/associations.txt'
 replaceSection = '{FILES GO HERE}'
 fileHTML = open(basePath).read()
 loc = fileHTML.index(replaceSection)

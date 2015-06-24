@@ -95,20 +95,6 @@ def getSamToGeneToRank(dSamToCountToGene):
             lRowRanks.append(dSamToGeneToRank[strCurSam][strCurGene])
             dGeneToMeanRank[strCurGene] = np.average(lRowRanks)
 
-    #QC print rankings
-
-    #fout = open('./test_rank.log','w')
-    #strHeader = 'GENE'
-    #for strCurSam in sorted(dSamToGeneToRank.keys()):
-    #    strHeader+='\t'+strCurSam
-    #fout.write(strHeader+'\tAVG\n')
-    #for strCurGene in sorted(dSamToGeneToRank[dSamToGeneToRank.keys()[0]].keys()):
-    #    strRow = strCurGene
-    #    for strCurSam in sorted(dSamToGeneToRank.keys()):
-    #        strRow+='\t%d'%dSamToGeneToRank[strCurSam][strCurGene]
-    #    fout.write(strRow+'\t%f\n'%dGeneToMeanRank[strCurGene])
-    #fout.close()
-
     return dSamToGeneToRank,dGeneToMeanRank
 
 def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bIsLog,sigNames):
@@ -132,23 +118,19 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
                 for strSig in dSigToGenes.keys():
                     dSamToSigToLVals[lcols[i]][strSig] = []
         else:
-            strCurGene = lcols[0]
-            strCurGene = strCurGene.upper()
-            #for averaging
-            """if strCurGene in numGenes:
-                numGenes[strCurGene] += 1
-            else:
-                numGenes[strCurGene] = 1"""
-            if all(float(lcols[i])==0 for i in range(1,len(lcols))):
+            #processing when more than one gene is in the name (with //)
+            strCurGenes = lcols[0].upper().split('//').strip()
+            if all(float(val) == 0 for val in lcols[1:]):
                 continue
-            for i in range(1,len(lcols)):
-                if strCurGene not in dSamToGeneToCount[dColIDToColLbl[i]]:
-                    dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = float(lcols[i])
-                    if dSamToCountToGene[dColIDToColLbl[i]].has_key(float(lcols[i])) == False:
-                        dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])] = []
-                    dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])].append(strCurGene)
-                else:
-                    dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = max(float(lcols[i]),dSamToGeneToCount[dColIDToColLbl[i]][strCurGene])
+            for strCurGene in strCurGenes:
+                for i in range(1,len(lcols)):
+                    if strCurGene not in dSamToGeneToCount[dColIDToColLbl[i]]:
+                        dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = float(lcols[i])
+                        if dSamToCountToGene[dColIDToColLbl[i]].has_key(float(lcols[i])) == False:
+                            dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])] = []
+                        dSamToCountToGene[dColIDToColLbl[i]][float(lcols[i])].append(strCurGene)
+                    else:
+                        dSamToGeneToCount[dColIDToColLbl[i]][strCurGene] = max(float(lcols[i]),dSamToGeneToCount[dColIDToColLbl[i]][strCurGene])
     fopen.close()
 
     #qc print gene

@@ -2,6 +2,9 @@
 Various utilities called by different functions used for iSigDB
 Made by Mike Ambrose, mikeambrose@berkeley.edu
 """
+from collections import OrderedDict
+import subprocess
+import make_heatmapV4 as make_heatmap
 def reformatFile(f):
     """Automatically changes f to be in the correct format
     Removes carriage returns (either with blank spaces if there are \r\n line endings
@@ -117,3 +120,112 @@ def writeRegularOutput(samSigVals,outFile,fullNames):
                 else:
                     out.write(str(samSigVals[sam][sig]))
             out.write('\n')
+
+def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,
+                    isClient,nullFilename):
+    """Calls the R script to cluster and create the heatmap
+        matrixFile is the location of the output
+        rPdfOutFile is where the R heatmap will be output
+        zTransform ("matrix","none") determines if the output is replaced with its z-scores
+        rowMetric, colMetric ("euclidean","pearson","none") determine how R clusters the output
+    Then control is passed to make_heatmap, which generates the HighCharts heatmap
+        invert controls whether or not the output is inverted
+        fixed controls whether or not the axes are fixed
+        isClient is a debug flag, always passed as False on the server
+        nullFilename is the location of the null distribution pdf
+    """
+    if not isClient:
+        rTxtOutFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+jobID+'/'+jobID+'.matrixForHC.txt'
+    else:
+        rTxtOutFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/rOutput.txt'
+    rscriptPath = "Rscript" if isClient\
+                else "/UCSC/Pathways-Auxiliary/UCLApathways-R-3.1.1/R-3.1.1/bin/Rscript"
+    heatsigPath = "/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R" if isClient\
+                else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatsigV4.R'
+    #call R and stuff all output
+    FNULL = open(os.devnull, 'w')
+    subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
+                    rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
+    #only center around zero  for certain input types
+    centerAroundZero = (zTransform=="matrix") or (version in ["rank_delta","pearson","spearman"])
+    #if fixed is selected, choose the fixed values
+    #TODO: make these reasonable (maybe user-chosen input?)
+    maxVal,minVal = None,None
+    if fixed:
+        if strColumnZ == 'matrix':
+            minVal = -5
+            maxVal = 5
+        else:
+            vals = {"rank_delta":(-10000,10000),"rank_avg":(0,300000),"log":(0,10),"pearson":(-1,1),\
+                    "spearman":(-1,1)}
+            minVal,maxVal = vals[version]
+            #TODO: fix 'log' referring to both log and values
+    #debug, location of html output from make_heatmap
+    out = '/home/mike/workspace/PellegriniResearch/output/HighChartsHeatmap.html' if isClient\
+            else None
+    #whether or not to include the detailed output
+    includeDetailed = version not in ['pearson','spearman']
+    #if we have a null filename, replace it with the html-accessable one
+    if nullFilename:
+        nullFilename="http://pathways-pellegrini.mcdb.ucla.edu//submit/img/" +\
+                            os.path.basename(nullFilename)
+    #pass control to make_heatmap
+    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if strColumnZ == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename)
+
+def readMatrix(f,filterAllZero=False,ordered=False):
+    """accepts file of the form:
+    GENE NAME   COL1    COL2    ...
+    A           0.1     0.2     ...
+    B           1.2     -0.4    ...
+    ...
+    and returns a dictionary of the form
+    {COL1 : {A : 0.1, B : 1.2}, COL2 : {A : 0.2, B : -0.4}}
+    in other words, returns a dictionary of sample:gene:value
+    if filterAllZero is false, removes any line which is all zeroes
+    if ordered is True, uses an OrderedDict() to maintain the order
+    otherwise will use a regular dictionary (better for performance, especially with many samples)"""
+    samDict = OrderedDict() if ordered else dict()
+    f = open(f).read().split('\n')
+    #names of the samples
+    sams = f[0].replace("\n","").replace("\r","").split('\t')[1:]
+    for sam in sams:
+        samDict[sam] = {}
+    for line in f[1:-1]:
+        line = line.split('\t')
+        if all(float(line[i])==0 for i in range(1,len(line))) and filterAllZero:
+            continue
+        gene = line[0].upper()
+        vals = [float(x) for x in line[1:]]
+        for i in range(len(sams)):
+            samDict[sams[i]][gene] = vals[i]
+    return samDict
+
+def getSigDict(dirSigs,selSigs):
+    """dirSigs is the directory with all signature files
+    selSigs is the signatures selected by the user
+    returns a dictionary of signature:gene:value for each signature in selSigs"""
+    #get all signature files
+    allSigs = glob.glob(dirSigs+'/*--*')
+    sigDict = {}
+    for sigPath in allSigs:
+        _,sig = os.path.split(sigPath)
+        #removing non-pms
+        sig =  sig.split('--')[0]
+        if sig not in selSigs:
+            continue
+        sigDict[sig] = {}
+        sigFile = open(sigPath).read().split('\n')
+        for line in sigFile:
+            if not line:    continue
+            line = line.split('\t')
+            gene = line[0].upper()
+            sigDict[sig][gene] = float(line[1])
+    return sigDict
+
+def getSelSigs(group):
+    selSigs = []
+    abbrevs = open(group).read().split('\n')
+    for abbrev in abbrevs[:-1]:
+        selSigs.append(abbrev.split('\t')[0])
+    return selSigs
+

@@ -97,8 +97,10 @@ def generateCanvas(dataFile,outFile,signature,invert,rowClustMethod,colClustMeth
     detailedHeatmapLoc = '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+seed+'RDetailHeatmap.pdf' if not isClient else '/home/mike/workspace/PellegriniResearch/output/RDetailHeatmap.pdf'
     subprocess.call([rscript,heatsigLoc,filename,detailedHeatmapLoc,"none",rowClustMethod,colClustMethod,scratch+"/matrixForHM.txt"], stdout=FNULL, stderr=FNULL)
     data = readMatrix(scratch+"/matrixForHM.txt")
-    data = data[0] + data[1::-1]
     xLabels = data[0][1:]
+    data = data[::-1]
+    del data[-1]
+    data.insert(0,'')
     yLabels = [data[x][0] for x in range(1,len(data))]
     htmlText = HTML_BASE
     #add the right location for scripts (use outFile != None to check if we are on server)

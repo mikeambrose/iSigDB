@@ -11,57 +11,10 @@ import math
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
+import iSigDBUtilities as util
 S_GENE_COUNT = '50'
 S_VERSION = 'rank_delta'
 S_ZSCORE = 'column'
-
-def replaceLineEndings(f):
-    s = open(f).read()
-    unix = '\n' in s
-    dos = '\r' in s
-    comma = ',' in s
-    doubleSpaced = -1 <= s.count('\n\n')*2-s.count('\n') <= 1
-    if unix and dos:
-        s = s.replace('\r\n','\n')
-        if '\r' in s: #we didn't successfully rid ourselves
-            errorMessage("File has non-standard line endings")
-    elif dos:
-        s = s.replace('\r','\n')
-    if doubleSpaced:
-        s = s.replace('\n\n','\n')
-    if comma:
-        s = s.replace(',',';')
-    if dos or doubleSpaced or comma:
-        with open(f,'w') as fout:
-            fout.write(s)
-
-def errorMessage(s):
-    print "<!doctype html> <html> <body>" + s + "</body> </html>"
-    exit()
-
-def checkForErrors(f):
-    """Checks that f is vaguely in the format we expect
-    Checks that it appears to be tab-delimited with a consistent number of columns
-    and that all entries are decimals.
-    If not, prints out html corresponding to an error message and exits execution"""
-    f = open(f).read().split('\n')
-    if len(f) <= 1:
-        errorMessage("Formatting error: Only one line detected")
-    names = f[0].split('\t')
-    if len(set(names)) != len(names):
-        errorMessage("Some of your samples have the same name (maybe duplicates?)")
-    numTabs = f[0].count('\t')
-    if numTabs == 0:
-        errorMessage("Not a tab-separated file")
-    for i in range(1,len(f)-1):
-        line = f[i]
-        if line.count('\t') != numTabs:
-            errorMessage("Inconsistent number of columns around line " + str(i+1))
-        for x in line.split('\t')[1:]:
-            try:
-                float(x)
-            except:
-                errorMessage("Non-decimal alue around line " + str(i+1))
 
 def getSigGenes(strSigFile,nGeneCount):
     dSigToGene = {}
@@ -187,9 +140,6 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
                 numGenes[strCurGene] += 1
             else:
                 numGenes[strCurGene] = 1"""
-            #if strCurGene in dSamToGeneToCount[dColIDToColLbl[1]]:
-            #        errorMessage("Multiple copies of the same gene are in the input")
-            #process zeros
             if all(float(lcols[i])==0 for i in range(1,len(lcols))):
                 continue
             for i in range(1,len(lcols)):
@@ -248,7 +198,7 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
             for j in range(len(lSigs)):
                 strCurSig = lSigs[j]
                 if len(dSamToSigToLVals[strSam][strCurSig]) == 0:
-                    errorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
+                    util.displayErrorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
                 strRow += '\t%f'%np.average(dSamToSigToLVals[strSam][strCurSig])
             fout.write(strRow+'\n')
         fout.close()
@@ -309,7 +259,7 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
             for j in range(len(lSigs)):
                 strCurSig = lSigs[j]
                 if len(dSamToSigToLVals[strSam][strCurSig]) == 0:
-                    errorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
+                    util.displayErrorMessage("Your file does not have any genes which intersect with signature {0}".format(strCurSig))
                 fMetric = np.average(dSamToSigToLVals[strSam][strCurSig])
                 strRow += '\t%f'%fMetric
             fout.write(strRow+'\n')
@@ -462,7 +412,7 @@ def getSpearmanGenes(sams,sigs,compType,sigFile=None,n=50):
         allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
         return list(getCommonGenes(candGenes,allSets))
     else:
-        errorMessage("Not a valid spearman gene selector " + str(compType))
+        util.displayErrorMessage("Not a valid spearman gene selector " + str(compType))
 
 def getSpearmanDict(inputDict,genes):
     """Contructs a matrix of key : values for each gene"""
@@ -619,18 +569,19 @@ if __name__ == "__main__":
     parser.add_option("--server", dest="client", action="store_false", default=True, help="running server-side")
     (options, args) = parser.parse_args()
 
-    replaceLineEndings(options.gene_count)
-    checkForErrors(options.gene_count)
+    util.reformatFile(options.gene_count)
+    util.checkForErrors(options.gene_count)
 
     if options.client:
         strOutMatrixTxt = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt'
     else:
         strOutMatrixTxt = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+options.job_id+'/'+options.job_id+'.matrix.txt'
     #null model
+
+        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
+                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/nulldist'+options.job_id+'.pdf'
     if options.version == 'log' and not options.bIsLog and options.null != 'none':
         sams = getSamDict(options.gene_count)
-        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
-                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
         names = []
         allVals = []
         for sam in sorted(sams.keys()):
@@ -639,8 +590,6 @@ if __name__ == "__main__":
         writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
     elif options.version == 'log' and options.bIsLog and options.null != 'none':
         sams = getSamDict(options.gene_count)
-        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
-                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
         names = []
         allVals = []
         for sam in sams:
@@ -648,8 +597,6 @@ if __name__ == "__main__":
             allVals.append([math.log(sams[sam][gene]+1,10) for gene in sams[sam]])
         writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
     elif options.version == 'rank_avg' and options.null != 'none':
-        nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
-                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_'+options.job_id + '/nulldist.pdf'
         names = ['All Samples']
         d = getSamDict(options.gene_count)
         num_genes = len(d[d.keys()[0]])
@@ -687,7 +634,7 @@ if __name__ == "__main__":
                 i += 1
         genes = getSpearmanGenes(sams,sigs,options.gene_option,options.sigfile,int(options.ngene_count))
         if len(genes) == 0:
-            errorMessage("There are no genes which are in common between your samples and all signatures. Make sure the gene name in your sample is in the first column")
+            util.displayErrorMessage("There are no genes which are in common between your samples and all signatures. Make sure the gene name in your sample is in the first column")
         spearmanSams, spearmanSigs = getSpearmanDict(sams,genes), getSpearmanDict(sigs,genes)
         corrRank(spearmanSigs,spearmanSams,genes,strOutMatrixTxt,loadSigDictionary(options.group),options.version)
         print "Based on " + str(len(genes)) + " genes"

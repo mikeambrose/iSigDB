@@ -33,43 +33,11 @@ def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):
         samSigCoefficient[sig] = {sam:sigSamCoefficient[(sig,sam)] for sam in sams}
     util.writeRegularOutput(samSigCoefficient,strOutFile,sigNames)
 
-def getRanksMemoize(f):
-    """fast memoization decorator for getRanks"""
-    class memodict(dict):
-        def __missing__(self,key):
-            ret = self[key] = f(key)
-            return ret
-    return memodict().__getitem__
-
-@getRanksMemoize
-def getRanks(lst):
-    """Returns a dictionary of entry : rank
-    This is memoized and thus must be called with a tuple"""
-    ranks = {}
-    sorted_lst = sorted(lst)
-    n = len(lst)
-    i = 0
-    while i < n:
-        #detect if there is a run
-        if i+1<n and sorted_lst[i+1] == sorted_lst[i]:
-            run_length = 2
-            j = i+1
-            while j+1<n and sorted_lst[j+1] == sorted_lst[j]:
-                run_length += 1
-                j += 1
-            rankVal = i+(run_length-1)/2.0
-            for k in range(i,j+1):
-                ranks[sorted_lst[k]] = rankVal
-            i = i+run_length
-        else:
-            ranks[sorted_lst[i]] = i
-            i += 1
-    return ranks
 
 def getSpearmanVals(v1,v2):
     """Returns the spearman correlation coefficient between v1 and v2"""
     n = len(v1)
-    v1Ranks,v2Ranks = getRanks(tuple(v1)),getRanks(tuple(v2))
+    v1Ranks,v2Ranks = util.getRanks(tuple(v1)),util.getRanks(tuple(v2))
     d = [v1Ranks[v1[i]] - v2Ranks[v2[i]] for i in range(n)]
     rho = 1 - 6*sum(x**2 for x in d)/float(n*(n**2-1))
     return rho

@@ -15,14 +15,15 @@ S_GENE_COUNT = '50'
 S_VERSION = 'rank_delta'
 S_ZSCORE = 'column'
 
-def getSigGenes(strSigFile,nGeneCount):
-    dSigToGene = {}
-    with open(strSigFile) as sigToGenes:
+def getSigGenes(sigFile,selectedSigs,n):
+    sigGenes = {}
+    with open(sigFile) as sigToGenes:
         for line in sigToGenes:
             splitLine = line.strip("\n").split("\t")
             sig = splitLine[0]
-            dSigToGene[splitLine[0]] = splitLine[1:nGeneCount+1]
-    return dSigToGene
+            if sig in selectedSigs:
+                sigGenes[sig] = splitLine[1:n+1]
+    return sigGenes
 
 def getSamToGeneToRank(dSamToCountToGene):
     dSamToGeneToRank = OrderedDict()
@@ -124,6 +125,28 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
         util.writeDetailedOutput(dSigToGenes,dSamToGeneToRank,strOutFile+'.full.txt',sigNames)
         util.writeRegularOutput(dSamToSigToLVals,strOutFile,sigNames)
 
+def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
+    """Writes the values after computation by version to compOutput
+    inputFile - user-provided input file
+    sigGenes - dictionary of signature : list of genes in signature
+    compOutput - where to write output
+    version - how to process input
+    abbrevsDict - dictionary of abbreviation : full name for each signature in sigGenes"""
+    util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
+    samSigVal = {}
+    for sam in sams:
+        samSigVal[sam] = {}
+        for sig in sigGenes:
+            geneVals = []
+            for gene in sigGenes[sig]:
+                if gene not in sams[sam]:
+                    #the gene does not exist in our input, so it is reported as a N/A
+                    continue
+                geneVals.append(sams[sam][gene])
+            samSigVal[sam][sig] = util.average(geneVals)
+    if 'delta' in version:
+        samSigVal = delta(samSigVal) #TODO: implement delta
+    util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
 
 def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=1000):
     """Writes each of the histograms to a pdf
@@ -133,25 +156,13 @@ def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_bucket
         nullmodel.getStatistics(allValues[i],n,pdf,sigNames[i],num_iter,num_buckets)
     pdf.close()
 
-def writeNull(inputFile,version,nullFilename,n):
+def writeNull(sams,nullFilename,n):
     """Writes the null distribution of inputFile to nullFilename
-    version is either rank_avg, log, or val
     n is the number of genes we're averaging over
     """
-    sams = util.readMatrix(inputFile)
-    if version == 'rank_avg':
-        #technically, this isn't quite accurate, since there could be some ties and this doesn't
-        #   include them
-        #consider redoing this
-        names = ['All Samples']
-        allVals = [list(range(1,num_genes))]
-    else:
-        names = [sam for sam in sorted(sams.keys())]
-            allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
-            if version == 'log':
-                allVals = [[log(val) for val in line] for line in allVals]
+    names = [sam for sam in sorted(sams.keys())]
+    allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
     writeNullModelHists(nullFilename,names,allVals,n)
-
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
                     fixed,computeNull,isClient):
@@ -161,12 +172,11 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         format: sigName\tgene1\tgene2...\nsigName2\t...
     abbrevs - file with abbreviations\tfull names
     n - number of genes to take from each signature
-    version - what computation to do
-        "log" - log-transformed values
-        "val" - values
-        "rank_avg" - rank average
-        "rank_delta" - rank delta
-    zTransform - "matrix" if going to be transformed, otherwise "none"
+    version - what computation to do. looks for certain strings
+        "avg" - use average values, or "delta" - difference from average
+        "log" - log-transform values, or nothing
+        "rank" - rank rather than raw values, or nothing
+    zTransform - "matrix", "column", "row" if going to be transformed by those metrics, otherwise "none"
     jobID - ID of the current job, used for identifying and writing to file
     rowMetric, colMetric - "euclidean", "pearson", "none", used to cluster columns/rows
     invert - invert the axes of the heatmap
@@ -194,15 +204,22 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(jobID)
 
+    #get sample values
+    sams = readMatrix(inputFile,ordered=True)
+    if 'rank' in version:
+        sams = ranked(sams) #TODO: implement ranked
+    if 'log' in version:
+        sams = logall(sams) #TODO: implement logall
+
     #computing null distribution
-    if computeNull and version in ['rank_avg','log','val']:
-        writeNull(inputFile,version,nullFilename,n)
+    if computeNull and not zTransform and 'delta' not in version:
+        writeNull(sams,version,nullFilename,n)
     else:
         nullFilename = None
 
     abbrevsDict = loadAbbrevs(abbrevs)
-    sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) #TODO: make it filter by selected sigs
-    writeValues(inputFile,sigGenes,compOutput,version,abbrevsDict) #TODO: write
+    sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
+    writeValues(sams,sigGenes,compOutput,version,abbrevsDict) #TODO: write
     util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,isClient,nullFilename)
         
 #----------------------------------------------------------------------------
@@ -210,39 +227,18 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
 #----------------------------------------------------------------------------
 if __name__ == "__main__":
     parser = OptionParser()
-    parser.add_option("-t", "--gene_count", dest="gene_count", help="table of gene counts", metavar="TAB", default="")
-    parser.add_option("-s", "--sig", dest="sig", help="path to pm ratio list", metavar="LIST", default="")
-    parser.add_option("-x","--sigfile",dest="sigfile",help="path to precomputed signatures")
-    parser.add_option("-g", "--group", dest="group", help="path to group files", metavar="PATH", default="")
-    parser.add_option("-n", "--ngene_count", dest="ngene_count", help="number of genes to use", metavar="NUM", default=S_GENE_COUNT)
-    parser.add_option("-v", "--version", dest="version", help="metric version (rank_avg,rank_delta,log)", metavar="VER", default=S_VERSION)
-    parser.add_option("-z", "--zscore", dest="zscore", help="default no column z-score", metavar="ZSCORE", default=S_ZSCORE)
-    parser.add_option("-j", "--job_id", dest="job_id", help="job id, for output path", default="-1")
-    parser.add_option("-a", "--absolute", dest="bIsLog", action="store_false", default=True, help="no log transformation")
-    parser.add_option("-l", "--log_transform", dest="bIsLog", action="store_true", help="log transform")
-    parser.add_option("-r", "--row_metric", dest="row_metric", help="metric for clustering rows (samples)", default="pear_cor")
-    parser.add_option("-c", "--col_metric", dest="col_metric", help="metric for clustering columns (signatures)", default="pear_cor")
-    parser.add_option("-i","--invert",default=True,dest="invert",help="heatmap columns/rows swtiched")
-    parser.add_option("-f", "--fixed", dest="fixed", default="none", help="use fixed color axis")
-    parser.add_option("-u", "--null", dest="null", help="compute null model")
-    parser.add_option("--client", dest="client", action="store_true", default=True, help="running client-side")
-    parser.add_option("--server", dest="client", action="store_false", help="running server-side")
+    parser.add_option("--input", dest="input", help="user-provided input")
+    parser.add_option("--sigfile",dest="sigfile",help="path to precomputed signatures")
+    parser.add_option("--abbrev", dest="abbrev", help="path to abbrevs file")
+    parser.add_option("--n",dest='n', help="number of genes to use")
+    parser.add_option("--version", dest="version", help="metric version with avg, log, rank, delta ", metavar="VER", default=S_VERSION)
+    parser.add_option("--zTransform", dest="zTransform", help="how to transform matrix")
+    parser.add_option("--job_id", dest="job_id", help="job id, for output path")
+    parser.add_option("--row_metric", dest="row_metric", help="metric for clustering rows (samples)")
+    parser.add_option("--col_metric", dest="col_metric", help="metric for clustering columns (signatures)")
+    parser.add_option("--invert",default=False,dest="invert",action="store_true",help="heatmap columns/rows swtiched")
+    parser.add_option("-f", "--fixed",default=False, dest="fixed",action="store_true", help="use fixed color axis")
+    parser.add_option("-u", "--null",default=False,action="store_true", dest="null", help="compute null model")
+    parser.add_option("--client", dest="client",default=False, action="store_true", help="running client-side")
     (options, args) = parser.parse_args()
-    
-    #load categories
-    dGroupToLTisDesc = loadGroupInfo(options.group)
-
-    #list signature
-    lTis = []
-    for strGroup in sorted(dGroupToLTisDesc.keys()):
-        for strTis,strDes in dGroupToLTisDesc[strGroup]:
-            lTis.append(strTis)
-
-    #load list of genes
-    dGroupSigToGene = getSigGenes(options.sigfile,int(options.ngene_count))
-
-    #process gene count matrix
-    procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,util.loadAbbrevs(options.group))
-
-    #generate heatmap pdf
-        util.createHeatmap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client,nullFilename)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,options.job_id,options.row_metric,options.col_mteric,options.invert,options.fixed,options.null,options.client)

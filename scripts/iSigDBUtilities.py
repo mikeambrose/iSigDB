@@ -252,6 +252,39 @@ def loadAbbrevs(abbrevs):
             returnDict[abbrev] = real
     return returnDict
 
+def getRanksMemoize(f):
+    """fast memoization decorator for getRanks"""
+    class memodict(dict):
+        def __missing__(self,key):
+            ret = self[key] = f(key)
+            return ret
+    return memodict().__getitem__
+
+@getRanksMemoize
+def getRanks(lst):
+    """Returns a dictionary of entry : rank
+    This is memoized and thus must be called with a tuple"""
+    ranks = {}
+    sorted_lst = sorted(lst)
+    n = len(lst)
+    i = 0
+    while i < n:
+        #detect if there is a run
+        if i+1<n and sorted_lst[i+1] == sorted_lst[i]:
+            run_length = 2
+            j = i+1
+            while j+1<n and sorted_lst[j+1] == sorted_lst[j]:
+                run_length += 1
+                j += 1
+            rankVal = i+(run_length-1)/2.0
+            for k in range(i,j+1):
+                ranks[sorted_lst[k]] = rankVal
+            i = i+run_length
+        else:
+            ranks[sorted_lst[i]] = i
+            i += 1
+    return ranks
+
 zeroExtend = lambda s,k: s if len(s)==k else zeroExtend("0"+s,k) #pads s with 0s until length k
 def getJobID():
     """Generates the job id

@@ -14,7 +14,7 @@ def reformatFile(f):
     s,ch1 = replaceNewlines(s)
     s,ch2 = replaceEmptyLines(s)
     s,ch3 = s.replace(',',';'),',' in s
-    if any(ch1,ch2,ch3):
+    if any([ch1,ch2,ch3]):
         with open(f,'w') as fout:
             fout.write(s)
 
@@ -44,3 +44,30 @@ def displayErrorMessage(message):
     print "<!DOCTYPE html>\n<title>iSigDB Error</title>\n<html>\n<body>"+message+"\n</body>\n</html>"""
     exit()
 
+def checkForErrors(f):
+    """Looks for errors which would cause us to terminate
+    Specifically, checks for
+        tab-delimiters with a consistent number of columns
+        unique sample names
+        Decimal values
+    and calls displayErrorMessage if any of these are not met"""
+    f = open(f).read().split('\n')
+    if len(f) <= 1:
+        displayErrorMessage("Formatting error: Only one line detected")
+    names = f[0].split('\t')
+    if len(set(names)) != len(names):
+        displayErrorMessage("Some of your samples have the same name (maybe duplicates?)")
+    numTabs = f[0].count('\t')
+    if numTabs == 0:
+        displayErrorMessage("Not a tab-separated file")
+    for i in range(1,len(f)-1):
+        line = f[i]
+        if line.count('\t') != numTabs:
+            displayErrorMessage("Inconsistent number of columns around line " + str(i+1))
+        for x in line.split('\t')[1:]:
+            try:
+                float(x)
+            except:
+                displayErrorMessage("Non-decimal value around line " + str(i+1))
+
+                    

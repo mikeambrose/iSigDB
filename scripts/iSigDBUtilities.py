@@ -199,15 +199,20 @@ def readMatrix(f,filterAllZero=False,ordered=False):
     sams = f[0].replace("\n","").replace("\r","").split('\t')[1:]
     for sam in sams:
         samDict[sam] = {}
-    for line in f[1:-1]:
+    for line in f[1:]:
+        if not line:
+            continue
         line = line.split('\t')
         if any(val == 'N/A' for val in line) or \
            (all(float(val)==0 for val in line[1:]) and filterAllZero):
             continue
-        gene = line[0].upper()
+        #process when there are multiple genes in one line with // operator
+        genes = line[0].upper().split('//')
+        genes = [gene.strip() for gene in genes]
         vals = [float(x) for x in line[1:]]
-        for i in range(len(sams)):
-            samDict[sams[i]][gene] = vals[i]
+        for gene in genes:
+            for i in range(len(sams)):
+                samDict[sams[i]][gene] = vals[i]
     return samDict
 
 def getSigDict(dirSigs,selSigs):

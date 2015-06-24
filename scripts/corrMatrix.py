@@ -148,6 +148,10 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     job_id - number generated to uniquely identify task
     abbrevs - file of abbreviation\tfull name
     """
+    #checks for errors and corrects whichever errors it can
+    util.reformatFile(inputFile)
+    util.checkForErrors(inputFile)
+
     outFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
             else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
                                 +job_id+'/'+job_id+'.matrix.txt'
@@ -184,4 +188,4 @@ if __name__ == '__main__':
     parser.add_option("--abbrev",dest="abbrevs",help="abbreviation file")
     options, _ = parser.parse_args()
     runCorrelation(options.inputFile,options.version,options.invert,options.row,options.col,\
-                    options.gene,options.geneVal,options.selMatrix,True,None,{})
+                    options.gene,options.geneVal,options.selMatrix,True,None,options.abbrevs)

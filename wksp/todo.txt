@@ -1,11 +1,11 @@
-parse // - treat as identical entries for each gene
+#parse // - treat as identical entries for each gene
 
-separate page for spearman/pearson
-	values for spearman/pearson
+#separate page for spearman/pearson
+#	values for spearman/pearson
 
 adding new signatures
 
-add signature:
+add signature script:
 	add it to abbrevs
 	add it to the hierarchy
 	regenerate the homepage
@@ -16,4 +16,4 @@ restructure cgi scripts/utility python script
 
 download own input histogram
 
-SQLIte
+SQLite

@@ -24,54 +24,6 @@ def getSigGenes(strSigFile,nGeneCount):
             dSigToGene[splitLine[0]] = splitLine[1:nGeneCount+1]
     return dSigToGene
 
-def readSigFiles(lFiles):
-    dTisToFCToGene = {}
-    dTisToGeneToFC = {}
-    for strFile in lFiles:
-        head,tail = os.path.split(strFile)
-        strTis =  tail.split('--')[0]
-        dTisToFCToGene[strTis]={}
-        dTisToGeneToFC[strTis] = {}
-        for strLine in open(strFile,'r'):
-            strGene,strRatio = strLine.rstrip().split('\t')
-            strGene = strGene.upper()
-            if strRatio == '0':
-                continue
-            flogFC = float(strRatio)
-            dTisToGeneToFC[strTis][strGene] = flogFC
-            if dTisToFCToGene[strTis].has_key(flogFC) == False:
-                dTisToFCToGene[strTis][flogFC] = []
-            dTisToFCToGene[strTis][flogFC].append(strGene)
-    return dTisToFCToGene,dTisToGeneToFC
-
-def getSigToGene(dTisToFCToGene,nGeneCount):
-    dSigToGene = {}
-
-    'load DN signatures'
-    '''
-    for strTis in dTisToFCToGene.keys():
-        dSigToGene[strTis+'_DN'] = []
-        nCurGeneCount = 0
-        for fFC in sorted(dTisToFCToGene[strTis].keys()):
-            for strCurGene in dTisToFCToGene[strTis][fFC]:
-                nCurGeneCount+=1
-                dSigToGene[strTis+'_DN'].append(strCurGene)
-            if nCurGeneCount >= nGeneCount:
-                break
-    '''
-
-    'load UP signatures'
-    for strTis in dTisToFCToGene.keys():
-        dSigToGene[strTis] = []
-        nCurGeneCount = 0
-        for fFC in sorted(dTisToFCToGene[strTis].keys(),reverse=True):
-            for strCurGene in dTisToFCToGene[strTis][fFC]:
-                nCurGeneCount+=1
-                dSigToGene[strTis].append(strCurGene)
-            if nCurGeneCount >= nGeneCount:
-                break
-    return dSigToGene
-
 def getSamToGeneToRank(dSamToCountToGene):
     dSamToGeneToRank = OrderedDict()
     dGeneToMeanRank = {}
@@ -119,7 +71,8 @@ def procGeneCountMatrix(strGeneCount,dSigToGenes,lSigs,strOutFile,strVersion, bI
                     dSamToSigToLVals[lcols[i]][strSig] = []
         else:
             #processing when more than one gene is in the name (with //)
-            strCurGenes = lcols[0].upper().split('//').strip()
+            strCurGenes = lcols[0].upper().split('//')
+            strCurGenes = [strCurGene.strip() for strCurGene in strCurGenes]
             if all(float(val) == 0 for val in lcols[1:]):
                 continue
             for strCurGene in strCurGenes:
@@ -180,18 +133,78 @@ def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_bucket
         nullmodel.getStatistics(allValues[i],n,pdf,sigNames[i],num_iter,num_buckets)
     pdf.close()
 
-def loadGroupInfo(strPathToGroupFile):
-    dGroupToLTisDesc = {}
-    strGroup = strPathToGroupFile.split('.')[0]
-    dGroupToLTisDesc[strGroup] = []
-    for strLine in open(strPathToGroupFile,'r'):
-        if strLine == '':
-            continue
-        lcols = strLine.rstrip().split('\t')
-        strTissue = lcols[0]
-        strDesc = lcols[1]
-        dGroupToLTisDesc[strGroup].append((strTissue,strDesc))
-    return dGroupToLTisDesc
+def writeNull(inputFile,version,nullFilename,n):
+    """Writes the null distribution of inputFile to nullFilename
+    version is either rank_avg, log, or val
+    n is the number of genes we're averaging over
+    """
+    sams = util.readMatrix(inputFile)
+    if version == 'rank_avg':
+        #technically, this isn't quite accurate, since there could be some ties and this doesn't
+        #   include them
+        #consider redoing this
+        names = ['All Samples']
+        allVals = [list(range(1,num_genes))]
+    else:
+        names = [sam for sam in sorted(sams.keys())]
+            allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
+            if version == 'log':
+                allVals = [[log(val) for val in line] for line in allVals]
+    writeNullModelHists(nullFilename,names,allVals,n)
+
+
+def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
+                    fixed,computeNull,isClient):
+    """Main function which generates the heatmap
+    inputFile - user-provided input
+    sigfile - file with most important genes for each signature
+        format: sigName\tgene1\tgene2...\nsigName2\t...
+    abbrevs - file with abbreviations\tfull names
+    n - number of genes to take from each signature
+    version - what computation to do
+        "log" - log-transformed values
+        "val" - values
+        "rank_avg" - rank average
+        "rank_delta" - rank delta
+    zTransform - "matrix" if going to be transformed, otherwise "none"
+    jobID - ID of the current job, used for identifying and writing to file
+    rowMetric, colMetric - "euclidean", "pearson", "none", used to cluster columns/rows
+    invert - invert the axes of the heatmap
+    fixed - fix the color values across multiple iterations
+    computeNull - compute the null distribution (only works for rank average, value, log)
+    isClient - always false when run on server (debug option)
+    """
+    #matplotlib imports - need to use a writeable directory
+    if not options.client:
+        os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+    import matplotlib
+    matplotlib.use('Agg')
+    import nullmodel
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    #checks for errors and corrects whatever errors it can
+    util.reformatFile(inputFile)
+    util.checkForErrors(inputFile)
+
+    #set up filenames
+    compOutput = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
+       else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{0}/{0}.matrix.txt'.format(jobID)
+    nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if isClient\
+       else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/nulldist_' + jobID + '.pdf'
+    RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
+        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(jobID)
+
+    #computing null distribution
+    if computeNull and version in ['rank_avg','log','val']:
+        writeNull(inputFile,version,nullFilename,n)
+    else:
+        nullFilename = None
+
+    abbrevsDict = loadAbbrevs(abbrevs)
+    sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) #TODO: make it filter by selected sigs
+    writeValues(inputFile,sigGenes,compOutput,version,abbrevsDict) #TODO: write
+    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,isClient,nullFilename)
+        
 #----------------------------------------------------------------------------
 # main function call
 #----------------------------------------------------------------------------
@@ -211,55 +224,11 @@ if __name__ == "__main__":
     parser.add_option("-c", "--col_metric", dest="col_metric", help="metric for clustering columns (signatures)", default="pear_cor")
     parser.add_option("-i","--invert",default=True,dest="invert",help="heatmap columns/rows swtiched")
     parser.add_option("-f", "--fixed", dest="fixed", default="none", help="use fixed color axis")
-    parser.add_option("-o", "--gene_option", dest="gene_option", help="spearman/pearson gene computation option")
     parser.add_option("-u", "--null", dest="null", help="compute null model")
     parser.add_option("--client", dest="client", action="store_true", default=True, help="running client-side")
     parser.add_option("--server", dest="client", action="store_false", help="running server-side")
     (options, args) = parser.parse_args()
-
-    #matplotlib imports
-    if not options.client:
-        os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
-    import matplotlib
-    matplotlib.use('Agg')
-    import nullmodel
-    from matplotlib.backends.backend_pdf import PdfPages
-
-    util.reformatFile(options.gene_count)
-    util.checkForErrors(options.gene_count)
-
-    if options.client:
-        strOutMatrixTxt = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt'
-    else:
-        strOutMatrixTxt = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+options.job_id+'/'+options.job_id+'.matrix.txt'
-    #null model
-    nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if options.client\
-                        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/nulldist_' + options.job_id + '.pdf'
-    if options.version == 'log' and not options.bIsLog and options.null != 'none':
-        sams = getSamDict(options.gene_count)
-        names = []
-        allVals = []
-        for sam in sorted(sams.keys()):
-            names.append(sam)
-            allVals.append([sams[sam][gene] for gene in sams[sam]])
-        writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
-    elif options.version == 'log' and options.bIsLog and options.null != 'none':
-        sams = getSamDict(options.gene_count)
-        names = []
-        allVals = []
-        for sam in sams:
-            names.append(sam)
-            allVals.append([math.log(sams[sam][gene]+1,10) for gene in sams[sam]])
-        writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
-    elif options.version == 'rank_avg' and options.null != 'none':
-        names = ['All Samples']
-        d = getSamDict(options.gene_count)
-        num_genes = len(d[d.keys()[0]])
-        allVals = [list(range(1,num_genes))]
-        writeNullModelHists(nullFilename,names,allVals,int(options.ngene_count))
-    else:
-        nullFilename = None
-
+    
     #load categories
     dGroupToLTisDesc = loadGroupInfo(options.group)
 
@@ -276,6 +245,4 @@ if __name__ == "__main__":
     procGeneCountMatrix(options.gene_count,dGroupSigToGene,lTis,strOutMatrixTxt,options.version,options.bIsLog,util.loadAbbrevs(options.group))
 
     #generate heatmap pdf
-    RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if options.client\
-        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(options.job_id)
-    util.createHeatMap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client,nullFilename)
+        util.createHeatmap(strOutMatrixTxt,RHeatmapOut,options.version,options.zscore,options.row_metric,options.col_metric,options.job_id,False if options.invert=='none' else True, False if options.fixed == 'none' else True,options.client,nullFilename)

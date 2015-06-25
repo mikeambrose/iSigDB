@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="New document 1">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;">
+      <path
+         id="path3986"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3962"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend-5"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3986-0"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend-8"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3986-8"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="337.46563"
+     inkscape:cy="377.22079"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2985"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-18.571427,-12.857143)"><flowRegion
+         id="flowRegion2987"><rect
+           id="rect2989"
+           width="852.85712"
+           height="138.57141"
+           x="25.714285"
+           y="9.5050402" /></flowRegion><flowPara
+         id="flowPara2991"
+         style="font-size:70px">Heatmap Generation</flowPara></flowRoot>    <rect
+       style="fill:#87cdde;fill-opacity:1;stroke:#5fbcd3;stroke-width:9.15385818;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993"
+       width="296.93933"
+       height="144.21344"
+       x="22.755857"
+       y="88.444382"
+       ry="38.498112" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-31.437281,-23.275562)"><flowRegion
+         id="flowRegion3765"><rect
+           id="rect3767"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769"
+         style="font-size:30px">User inputs file and settings on webpage</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Mend)"
+       d="m 335.37065,162.41779 87.88327,0"
+       id="path3771"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#87cdde;fill-opacity:1;stroke:#5fbcd3;stroke-width:8.5687151;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993-3"
+       width="259.13867"
+       height="144.79858"
+       x="463.89526"
+       y="85.977882"
+       ry="38.654316" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4603"
+       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Sans;font-style:normal;font-weight:normal;font-size:40px;line-height:125%;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion4605"><rect
+           id="rect4607"
+           width="209.10158"
+           height="105.05586"
+           x="486.89352"
+           y="108.87971" /></flowRegion><flowPara
+         id="flowPara4609"></flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(407.20498,-31.601245)"><flowRegion
+         id="flowRegion3765-7"><rect
+           id="rect3767-7"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-3"
+         style="font-size:20px;font-weight:bold">iSigHeatmap.cgi</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-8"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(401.14407,-5.3372787)"><flowRegion
+         id="flowRegion3765-6"><rect
+           id="rect3767-3"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         style="font-size:30px"
+         id="flowPara4665">Reads inputs, copies file </flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       d="M 582.85802,242.21984 191.92898,276.56503"
+       id="path4673"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#87cdde;fill-opacity:1;stroke:#5fbcd3;stroke-width:15.18713379;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993-6"
+       width="721.23108"
+       height="163.43398"
+       x="12.130768"
+       y="303.43942"
+       ry="43.629078" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6-6"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(99.186072,184.75526)"><flowRegion
+         id="flowRegion3765-7-1"><rect
+           id="rect3767-7-6"
+           width="405.95218"
+           height="28.790398"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-3-3"
+         style="font-size:20px;font-weight:bold">Sig_Avg_Matrix_Derm.RankV4.py</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-5"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-53.424587,203.7643)"><flowRegion
+         id="flowRegion3765-5"><rect
+           id="rect3767-0"
+           width="386.75928"
+           height="122.73457"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-1"
+         style="font-size:30px">Checks for errors in user input, computes value for each signature/sample</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       d="M 435.85205,397.78333 C 433.94647,424.48085 398.4764,535.16409 398.4764,535.16409"
+       id="path4933"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <rect
+       style="fill:#87cdde;fill-opacity:1;stroke:#5fbcd3;stroke-width:8.40744305;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993-37"
+       width="249.19844"
+       height="144.95985"
+       x="321.88818"
+       y="542.48627"
+       ry="38.697372" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6-2"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(294.14551,426.18173)"><flowRegion
+         id="flowRegion3765-7-5"><rect
+           id="rect3767-7-0"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         style="font-size:20px;font-weight:bold"
+         id="flowPara5164">heatsigV4.R</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-3"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(239.51966,443.17044)"><flowRegion
+         id="flowRegion3765-9"><rect
+           id="rect3767-03"
+           width="264.53085"
+           height="118.69398"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-0"
+         style="font-size:30px">Creates heatmap, clusters values</flowPara></flowRoot>    <rect
+       style="fill:#87cdde;fill-opacity:1;stroke:#5fbcd3;stroke-width:8.72679615;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993-37-3"
+       width="269.08212"
+       height="144.6405"
+       x="14.961511"
+       y="533.55457"
+       ry="38.612118" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6-2-1"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-14.961157,416.08021)"><flowRegion
+         id="flowRegion3765-7-5-9"><rect
+           id="rect3767-7-0-3"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         style="font-size:20px;font-weight:bold"
+         id="flowPara5164-6">nullmodel.py</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-3-7"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-67.566703,436.09938)"><flowRegion
+         id="flowRegion3765-9-9"><rect
+           id="rect3767-03-2"
+           width="282.71359"
+           height="118.69398"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-0-8"
+         style="font-size:30px">Runs simulations to calculate null distribution</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       d="m 139.30571,450.36348 c -1.90558,26.69752 -1.01016,72.731 -1.01016,72.731"
+       id="path4933-1"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6-2-1-4"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(65.330018,356.48119)"><flowRegion
+         id="flowRegion3765-7-5-9-3"><rect
+           id="rect3767-7-0-3-6"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         style="font-size:20px;font-weight:normal"
+         id="flowPara5164-6-1">(if selected)</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot5306"
+       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Sans;font-style:normal;font-weight:normal;font-size:40px;line-height:125%;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion5308"><rect
+           id="rect5310"
+           width="232.33508"
+           height="109.09647"
+           x="467.70062"
+           y="337.17419" /></flowRegion><flowPara
+         id="flowPara5312"></flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-60"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(364.77857,206.79475)"><flowRegion
+         id="flowRegion3765-63"><rect
+           id="rect3767-2"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-15"
+         style="font-size:30px">Sends control to make_heatmap</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend-5)"
+       d="m 621.24382,478.59554 c -1.01016,4.04061 54.61783,159.08677 9.09137,214.15234 -52.51977,63.52418 -166.50927,83.15971 -274.78608,54.00532 -247.70895,-66.69758 -250.49325,34.8881 -250.49325,34.8881"
+       id="path5343"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cssc" />
+    <rect
+       style="fill:#87cdde;fill-opacity:1;stroke:#5fbcd3;stroke-width:9.15385818;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993-8"
+       width="296.93933"
+       height="144.21344"
+       x="22.246107"
+       y="804.48889"
+       ry="38.498112" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-0"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-51.139925,709.94158)"><flowRegion
+         id="flowRegion3765-0"><rect
+           id="rect3767-29"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-2"
+         style="font-size:30px">Creates HTML for heatmap</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6-2-7"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(-35.609045,683.77062)"><flowRegion
+         id="flowRegion3765-7-5-1"><rect
+           id="rect3767-7-0-6"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         style="font-size:20px;font-weight:bold"
+         id="flowPara5164-8">make_heatmapV4.py</flowPara></flowRoot>    <rect
+       style="fill:#ff5555;fill-opacity:1;stroke:#ff2a2a;stroke-width:10.07046604;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2993-8-0"
+       width="361.68265"
+       height="143.29683"
+       x="349.99387"
+       y="848.38379"
+       ry="38.253422" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-6-2-7-1"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(339.51439,729.0273)"><flowRegion
+         id="flowRegion3765-7-5-1-6"><rect
+           id="rect3767-7-0-6-0"
+           width="268.57144"
+           height="120.71429"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         style="font-size:20px;font-weight:bold"
+         id="flowPara5164-8-0">iSigDBUtilities.py</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:5.81011915;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+       d="M 481.99492,531.1662 C 480.07356,506.33735 451.67361,409.4118 451.67361,409.4118"
+       id="path4933-8"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3763-89"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(282.9562,747.22637)"><flowRegion
+         id="flowRegion3765-2"><rect
+           id="rect3767-4"
+           width="318.06891"
+           height="117.68382"
+           x="90"
+           y="123.79076" /></flowRegion><flowPara
+         id="flowPara3769-7"
+         style="font-size:30px">Used by everything, various common functions</flowPara></flowRoot>  </g>
+</svg>

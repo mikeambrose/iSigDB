@@ -10,12 +10,11 @@ from optparse import OptionParser
 import iSigDBUtilities as util
 import math
 
-def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):
+def corrRank(sigs,sams,geneNames,strOutFile,version):
     """Uses the spearman/pearson coefficient to evaluate the similarity between signatures and samples
     sigs is a dictionary where each entry has the n genes chosen for analysis
     sams is in the same format as sigDict, but has samples as keys instead of signatures
     geneNames is a list of gene names in the same order as they appear in sigs and sams
-    sigNames is a dictionary of sig abbreviation : full name
     Similar to other functions, writes to strOutFile with the default output
     No value is returned"""
     #stored as a dictionary of (sig,sam):coef
@@ -31,7 +30,7 @@ def corrRank(sigs,sams,geneNames,strOutFile,sigNames,version):
     samSigCoefficient = {}
     for sig in sigs:
         samSigCoefficient[sig] = {sam:sigSamCoefficient[(sig,sam)] for sam in sams}
-    util.writeRegularOutput(samSigCoefficient,strOutFile,sigNames)
+    util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
 
 def getSpearmanVals(v1,v2):
@@ -103,7 +102,7 @@ def getSpearmanDict(inputDict,genes):
     return returnDict
 
 def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneVal,selMatrix,\
-                    isClient,job_id,abbrevs):
+                    isClient,job_id):
     """Runs Spearman or Pearson correlation on the inputFile
     inputFile - user-uploaded file
     version - either "pearson" or "spearman"
@@ -114,7 +113,6 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     sigMatrix - which matrix is selected
     isClient- debug flag, always False when run on server
     job_id - number generated to uniquely identify task
-    abbrevs - file of abbreviation\tfull name
     """
     #checks for errors and corrects whichever errors it can
     util.reformatFile(inputFile)
@@ -132,10 +130,8 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes
     spearmanSams, spearmanMatrix = getSpearmanDict(sams,genes), getSpearmanDict(matrix,genes)
-    #get full names of signatures
-    abbrevs = util.loadAbbrevs(abbrevs)
     #run correlation on them
-    corrRank(spearmanMatrix,spearmanSams,genes,outFile,abbrevs,version)
+    corrRank(spearmanMatrix,spearmanSams,genes,outFile,version)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(options.job_id)
     #pass computation to R/make_heatmap
@@ -153,7 +149,6 @@ if __name__ == '__main__':
     parser.add_option("--gene",dest="gene",help="gene metric (all, top, mag)")
     parser.add_option("--gval",dest="geneVal",help="value corresponding with gene metric")
     parser.add_option("--matrix",dest="selMatrix",help="matrix selected")
-    parser.add_option("--abbrev",dest="abbrevs",help="abbreviation file")
     options, _ = parser.parse_args()
     runCorrelation(options.inputFile,options.version,options.invert,options.row,options.col,\
-                    options.gene,options.geneVal,options.selMatrix,True,None,options.abbrevs)
+                    options.gene,options.geneVal,options.selMatrix,True,None)

@@ -23,7 +23,7 @@ HTML_BASE = """<!DOCTYPE HTML>
 
 
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename=''):
+def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None):
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
@@ -58,6 +58,8 @@ If you can't see the heatmap, make sure adblock is disabled and try again.<br>
     htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />'''
     if nullFilename:
         htmlText += "\n<a target=\"_blank\" href=" + nullFilename + ">Null model output</a><br>\n"
+    if inpHistFilename:
+        htmlText += "\n<a target=\"_blank\" href=" + inpHistFilename + ">Input distribution</a><br>\n"
     if includeDetailed:
         htmlText += '''
 Look in more detail at one signature:

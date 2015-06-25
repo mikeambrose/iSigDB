@@ -1,21 +1,22 @@
-#==============================================================================
-# Date Modified: 2015.04.24
-#==============================================================================
+"""File which does the actual analysis for the signature visualization
+Written/modified by Mike Ambrose, mikeambrose@berkeley.edu
+Feel free to email with any questions!
+"""
 import os
 from optparse import OptionParser
-import numpy as np
-import glob
-import os
-import gzip
 import subprocess
 import math
-from collections import OrderedDict
 import iSigDBUtilities as util
-S_GENE_COUNT = '50'
-S_VERSION = 'rank_delta'
-S_ZSCORE = 'column'
-
+#TODO: uncomment this when on server
+#os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+import matplotlib
+matplotlib.use('Agg')
+import nullmodel
+from matplotlib.backends.backend_pdf import PdfPages
 def getSigGenes(sigFile,selectedSigs,n):
+    """Returns dictionary of signature : [top n genes]
+    sigFile is the file with the shortened signatures
+    n is the number of genes"""
     sigGenes = {}
     with open(sigFile) as sigToGenes:
         for line in sigToGenes:
@@ -67,15 +68,27 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
                 geneVals.append(sams[sam][gene])
             samSigVal[sam][sig] = util.average(geneVals)
     if 'delta' in version:
-        samSigVal = delta(samSigVal) #TODO: implement delta
+        samSigVal = delta(samSigVal)
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
 
-def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=1000):
+def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=100):
     """Writes each of the histograms to a pdf
     sigNames[i] should correspond with allValues[i]"""
-    pdf = PdfPages(filename)
+    pdf = PdfPages(filename) #version-dependent, but this seems to work for all versions
     for i in range(len(allValues)):
         nullmodel.getStatistics(allValues[i],n,pdf,sigNames[i],num_iter,num_buckets)
+    pdf.close()
+
+def writeInputFileHist(filename,sigNames,allValues,num_buckets=100):
+    """Writes the distribution of each input signature
+    sigNames is the names of the signatures, allValues is the set of values in the signature
+    sigNames[i] corresponds to allValues[i]"""
+    pdf = PdfPages(filename)
+    for i in range(len(allValues)):
+        matplotlib.pyplot.hist(allValues[i],num_buckets)
+        matplotlib.pyplot.title(sigNames[i])
+        pdf.savefig()
+        matplotlib.pyplot.close()
     pdf.close()
 
 def writeNull(sams,nullFilename,n):
@@ -85,6 +98,12 @@ def writeNull(sams,nullFilename,n):
     names = [sam for sam in sorted(sams.keys())]
     allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
     writeNullModelHists(nullFilename,names,allVals,n)
+
+def writeInDist(sams,inDistFilename):
+    """Writes the distribution of the input samples to inDistFilename"""
+    names = [sam for sam in sorted(sams.keys())]
+    allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
+    writeInputFileHist(inDistFilename,names,allVals)
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
                     fixed,computeNull,isClient):
@@ -106,14 +125,6 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     computeNull - compute the null distribution (only works for rank average, value, log)
     isClient - always false when run on server (debug option)
     """
-    #matplotlib imports - need to use a writeable directory
-    if not isClient:
-        os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
-    import matplotlib
-    matplotlib.use('Agg')
-    import nullmodel
-    from matplotlib.backends.backend_pdf import PdfPages
-
     #checks for errors and corrects whatever errors it can
     util.reformatFile(inputFile)
     util.checkForErrors(inputFile)
@@ -123,27 +134,31 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
        else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{0}/{0}.matrix.txt'.format(jobID)
     nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if isClient\
        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/nulldist_' + jobID + '.pdf'
+    inpHistFilename = '/home/mike/workspace/PellegriniResearch/output/inputdist.pdf' if isClient\
+       else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/inputdist_' + jobID + '.pdf'
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/output/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(jobID)
 
     #get sample values
     sams = util.readMatrix(inputFile,ordered=True)
     if 'rank' in version:
-        sams = ranked(sams) #TODO: implement ranked
+        sams = ranked(sams)
     if 'log' in version:
-        sams = logall(sams) #TODO: implement logall
+        sams = logall(sams)
+
+    #computing sample distribution
+    writeInDist(sams,inpHistFilename)
 
     #computing null distribution
-    if computeNull and not zTransform and 'delta' not in version:
-        writeNull(sams,version,nullFilename,n)
+    if computeNull and zTransform != 'matrix' and 'delta' not in version:
+        writeNull(sams,nullFilename,n)
     else:
         nullFilename = None
 
     abbrevsDict = util.loadAbbrevs(abbrevs)
     sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
-    writeValues(sams,sigGenes,compOutput,version,abbrevsDict) #TODO: write
-    print RHeatmapOut
-    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,isClient,nullFilename)
+    writeValues(sams,sigGenes,compOutput,version,abbrevsDict)
+    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,isClient,nullFilename,inpHistFilename)
         
 #----------------------------------------------------------------------------
 # main function call
@@ -154,7 +169,7 @@ if __name__ == "__main__":
     parser.add_option("--sigfile",dest="sigfile",help="path to precomputed signatures")
     parser.add_option("--abbrev", dest="abbrev", help="path to abbrevs file")
     parser.add_option("--n",dest='n', help="number of genes to use")
-    parser.add_option("--version", dest="version", help="metric version with avg, log, rank, delta ", metavar="VER", default=S_VERSION)
+    parser.add_option("--version", dest="version", help="metric version with avg, log, rank, delta ")
     parser.add_option("--zTransform", dest="zTransform", help="how to transform matrix")
     parser.add_option("--row_metric", dest="row_metric", help="metric for clustering rows (samples)")
     parser.add_option("--col_metric", dest="col_metric", help="metric for clustering columns (signatures)")

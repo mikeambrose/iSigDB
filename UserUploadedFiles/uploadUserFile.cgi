@@ -102,7 +102,8 @@ def getFilesize(userFile):
 
 def checkAscii(fileName):
     """Returns whether or not every character in fileName is ascii"""    
-    return all(48 <= ord(c) <= 57 or 65 <= ord(c) <= 90 or 97 <= ord(c) <= 122 or ord(c) == 95 or ord(c) == 45 or c == '.' or c == '\t' or c == '\n' or c == '\r' or c == '_' or c == '-' or c == '(' or c == ')' or c == '/' or c == ' ' for c in fileName)
+    allowedCharacters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,-_ ()/\t\n\r'
+    return all(c in allowedCharacters for c in fileName)
 
 def checkDiskSpace(logFile):
     """Returns whether or not there is at least MIN_SPACE_REMAINING_ON_DISK space left on disk

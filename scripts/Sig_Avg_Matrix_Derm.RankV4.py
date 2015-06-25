@@ -38,7 +38,7 @@ def ranked(sams):
 def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
     return {sam:{gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]} for sam in sams}
-
+'''
 def delta(samSigVals):
     """for each signature, replace each samples values with the difference between their value
     and the average value across all samples"""
@@ -46,7 +46,16 @@ def delta(samSigVals):
         av = util.average([samSigVals[sam][sig] for sam in samSigVals])
         for sam in samSigVals:
             samSigVals[sam][sig] = samSigVals[sam][sig] - av
-    return samSigVals
+    return samSigVals'''
+
+def delta(sams):
+    """for each sample, replaces the gene's value with the difference between its value and the
+    mean value across all samples"""
+    for sam in sams:
+        av = util.average([sams[sam][gene] for gene in sams[sam]])
+        for gene in sams[sam]:
+            sams[sam][gene] = sams[sam][gene] - av
+    return sams
 
 def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
     """Writes the values after computation by version to compOutput
@@ -55,7 +64,6 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
     compOutput - where to write output
     version - how to process input
     abbrevsDict - dictionary of abbreviation : full name for each signature in sigGenes"""
-    util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
     samSigVal = {}
     for sam in sams:
         samSigVal[sam] = {}
@@ -67,9 +75,9 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
                     continue
                 geneVals.append(sams[sam][gene])
             samSigVal[sam][sig] = util.average(geneVals)
-    if 'delta' in version:
-        samSigVal = delta(samSigVal)
+    samSigVal = delta(samSigVal)
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
+    util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
 
 def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=100):
     """Writes each of the histograms to a pdf
@@ -145,6 +153,8 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         sams = ranked(sams)
     if 'log' in version:
         sams = logall(sams)
+    if 'delta' in version:
+        sams = delta(sams)
 
     #computing sample distribution
     writeInDist(sams,inpHistFilename)

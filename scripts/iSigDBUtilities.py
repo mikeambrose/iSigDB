@@ -77,11 +77,13 @@ def checkForErrors(f):
             except:
                 displayErrorMessage("Non-decimal value around line " + str(i+1))
 
-def writeDetailedOutput(sigGenes,samVals,outFile,fullNames):
+def writeDetailedOutput(sigGenes,samVals,outFile,fullNames,deltaSigs=None):
     """Writes detailed output to outFile
     sigGenes is a dictionary of signature : gene
     samVals is a dictionary of sample : gene : value
-    fullNames is a dictionary of abbreviation to full name"""
+    fullNames is a dictionary of abbreviation to full name
+    deltaSigs is a dictionary of signature name : average signature value
+        used for detailed output with a delta"""
     with open(outFile,'w') as out:
         for sig in sigGenes:
             fullName = fullNames[sig] if sig in fullNames else sig
@@ -95,7 +97,10 @@ def writeDetailedOutput(sigGenes,samVals,outFile,fullNames):
                     if gene not in samVals[sam]:
                         out.write('\tN/A')
                     else:
-                        out.write('\t'+str(samVals[sam][gene]))
+                        if deltaSigs and sig in deltaSigs:
+                            out.write('\t'+str(samVals[sam][gene]-deltaSigs[sig]))
+                        else:
+                            out.write('\t'+str(samVals[sam][gene]))
                 out.write('\n')
             out.write('\n')
 

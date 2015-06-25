@@ -8,8 +8,9 @@ import subprocess
 import hashlib
 import random
 from optparse import OptionParser
+import cgitb
 
-MAX_FILES_PER_IP_PER_DAY = 5
+MAX_FILES_PER_IP_PER_DAY = 500
 MAX_FILE_SIZE = 1e8 #this is measured in bytes
 MAX_FILE_SIZE_HUMAN_READABLE = "100mb"
 MAX_LEN_FILENAME = 100
@@ -52,7 +53,7 @@ def uploadFile(userFile,fileName,userIP,fileSource='files/',assocFile='associati
         return reportError("Your file has non-ascii characters",outputHTMLFile,debug)
     fileUnique,dupeFileName = checkFileUnique(hashVal,hashFile)
     if not fileUnique:
-        return reportError("This file has already been uploaded under the name" + dupeFileName,outputHTMLFile,debug)
+        return reportError("This file has already been uploaded under the name " + dupeFileName,outputHTMLFile,debug)
     if not checkNameUnique(fileName,assocFile):
         return reportError("This filename has already been used",outputHTMLFile,debug) 
     if not checkDiskSpace(logFile):
@@ -60,7 +61,7 @@ def uploadFile(userFile,fileName,userIP,fileSource='files/',assocFile='associati
     if len(fileName) > MAX_LEN_FILENAME:
         return reportError("Your name or your filename is too long",outputHTMLFile,debug)
     if not checkAscii(fileName):
-        return reportError("No special characters are allowed in the filename",outputHTMLFile,debug)
+        return reportError("No special characters are allowed in the filename, only alphanumeric and underscores and dashes are allowed",outputHTMLFile,debug)
     if not checkFileFormat(userFile):
         return reportError("Your file does not have the correct format. Make sure that it is tab-delimited, has a constant number of columns, and every entry is a decimal number.",outputHTMLFile,debug)
     #we generate the random filename with the same method as we generate random seeds
@@ -100,8 +101,8 @@ def getFilesize(userFile):
     return size
 
 def checkAscii(fileName):
-    """Returns whether or not every character in fileName is ascii"""
-    return all(ord(c) < 128 for c in fileName)
+    """Returns whether or not every character in fileName is ascii"""    
+    return all(48 <= ord(c) <= 57 or 65 <= ord(c) <= 90 or 97 <= ord(c) <= 122 or ord(c) == 95 or ord(c) == 45 or c == '.' or c == '\t' or c == '\n' or c == '\r' or c == '_' or c == '-' or c == '(' or c == ')' or c == '/' or c == ' ' for c in fileName)
 
 def checkDiskSpace(logFile):
     """Returns whether or not there is at least MIN_SPACE_REMAINING_ON_DISK space left on disk
@@ -233,10 +234,9 @@ def reportSuccess(outputHTMLFile,fileName):
     return 0
 
 import cgi
-import cgitb
 cgitb.enable()
 form = cgi.FieldStorage()
 userFile = form["fileToUpload"].file
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
 fileName = form["fileName"].value
-uploadFile(userFile,fileName,userIP,'TODO','TODO','TODO','TODO',None)
+uploadFile(userFile,fileName,userIP,'/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/','/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/associations.txt','/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/logs.txt','/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/hashes.txt',None)

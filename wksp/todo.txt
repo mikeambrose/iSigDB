@@ -10,7 +10,7 @@ add signature script:
 	add it to the hierarchy
 	regenerate the homepage
 
-restructure cgi scripts/utility python script
+# restructure cgi scripts/utility python script
 
 (test everything)
 

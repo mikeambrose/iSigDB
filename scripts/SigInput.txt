@@ -1,1 +1,1 @@
-python scripts/Sig_Avg_Matrix_Derm.RankV4.py --input exampleInputs/rnacount_arjun_time_norm.txt --sigfile sigdir/SigGenes.txt --version 'rankavg' --zTransform matrix --row_metric euclidean --col_metric euclidean --invert --n 50 --abbrev sigdir/abbrevs_fixed.txt
+python scripts/SigAvg.py --input exampleInputs/rnacount_arjun_time_norm.txt --sigfile sigdir/SigGenes.txt --version 'rankavg' --zTransform matrix --row_metric euclidean --col_metric euclidean --invert --n 50 --abbrev sigdir/abbrevs_fixed.txt

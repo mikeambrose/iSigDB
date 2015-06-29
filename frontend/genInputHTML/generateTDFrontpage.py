@@ -184,7 +184,8 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png
 <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
 <br> <br>
 
-<input type="checkbox" name="null" id="null" value="checked"> Compute null distribution
+<input type="checkbox" name="null" id="null" value="checked"> Compute null distribution with
+<input type="number" name="nullNumIter" id="nullNumIter" min="1" max="100000" value="10000"> iterations
 <br><br>
 
 Metric for sample clustering: &nbsp;

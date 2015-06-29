@@ -5,7 +5,7 @@ cgi.maxlen = 100 * 1024**2
 #TODO: add to python path
 import iSigDBUtilities as util
 #TODO: fix filename - don't think python allows .
-import Sig_Avg_Matrix_Derm.RankV4 as sigComp
+import SigAvg as sigComp
 if 'serverFile' in form and form['serverFile'].value != '':
     #the user has selected a file from the server
     with open('/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/associations.txt')\

@@ -99,13 +99,13 @@ def writeInputFileHist(filename,sigNames,allValues,num_buckets=100):
         matplotlib.pyplot.close()
     pdf.close()
 
-def writeNull(sams,nullFilename,n):
+def writeNull(sams,nullFilename,n,numIter):
     """Writes the null distribution of inputFile to nullFilename
     n is the number of genes we're averaging over
     """
     names = [sam for sam in sorted(sams.keys())]
     allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
-    writeNullModelHists(nullFilename,names,allVals,n)
+    writeNullModelHists(nullFilename,names,allVals,n,numIter)
 
 def writeInDist(sams,inDistFilename):
     """Writes the distribution of the input samples to inDistFilename"""
@@ -114,7 +114,7 @@ def writeInDist(sams,inDistFilename):
     writeInputFileHist(inDistFilename,names,allVals)
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
-                    fixed,computeNull,isClient):
+                    fixed,computeNull,isClient,nullIterations):
     """Main function which generates the heatmap
     inputFile - user-provided input
     sigfile - file with most important genes for each signature
@@ -132,6 +132,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     fixed - fix the color values across multiple iterations
     computeNull - compute the null distribution (only works for rank average, value, log)
     isClient - always false when run on server (debug option)
+    nullIterations - number of iterations to run the simulation to find null distribution
     """
     #checks for errors and corrects whatever errors it can
     util.reformatFile(inputFile)
@@ -161,7 +162,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
 
     #computing null distribution
     if computeNull and zTransform != 'matrix' and 'delta' not in version:
-        writeNull(sams,nullFilename,n)
+        writeNull(sams,nullFilename,n,nullIterations)
     else:
         nullFilename = None
 
@@ -186,5 +187,6 @@ if __name__ == "__main__":
     parser.add_option("--invert",default=False,dest="invert",action="store_true",help="heatmap columns/rows swtiched")
     parser.add_option("--fixed",default=False, dest="fixed",action="store_true", help="use fixed color axis")
     parser.add_option("--null",default=False,action="store_true", dest="null", help="compute null model")
+    parser.add_option("--nullIter",dest="nullIterations",help="how many iterations to use in null model")
     (options, args) = parser.parse_args()
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.fixed,options.null,True)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.fixed,options.null,True,options.nullIterations if options.null else None)

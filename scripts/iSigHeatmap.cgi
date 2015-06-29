@@ -4,7 +4,6 @@ import cgi
 cgi.maxlen = 100 * 1024**2
 #TODO: add to python path
 import iSigDBUtilities as util
-#TODO: fix filename - don't think python allows .
 import SigAvg as sigComp
 if 'serverFile' in form and form['serverFile'].value != '':
     #the user has selected a file from the server
@@ -57,8 +56,9 @@ for option in ["log","delta","rank"]:
 zTransform = "matrix" if "scale_columns" in form else "none"
 fixed = "fixed" in form
 compNull = "null" in form
+numIter = int(form["numNullIter"].value)
 invert = "invert" in form
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 n = int(form["num_genes"].value)
-sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,fixed,compNull,False)
+sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,fixed,compNull,False,numIter)

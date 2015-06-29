@@ -61,4 +61,12 @@ invert = "invert" in form
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 n = int(form["num_genes"].value)
+
+#logging this call
+
+userIP = cgi.escape(os.environ["REMOTE_ADDR"])
+logFileDir = '' #TODO: add directory
+with open(logFileDir,'a') as logFile:
+    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,fixed,compNull,numIter,invert,rowMetric,colMetric,n]]))
+
 sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,fixed,compNull,False,numIter)

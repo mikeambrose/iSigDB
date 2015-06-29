@@ -67,7 +67,7 @@ def generateGenesChanged(aToLen):
 """
     return baseHTML + "\n}"
     
-def generateJSTree(formatLines,abbrevs,delim="    "):
+def generateJSTree(formatLines,delim="    "):
     """generates the JSTree portion of the front tree based on the file formatLines"""
     lastInd = 0 #indendation of previous line (number of tabs)
     returnHTML = ''
@@ -86,12 +86,9 @@ def generateJSTree(formatLines,abbrevs,delim="    "):
     returnHTML = returnHTML[5:-11]
     return returnHTML
 
-def generateHTML(abbrevs, formatLines, aToLen, output):
+def generateHTML(formatLines, output):
     """Generates the HTML frontend (currently called tissueDeconvolutionV2/3
-    abbrevs is a dictioanry of abbreviation : full name 
-        see generateAbbrevs
-    groups is a dictionary of group name:a list of all abbreviations in that group
-        see generateGroups
+    formatLines is the format file
     output is the file which the html is written to
     returns nothing"""
 
@@ -154,7 +151,7 @@ function submitCheckboxes() {
 </script>
 
 <br>
-<form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/tissueDeconvolutionByRank.cgi" ENCTYPE="multipart/form-data">
+<form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/iSigHeatmap.cgi" ENCTYPE="multipart/form-data">
 <strong class = "tooltip">Submit a file:</strong> <br>
 <input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span><strong>File guidelines</strong><br/>The uploaded file must be tab-separated. Columns should correspond to samples and rows should correspond to genes. There is a size limit of 100mb.</span></a>  <br>
 <input type="radio" name="uploadSettings" value="server" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Use a file from the server <br>
@@ -170,20 +167,10 @@ or <a href="./serverFileUpload.html">upload a file</a>
 <hr>
 
 <strong>Heatmap options<a href="OptionDescriptions.html">[Help]</a>:</strong><br /><br />
-<ul class="tabs">
-    <li class="tab-link current" data-tab="heatmapSection">Visualization/Heatmap</li>
-    <li class="tab-link" data-tab="corrMatrixSection">Correlation Matrix</li>
-</ul>
-<div id="heatmapSection" class="tab-content current">
-Compute heatmap based on:&nbsp;
-<select id="heatmap_metric" name="heatmap_metric">
-<option value="rank_avg">Rank Average</option>
-<option value="rank_delta">Rank Delta</option>
-<option value="log">Log10-Transformed Values</option>
-<option value="absolute">Values (Do Not Log-Transform)</option>
-</select> <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span><strong>Rank Average</strong> computes similarity between genes based on ordering them by importance<br><strong>Rank Delta</strong> computes similarity using the difference between a gene's rank in one sample and its mean rank across all samples<br><strong>Log10-Transformed Values</strong> uses log-transformed raw expression values instead of gene rank<br><strong>Values (Do Not Log-Transform)</strong> uses non-log-transformed raw values instead of gene rank</span></a>
+<input type="checkbox" name="rank" id="rank"> Rank the input by sample instead of using values <br> <br>
+<input type="checkbox" name="log" id="log"> Log-transform the input (or ranks) <br> <br>
+<input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
 
-<br /><br />
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
 checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
 
@@ -234,77 +221,10 @@ Click on a category to select specific signatures within that category <br />
 <ul>
 """
     #--------checkboxes for each group---------
-    returnHTML += generateJSTree(formatLines,abbrevs)
+    returnHTML += generateJSTree(formatLines)
     #--------small ending section--------------
     returnHTML += """</ul></div>
-</div>
-<div id="corrMatrixSection" class="tab-content">
-Compute matrix based on: <select id="matrix_metric" name="matrix_metric">
-<option value="pearson">Pearson Correlation</option>
-<option value="spearman">Spearman Correlation</option>
-</select> <br> <br>
 
-<input type="checkbox" name="matrix_invert" id="matrix_invert" value="checked" checked> Signatures on vertical axis <br>
-<br>
-
-Metric for sample clustering: &nbsp;
-<select id="matrix_row_metric" name="matrix_row_metric">
-<option value="euclidean">Euclidean Distance</option>
-<option value="pear_cor">Pearson Correlation</option>
-<option value="none">None (Do Not Cluster)</option>
-</select>
-<br>
-
-Metric for signature clustering: &nbsp;
-<select id="matrix_col_metric" name="matrix_col_metric">
-<option value="euclidean">Euclidean Distance</option>
-<option value="pear_cor">Pearson Correlation</option>
-<option value="none">None (Do Not Cluster)</option>
-</select>
-<br> <br>
-
-Gene selection metric: &nbsp;
-<select id="spear_gene" name="spear_gene" onchange="spear_gene_change()">
-<option value="spearGeneAll">Use all genes</option>
-<option value="spearGeneTop">Use top genes from each signature</option>
-<option value="spearGeneMag">Use all genes upregulated beyond a certain threshold</option>
-</select>
-<br>
-
-<div id="spearGeneAll"> </div>
-
-<div id="spearGeneTop" style = "display:none">
-Number of genes from each signature: &nbsp;
-<select name="matrix_num_genes" id="matrix_num_genes">
-<option value="10">10</option>
-<option value="25">25</option>
-<option value="50" selected>50</option>
-<option value="100">100</option>
-<option value="250">250</option>
-</select>
-</div>
-
-<div id="spearGeneMag" style = "display:none">
-    Minimum fold change: &nbsp; <select name="matrix_mag" id="matrix_mag">
-    <option value="2">2</option>
-    <option value="5" selected>5</option>
-    <option value="10">10</option>
-    <option value="50">50</option>
-    </select>
-</div>
-
-<hr>
-
-<strong> Select signature matrix: </strong> <br>
-<input type="radio" name="matrix" id="matrix" value="DermDB">DermDB<br>
-<input type="radio" name="matrix" id="matrix" value="frozen">Frozen RMA perturbation matrix<br>
-<input type="radio" name="matrix" id="matrix" value="RNA-seq">RNA-seq based perturbation matrix<br>
-<input type="radio" name="matrix" id="matrix" value="mba">Mouse body atlas<br>
-<input type="radio" name="matrix" id="matrix" value="hba">Human body atlas<br>
-<input type="radio" name="matrix" id="matrix" value="immgen">Immgen data<br>
-<input type="radio" name="matrix" id="matrix" value="macrophage">Macrophage perturbation matrix<br>
-<hr>
-</div>
 <input type="submit" id="tissueDeconvolutionSubmit" name="tissueDeconvolutionSubmit" onclick="submitCheckboxes()" value="Submit" />
 
 </form>
@@ -341,11 +261,6 @@ Number of genes from each signature: &nbsp;
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-f","--format",dest="format",help="file with formatting")
-    parser.add_option("-a","--abbrevs",dest="abbrevs",help="abbrevs file")
     parser.add_option("-o","--output",dest="output",help="output filename")
-    parser.add_option("-s","--sigs",dest="sigs",help="directory of all signatures")
     options,_ = parser.parse_args()
-    #abbrevs = generateAbbrevs(options.abbrevs)
-    #aToLen = generateAToLen([options.sigs + name for name in os.listdir(options.sigs)])
-    abbrevs,aToLen = None,None
-    generateHTML(abbrevs,open(options.format).read().split('\n'),aToLen,options.output)
+    generateHTML(open(options.format).read().split('\n'),options.output)

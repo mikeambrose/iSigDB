@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>iSigDB</title>
+<script src="../js/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" href="../td.css">
+<link rel="stylesheet" href="../vakata-jstree-5bece58/dist/themes/default/style.min.css" />
+<link rel="stylesheet" href="../tooltip.css">
+<script>
+        $(document).ready(function(){
+            
+            $('ul.tabs li').click(function(){
+                var tab_id = $(this).attr('data-tab');
+
+                $('ul.tabs li').removeClass('current');
+                $('.tab-content').removeClass('current');
+
+                $(this).addClass('current');
+                $("#"+tab_id).addClass('current');
+            })
+
+        })
+</script>
+
+<script type="text/javascript">
+
+function toggleVisibility(section) {
+    var section = document.getElementById(section);
+    if (section.style.display == 'block' || section.style.display == ''){
+        section.style.display = 'none';
+    } else {
+        section.style.display = 'block';
+    }
+}
+
+function hide(section) {
+    var section = document.getElementById(section);
+    section.style.display = 'none';
+}
+
+function spear_gene_change() {
+    var value = document.getElementById('spear_gene').value;
+    hide('spearGeneTop');
+    hide('spearGeneAll');
+    hide('spearGeneMag');
+    toggleVisibility(value);
+}
+
+function submitCheckboxes() {
+    var checkedIds = $('#sigs').jstree("get_selected");
+    document.getElementById('checkedSigs').value = checkedIds.join(",");
+}
+
+</script>
+
+<br>
+<form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/iSigHeatmap.cgi" ENCTYPE="multipart/form-data">
+<strong class = "tooltip">Submit a file:</strong> <br>
+<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span><strong>File guidelines</strong><br/>The uploaded file must be tab-separated. Columns should correspond to samples and rows should correspond to genes. There is a size limit of 100mb.</span></a>  <br>
+<input type="radio" name="uploadSettings" value="server" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Use a file from the server <br>
+<div id="clientFile" name="clientFile">
+File: <input type="file" name="matrix_file" size="30">
+</div>
+<div id="serverFile" name="serverFile" style="display:none">
+Filename: <select id="serverFileName" name="serverFileName">
+{FILES GO HERE}
+</select>
+or <a href="./serverFileUpload.html">upload a file</a>
+</div>
+<hr>
+
+<strong>Heatmap options<a href="OptionDescriptions.html">[Help]</a>:</strong><br /><br />
+<input type="checkbox" name="rank" id="rank"> Rank the input by sample instead of using values <br> <br>
+<input type="checkbox" name="log" id="log"> Log-transform the input (or ranks) <br> <br>
+<input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
+
+<input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
+checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
+
+<br /><br />
+
+<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis
+
+<br /><br />
+
+<input type="checkbox" name="fixed" id="fixed" value="checked"> Keep colors constant
+<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
+<br> <br>
+
+<input type="checkbox" name="null" id="null" value="checked"> Compute null distribution
+<br><br>
+
+Metric for sample clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br />
+
+Metric for signature clustering: &nbsp;
+<select id="col_metric" name="col_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select><br />
+
+
+<br />
+
+Number of genes per signature:&nbsp;<select
+name="num_genes" onchange="genesChanged(this);"><option value="10">10</option><option
+value="25">25</option><option value="50" selected="selected">50</option><option
+value="100">100</option><option value="250">250</option><option
+value="500">500</option><option value="1000">1000</option></select>
+<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
+<hr>
+
+<input type="hidden" name="checkedSigs" id="checkedSigs"></input>
+
+<strong>Select signatures:</strong><br />
+Click on a category to select specific signatures within that category <br />
+<div id="sigs">
+<ul>
+<li id="Mouse">Mouse
+<ul><li id="Mouse Tissue">Mouse Tissue
+<ul><li id="MBA_adipose_brown">MBA_adipose_brown
+</li><li id="MBA_adipose_white">MBA_adipose_white
+</li><li id="MBA_adrenal_gland">MBA_adrenal_gland
+</li><li id="MBA_amygdala">MBA_amygdala
+</li><li id="MBA_bladder">MBA_bladder
+</li><li id="MBA_bone">MBA_bone
+</li><li id="MBA_bone_marrow">MBA_bone_marrow
+</li><li id="MBA_cerebellum">MBA_cerebellum
+</li><li id="MBA_cerebral_cortex">MBA_cerebral_cortex
+</li><li id="MBA_cerebral_cortex_prefrontal">MBA_cerebral_cortex_prefrontal
+</li><li id="MBA_ciliary_bodies">MBA_ciliary_bodies
+</li><li id="MBA_common_myeloid_progenitor">MBA_common_myeloid_progenitor
+</li><li id="MBA_cornea">MBA_cornea
+</li><li id="MBA_dorsal_root_ganglia">MBA_dorsal_root_ganglia
+</li><li id="MBA_dorsal_striatum">MBA_dorsal_striatum
+</li><li id="MBA_epidermis">MBA_epidermis
+</li><li id="MBA_eyecup">MBA_eyecup
+</li><li id="MBA_heart">MBA_heart
+</li><li id="MBA_hippocampus">MBA_hippocampus
+</li><li id="MBA_hypothalamus">MBA_hypothalamus
+</li><li id="MBA_intestine_large">MBA_intestine_large
+</li><li id="MBA_intestine_small">MBA_intestine_small
+</li><li id="MBA_iris">MBA_iris
+</li><li id="MBA_kidney">MBA_kidney
+</li><li id="MBA_lacrimal_gland">MBA_lacrimal_gland
+</li><li id="MBA_lens">MBA_lens
+</li><li id="MBA_liver">MBA_liver
+</li><li id="MBA_lung">MBA_lung
+</li><li id="MBA_lymph_nodes">MBA_lymph_nodes
+</li><li id="MBA_mammary_gland__lact">MBA_mammary_gland__lact
+</li><li id="MBA_mammary_gland_non-lactating">MBA_mammary_gland_non-lactating
+</li><li id="MBA_nucleus_accumbens">MBA_nucleus_accumbens
+</li><li id="MBA_olfactory_bulb">MBA_olfactory_bulb
+</li><li id="MBA_ovary">MBA_ovary
+</li><li id="MBA_pancreas">MBA_pancreas
+</li><li id="MBA_pituitary">MBA_pituitary
+</li><li id="MBA_placenta">MBA_placenta
+</li><li id="MBA_prostate">MBA_prostate
+</li><li id="MBA_retina">MBA_retina
+</li><li id="MBA_retinal_pigment_epithelium">MBA_retinal_pigment_epithelium
+</li><li id="MBA_salivary_gland">MBA_salivary_gland
+</li><li id="MBA_skeletal_muscle">MBA_skeletal_muscle
+</li><li id="MBA_spinal_cord">MBA_spinal_cord
+</li><li id="MBA_spleen">MBA_spleen
+</li><li id="MBA_stomach">MBA_stomach
+</li><li id="MBA_testis">MBA_testis
+</li><li id="MBA_umbilical_cord">MBA_umbilical_cord
+</li><li id="MBA_uterus">MBA_uterus
+</li></ul></li><li id="Mouse Cell Type">Mouse Cell Type
+<ul><li id="MBA_3T3-L1">MBA_3T3-L1
+</li><li id="MBA_B-cells_marginal_zone">MBA_B-cells_marginal_zone
+</li><li id="MBA_Baf3">MBA_Baf3
+</li><li id="MBA_C2C12">MBA_C2C12
+</li><li id="MBA_C3H_10T1_2">MBA_C3H_10T1_2
+</li><li id="MBA_NK_cells">MBA_NK_cells
+</li><li id="MBA_RAW_264_7">MBA_RAW_264_7
+</li><li id="MBA_T-cells_CD4+">MBA_T-cells_CD4+
+</li><li id="MBA_T-cells_CD8+">MBA_T-cells_CD8+
+</li><li id="MBA_T-cells_foxP3+">MBA_T-cells_foxP3+
+</li><li id="MBA_dendritic_cells_lymphoid_CD8a+">MBA_dendritic_cells_lymphoid_CD8a+
+</li><li id="MBA_dendritic_cells_myeloid_CD8a-">MBA_dendritic_cells_myeloid_CD8a-
+</li><li id="MBA_dendritic_plasmacytoid_B220+">MBA_dendritic_plasmacytoid_B220+
+</li><li id="MBA_embryonic_stem_line_Bruce4_p13">MBA_embryonic_stem_line_Bruce4_p13
+</li><li id="MBA_embryonic_stem_line_V26_2_p16">MBA_embryonic_stem_line_V26_2_p16
+</li><li id="MBA_follicular_B-cells">MBA_follicular_B-cells
+</li><li id="MBA_granulo_mono_progenitor">MBA_granulo_mono_progenitor
+</li><li id="MBA_granulocytes_mac1+gr1+">MBA_granulocytes_mac1+gr1+
+</li><li id="MBA_mIMCD-3">MBA_mIMCD-3
+</li><li id="MBA_macrophage_bone_marrow_0hr">MBA_macrophage_bone_marrow_0hr
+</li><li id="MBA_macrophage_peri_LPS_thio_0hrs">MBA_macrophage_peri_LPS_thio_0hrs
+</li><li id="MBA_mast_cells">MBA_mast_cells
+</li><li id="MBA_mast_cells_IgE">MBA_mast_cells_IgE
+</li><li id="MBA_mega_erythrocyte_progenitor">MBA_mega_erythrocyte_progenitor
+</li><li id="MBA_microglia">MBA_microglia
+</li><li id="MBA_min6">MBA_min6
+</li><li id="MBA_neuro2a">MBA_neuro2a
+</li><li id="MBA_nih_3T3">MBA_nih_3T3
+</li><li id="MBA_osteoblast_day14">MBA_osteoblast_day14
+</li><li id="MBA_osteoblast_day21">MBA_osteoblast_day21
+</li><li id="MBA_osteoblast_day5">MBA_osteoblast_day5
+</li><li id="MBA_osteoclasts">MBA_osteoclasts
+</li><li id="MBA_stem_cells__HSC">MBA_stem_cells__HSC
+</li><li id="MBA_thymocyte_DP_CD4+CD8+">MBA_thymocyte_DP_CD4+CD8+
+</li><li id="MBA_thymocyte_SP_CD4+">MBA_thymocyte_SP_CD4+
+</li><li id="MBA_thymocyte_SP_CD8+">MBA_thymocyte_SP_CD8+
+</li></ul></li><li id="Mouse Perturbation">Mouse Perturbation
+<ul><li id="MBA_macrophage_bone_marrow_0hr">MBA_macrophage_bone_marrow_0hr
+</li><li id="MBA_macrophage_bone_marrow_24h_LPS">MBA_macrophage_bone_marrow_24h_LPS
+</li><li id="MBA_macrophage_bone_marrow_2hr_LPS">MBA_macrophage_bone_marrow_2hr_LPS
+</li><li id="MBA_macrophage_bone_marrow_6hr_LPS">MBA_macrophage_bone_marrow_6hr_LPS
+</li><li id="MBA_macrophage_peri_LPS_thio_0hrs">MBA_macrophage_peri_LPS_thio_0hrs
+</li><li id="MBA_macrophage_peri_LPS_thio_1hrs">MBA_macrophage_peri_LPS_thio_1hrs
+</li><li id="MBA_macrophage_peri_LPS_thio_7hrs">MBA_macrophage_peri_LPS_thio_7hrs
+</li><li id="MBA_mast_cells_IgE">MBA_mast_cells_IgE
+</li><li id="MBA_mast_cells_IgE+antigen_1hr">MBA_mast_cells_IgE+antigen_1hr
+</li><li id="MBA_mast_cells_IgE+antigen_6hr">MBA_mast_cells_IgE+antigen_6hr
+</li></ul></li></ul></li><li id="Human">Human
+<ul><li id="Human Tissue">Human Tissue
+<ul><li id="DermDB_Normal skin">DermDB_Normal skin
+</li><li id="DermDB_Psoriasis">DermDB_Psoriasis
+</li><li id="DermDB_Burn">DermDB_Burn
+</li><li id="DermDB_Acute wound (0h after injury)">DermDB_Acute wound (0h after injury)
+</li><li id="DermDB_Post-operative wound (3, 7 days after injury)">DermDB_Post-operative wound (3, 7 days after injury)
+</li><li id="DermDB_Stevens Johnson syndrome (blister cells)">DermDB_Stevens Johnson syndrome (blister cells)
+</li><li id="DermDB_Reversal reaction (leprosy)">DermDB_Reversal reaction (leprosy)
+</li><li id="DermDB_Lepromatous leprosy">DermDB_Lepromatous leprosy
+</li><li id="DermDB_Tuberculoid leprosy">DermDB_Tuberculoid leprosy
+</li><li id="DermDB_Erythema nodosum leprosum ">DermDB_Erythema nodosum leprosum 
+</li><li id="DermDB_Allergic contact dermatitis">DermDB_Allergic contact dermatitis
+</li><li id="DermDB_Irritant contact dermatitis">DermDB_Irritant contact dermatitis
+</li><li id="DermDB_Atopic dermatitis">DermDB_Atopic dermatitis
+</li><li id="DermDB_Mycosis fungoides">DermDB_Mycosis fungoides
+</li><li id="DermDB_Squamous cell carcinoma">DermDB_Squamous cell carcinoma
+</li><li id="DermDB_Basal cell carcinoma">DermDB_Basal cell carcinoma
+</li><li id="DermDB_Melanoma">DermDB_Melanoma
+</li><li id="DermDB_Cutaneous sarcoidosis">DermDB_Cutaneous sarcoidosis
+</li><li id="DermDB_Chancroid">DermDB_Chancroid
+</li><li id="DermDB_Alopecia areata">DermDB_Alopecia areata
+</li><li id="DermDB_Discoid Lupus Erythematosus">DermDB_Discoid Lupus Erythematosus
+</li><li id="DermDB_Acne">DermDB_Acne
+</li><li id="DermDB_Non-lesional acne">DermDB_Non-lesional acne
+</li><li id="RTLEP_ENL2">RTLEP_ENL2
+</li><li id="RTLEP_LL2">RTLEP_LL2
+</li><li id="RTLEP_RR2">RTLEP_RR2
+</li><li id="RTLEP_TL2">RTLEP_TL2
+</li><li id="WRS_Dermis">WRS_Dermis
+</li><li id="WRS_Subcutaneous_adipose">WRS_Subcutaneous_adipose
+</li></ul></li><li id="Human Cell type">Human Cell type
+<ul><li id="WRS_B_cell">WRS_B_cell
+</li><li id="WRS_CD138+Plasma_Cell">WRS_CD138+Plasma_Cell
+</li><li id="WRS_CD34+cell">WRS_CD34+cell
+</li><li id="WRS_CD3+T-cell">WRS_CD3+T-cell
+</li><li id="WRS_CD4+T-cell">WRS_CD4+T-cell
+</li><li id="WRS_CD8+T-cell">WRS_CD8+T-cell
+</li><li id="WRS_Dendritic_cell">WRS_Dendritic_cell
+</li><li id="WRS_Eosinophil">WRS_Eosinophil
+</li><li id="WRS_Epidermis">WRS_Epidermis
+</li><li id="WRS_Fibroblast">WRS_Fibroblast
+</li><li id="WRS_Gamma_Delta_T-cell">WRS_Gamma_Delta_T-cell
+</li><li id="WRS_Keratinocyte">WRS_Keratinocyte
+</li><li id="WRS_Lymph_endothelial_cell">WRS_Lymph_endothelial_cell
+</li><li id="WRS_Macrophage">WRS_Macrophage
+</li><li id="WRS_Monocyte">WRS_Monocyte
+</li><li id="WRS_NK_T-cell">WRS_NK_T-cell
+</li><li id="WRS_NK_cell">WRS_NK_cell
+</li><li id="WRS_Neutrophil">WRS_Neutrophil
+</li><li id="WRS_Platelet">WRS_Platelet
+</li><li id="WRS_Regulatory_T-cell">WRS_Regulatory_T-cell
+</li><li id="WRS_Reticulocyte">WRS_Reticulocyte
+</li><li id="WRS_Vascular_endothelial_cell">WRS_Vascular_endothelial_cell
+</li><li id="TH_Th17">TH_Th17
+</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
+</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
+</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
+</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
+</li></ul></li><li id="Human Perturbation">Human Perturbation
+<ul><li id="MacCyto_adPBMC_IL4_6h">MacCyto_adPBMC_IL4_6h
+</li><li id="MacCyto_adPBMC_IL4_24h">MacCyto_adPBMC_IL4_24h
+</li><li id="MacCyto_adPBMC_IL10_6h">MacCyto_adPBMC_IL10_6h
+</li><li id="MacCyto_adPBMC_IL10_24h">MacCyto_adPBMC_IL10_24h
+</li><li id="MacCyto_adPBMC_IL15_6h">MacCyto_adPBMC_IL15_6h
+</li><li id="MacCyto_adPBMC_IL15_24h">MacCyto_adPBMC_IL15_24h
+</li><li id="MacCytoT0_adPBMC_IL4_6h">MacCytoT0_adPBMC_IL4_6h
+</li><li id="MacCytoT0_adPBMC_IL4_24h">MacCytoT0_adPBMC_IL4_24h
+</li><li id="MacCytoT0_adPBMC_IL10_6h">MacCytoT0_adPBMC_IL10_6h
+</li><li id="MacCytoT0_adPBMC_IL10_24h">MacCytoT0_adPBMC_IL10_24h
+</li><li id="MacCytoT0_adPBMC_IL15_6h">MacCytoT0_adPBMC_IL15_6h
+</li><li id="MacCytoT0_adPBMC_IL15_24h">MacCytoT0_adPBMC_IL15_24h
+</li><li id="IL-6_MDMd7_IL6_4h">IL-6_MDMd7_IL6_4h
+</li><li id="NOD_adPBMC_NOD2L_6h">NOD_adPBMC_NOD2L_6h
+</li><li id="NOD_adPBMC_NOD2L_24h">NOD_adPBMC_NOD2L_24h
+</li><li id="NOD_adPBMC_TLR2L_6h">NOD_adPBMC_TLR2L_6h
+</li><li id="NOD_adPBMC_TLR2L_24h">NOD_adPBMC_TLR2L_24h
+</li><li id="NOD_adPBMC_NOD2L+TLR2L_6h">NOD_adPBMC_NOD2L+TLR2L_6h
+</li><li id="NOD_adPBMC_NOD2L+TLR2L_24h">NOD_adPBMC_NOD2L+TLR2L_24h
+</li><li id="INF_MDMd5_IFNB_2h">INF_MDMd5_IFNB_2h
+</li><li id="INF_MDMd5_IFNB_6h">INF_MDMd5_IFNB_6h
+</li><li id="INF_MDMd5_IFNB_24h">INF_MDMd5_IFNB_24h
+</li><li id="INF_MDMd5_IFNG_2h">INF_MDMd5_IFNG_2h
+</li><li id="INF_MDMd5_IFNG_6h">INF_MDMd5_IFNG_6h
+</li><li id="INF_MDMd5_IFNG_24h">INF_MDMd5_IFNG_24h
+</li><li id="INF_MDMd5_TLR2L_2h">INF_MDMd5_TLR2L_2h
+</li><li id="INF_MDMd5_TLR2L_6h">INF_MDMd5_TLR2L_6h
+</li><li id="INF_MDMd5_TLR2L_24h">INF_MDMd5_TLR2L_24h
+</li><li id="VITD_adPBMC_ATRA_18h">VITD_adPBMC_ATRA_18h
+</li><li id="VITD_adPBMC_1,25D_18h">VITD_adPBMC_1,25D_18h
+</li><li id="NHEK_IL26">NHEK_IL26
+</li><li id="TH_Th17">TH_Th17
+</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
+</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
+</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
+</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
+</li><li id="KC_NHEK_IFNG_24hA">KC_NHEK_IFNG_24hA
+</li><li id="KC_NHEK_IFNG_24hB">KC_NHEK_IFNG_24hB
+</li><li id="KC_NHEK_IL22_4d">KC_NHEK_IL22_4d
+</li><li id="KC_NHEK_IFNG10_4d">KC_NHEK_IFNG10_4d
+</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
+</li><li id="KC_HaCaT_IFNG+TNF_24h">KC_HaCaT_IFNG+TNF_24h
+</li><li id="KC_NHEK_IL17A+TNF1_24h">KC_NHEK_IL17A+TNF1_24h
+</li><li id="KC_NHEK_IL17A+TNF10_24h">KC_NHEK_IL17A+TNF10_24h
+</li><li id="KC_HaCaT_TNF10_4h">KC_HaCaT_TNF10_4h
+</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
+</li><li id="KC_NHEK_IL17A_24h">KC_NHEK_IL17A_24h
+</li><li id="KC_NHEK_IFNG10_24h">KC_NHEK_IFNG10_24h
+</li><li id="GM_mono_GMCSF_3h">GM_mono_GMCSF_3h
+</li><li id="GM_mono_GMCSF_12h">GM_mono_GMCSF_12h
+</li></ul></li></ul></li></ul></div>
+
+<input type="submit" id="tissueDeconvolutionSubmit" name="tissueDeconvolutionSubmit" onclick="submitCheckboxes()" value="Submit" />
+
+</form>
+	<script src="../vakata-jstree-5bece58/dist/jstree.min.js"></script>
+    <script>
+        $(function () {
+            $('#sigs').jstree({
+                "checkbox" : {
+                    "keep_selected_style" : false
+                },
+                "plugins" : [ "checkbox" ],
+                "core": {
+                    "themes":{
+                        "icons":false
+                    }
+                }
+            });
+        function checkall(){$('#sigs').jstree('check_all');$('#sigs').jstree('close_all');};
+        window.addEventListener ?
+        window.addEventListener("load",checkall,false) : 
+        window.attachEvent && window.attachEvent("onload",checkall);
+        if (navigator.appName == "Netscape") {
+            setTimeout(checkall,100);
+        }
+        });
+    </script>
+</body>
+</html>

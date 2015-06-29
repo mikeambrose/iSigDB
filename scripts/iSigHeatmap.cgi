@@ -50,8 +50,10 @@ with open("{0}/abbrevs.txt".format(workDir),'w') as localAbbrevs:
     for full in selectedFulls:
         if full in fullToAbbrev: #filters out headers like 'mouse', 'human'
             localAbbrevs.write("{0}\t{1}\n".format(fullToAbbrev[full],full))
-
-version = form["heatmap_metric"].value
+version = ''
+for option in ["log","delta","rank"]:
+    #add option string to version if it's in the form
+    version = version + option * (option in form)
 zTransform = "matrix" if "scale_columns" in form else "none"
 fixed = "fixed" in form
 compNull = "null" in form

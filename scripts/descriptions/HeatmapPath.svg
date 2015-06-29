@@ -14,7 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="HeatmapPath.svg"
+   inkscape:export-filename="/home/mike/workspace/PellegriniResearch/scripts/descriptions/HeatmapPath.png"
+   inkscape:export-xdpi="200"
+   inkscape:export-ydpi="200">
   <defs
      id="defs4">
     <marker
@@ -79,9 +82,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="337.46563"
-     inkscape:cy="377.22079"
+     inkscape:zoom="0.7"
+     inkscape:cx="434.14834"
+     inkscape:cy="462.47009"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"

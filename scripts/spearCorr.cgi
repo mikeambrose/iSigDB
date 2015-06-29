@@ -53,6 +53,14 @@ if geneMetric == 'spearGeneMag':
 
 #the signature matrix is in matrix
 matrix_selected = form["matrix"].value
+
+#logging
+
+userIP = cgi.escape(os.environ["REMOTE_ADDR"])
+logFileDir = '' #TODO: add directory
+with open(logFileDir,'a') as logFile:
+    logFile.write('\t'.join([str(x) for x in [userIP,version,interMetric,geneMetric,geneVal,rowMetric,colMetric]]))
+
 #TODO: get path to matrix_selected working somehow
 print "Content-type: text/html\n\n"
 corrMatrix.runCorrelation(output_file,version,invertMetric,rowMetric,colMetric,geneMetric,geneVal,matrix_selected,False,job_id,None)

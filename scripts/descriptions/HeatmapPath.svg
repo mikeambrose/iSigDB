@@ -101,7 +101,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -164,7 +164,7 @@
            height="105.05586"
            x="486.89352"
            y="108.87971" /></flowRegion><flowPara
-         id="flowPara4609"></flowPara></flowRoot>    <flowRoot
+         id="flowPara4609" /></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot3763-6"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -205,7 +205,7 @@
        xml:space="preserve"
        id="flowRoot3763-6-6"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       transform="translate(99.186072,184.75526)"><flowRegion
+       transform="translate(237.7575,186.18383)"><flowRegion
          id="flowRegion3765-7-1"><rect
            id="rect3767-7-6"
            width="405.95218"
@@ -213,7 +213,7 @@
            x="90"
            y="123.79076" /></flowRegion><flowPara
          id="flowPara3769-3-3"
-         style="font-size:20px;font-weight:bold">Sig_Avg_Matrix_Derm.RankV4.py</flowPara></flowRoot>    <flowRoot
+         style="font-size:20px;font-weight:bold">SigAvg.py</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot3763-5"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -323,7 +323,7 @@
            height="109.09647"
            x="467.70062"
            y="337.17419" /></flowRegion><flowPara
-         id="flowPara5312"></flowPara></flowRoot>    <flowRoot
+         id="flowPara5312" /></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot3763-60"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"

@@ -21,8 +21,6 @@ HTML_BASE = """<!DOCTYPE HTML>
         </style>
 """
 
-
-
 def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None):
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
@@ -43,6 +41,7 @@ def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerArou
     </script>
     </head>
     <body>
+    <h1>Results</h1>
 <script src=""" + '"'+base_loc+"""/HighCharts/js/highcharts.js"></script>
 <script src="""+ '"'+base_loc+"""/HighCharts/js/modules/data.js"></script>
 <script src="""+'"'+base_loc+"""/HighCharts/js/modules/heatmap.js"></script>
@@ -86,11 +85,10 @@ Metric for gene clustering: &nbsp;
 <option value="none">None (Do Not Cluster)</option>
 </select><br />
 <input type="submit" value="Go">
-    </body>
 </form>
+</body>
 """
     htmlText += """
-</html>
 <pre id="csv" style="display: none">
 ignored line
 """
@@ -137,7 +135,6 @@ ignored line
 <pre id="color50" style="display:none">{2}</pre>
 <pre id="color75" style="display:none">{3}</pre>
 <pre id="color100" style="display:none">{4}</pre>
-    </body>
 </html>""".format(c0,c25,c50,c75,c100)
     if outFile:
         with open(outFile,'w') as f_out:

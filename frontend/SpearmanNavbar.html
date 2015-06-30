@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="iSigDB allows users to analyze and visualize gene expression data">
+    <meta name="author" content="">
+    <title>iSigDB</title>
+    <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="iSigStyle.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    
+<title>iSigDB Spearman and Pearson Correlation</title>
+<script type="text/javascript">
+function toggleVisibility(section) {
+    var section = document.getElementById(section);
+    if (section.style.display == 'block' || section.style.display == ''){
+        section.style.display = 'none';
+    } else {
+        section.style.display = 'block';
+    }
+}
+
+function hide(section) {
+    var section = document.getElementById(section);
+    section.style.display = 'none';
+}
+
+function spear_gene_change() {
+    var value = document.getElementById('spear_gene').value;
+    hide('spearGeneTop');
+    hide('spearGeneAll');
+    hide('spearGeneMag');
+    toggleVisibility(value);
+}
+</script>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="iSigDBHomepage.html">iSigDB</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="matrixCorr.html">Matrix Correlation</a></li>
+            <li><a href="heatmap.html">Heatmap</a></li>  
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      
+<form method="post" action="/cgi-bin/goTeles/spearCorr.cgi" ENCTYPE="multipart/form-data">
+<strong class = "tooltip">Submit a file:</strong> <br>
+<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <br>
+<input type="radio" name="uploadSettings" value="server" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Use a file from the server <br>
+<div id="clientFile" name="clientFile">
+File: <input type="file" name="matrix_file" size="30">
+</div>
+<div id="serverFile" name="serverFile" style="display:none">
+Filename: 
+<select id="serverFileName" name="serverFileName">
+{FILES GO HERE}
+</select>
+or <a href="./serverFileUpload.html">upload a file</a>
+</div>
+<hr>
+
+<div id="corrMatrixSection" class="tab-content">
+Compute matrix based on: <select id="heatmap_metric" name="heatmap_metric">
+<option value="pearson">Pearson Correlation</option>
+<option value="spearman">Spearman Correlation</option>
+</select> <br> <br>
+
+<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br>
+<br>
+
+Metric for sample clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br>
+
+Metric for signature clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br> <br>
+
+Gene selection metric: &nbsp;
+<select id="spear_gene" name="spear_gene" onchange="spear_gene_change()">
+<option value="spearGeneAll">Use all genes</option>
+<option value="spearGeneTop">Use top genes from each signature</option>
+<option value="spearGeneMag">Use all genes upregulated beyond a certain threshold</option>
+</select>
+<br>
+
+<div id="spearGeneAll"> </div>
+
+<div id="spearGeneTop" style = "display:none">
+Number of genes from each signature: &nbsp;
+<select name="matrix_num_genes" id="matrix_num_genes">
+<option value="10">10</option>
+<option value="25">25</option>
+<option value="50" selected>50</option>
+<option value="100">100</option>
+<option value="250">250</option>
+</select>
+</div>
+
+<div id="spearGeneMag" style = "display:none">
+    Minimum fold change: &nbsp; <select name="matrix_mag" id="matrix_mag">
+    <option value="2">2</option>
+    <option value="5" selected>5</option>
+    <option value="10">10</option>
+    <option value="50">50</option>
+    </select>
+</div>
+
+<hr>
+
+<strong> Select signature matrix: </strong> <br>
+<input type="radio" name="matrix" id="matrix" value="DermDB">DermDB<br>
+<input type="radio" name="matrix" id="matrix" value="frozen">Frozen RMA perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="RNA-seq">Frozen RMA perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="mba">Mouse body atlas<br>
+<input type="radio" name="matrix" id="matrix" value="hba">Human body atlas<br>
+<input type="radio" name="matrix" id="matrix" value="immgen">Immgen data<br>
+<input type="radio" name="matrix" id="matrix" value="macrophage">Macrophage perturbation matrix<br>
+<hr>
+<input type="submit" value="Submit">
+
+</form>
+
+    </div>
+
+  </body>
+
+</html>

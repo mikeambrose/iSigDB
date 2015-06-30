@@ -12,8 +12,6 @@ add signature script:
 
 # restructure cgi scripts/utility python script
 
-(test everything)
+# (test everything)
 
-download own input histogram
-
-SQLite
+# download own input histogram

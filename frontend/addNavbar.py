@@ -26,12 +26,17 @@ for elem in illegal:
         print "which goes to {0}".format(endInd)
         content = content[:startInd] + content[endInd:]
 
-#find the body content and add it
+#find the body content
 bodyStart = content.index('<body>')+len('<body>')
 bodyEnd = content.index('</body>')
 bodyContents = content[bodyStart:bodyEnd]
 
-navbar = navbar.format(head=headContents,body=bodyContents)
+#find everything after the body
+postBodyStart = content.index('</body>') + len('<body>')
+postBodyEnd = content.index('</html>')
+postBodyContents = content[postBodyStart:postBodyEnd]
+
+navbar = navbar.format(head=headContents,body=bodyContents,postbody=postBodyContents)
 
 with open(options.output,'w') as out:
   out.write(navbar)

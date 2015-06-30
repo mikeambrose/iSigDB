@@ -51,9 +51,10 @@ def delta(samSigVals):
 def delta(sams):
     """for each sample, replaces the gene's value with the difference between its value and the
     mean value across all samples"""
-    for sam in sams:
-        av = util.average([sams[sam][gene] for gene in sams[sam]])
-        for gene in sams[sam]:
+    genes = sams[sams.keys()[0]].keys()
+    for gene in genes:
+        av = util.average([sams[sam][gene] for sam in sams])
+        for sam in sams:
             sams[sam][gene] = sams[sam][gene] - av
     return sams
 

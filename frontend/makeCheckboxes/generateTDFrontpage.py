@@ -149,8 +149,9 @@ function submitCheckboxes() {
 }
 
 </script>
+</head>
+<body>
 
-<br>
 <form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/iSigHeatmap.cgi" ENCTYPE="multipart/form-data">
 <strong class = "tooltip">Submit a file:</strong> <br>
 <input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span><strong>File guidelines</strong><br/>The uploaded file must be tab-separated. Columns should correspond to samples and rows should correspond to genes. There is a size limit of 100mb.</span></a>  <br>

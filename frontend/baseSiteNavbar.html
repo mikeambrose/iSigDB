@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="iSigDB allows users to analyze and visualize gene expression data">
+    <meta name="author" content="">
+    <title>iSigDB</title>
+    <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="iSigStyle.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    
     <meta charset="UTF-8">
     <title>iSigDB</title>
 <!--<script src="../js/jquery-1.11.3.min.js"></script>-->
@@ -53,8 +64,31 @@ function submitCheckboxes() {
 }
 
 </script>
-</head>
-<body>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="iSigDBHomepage.html">iSigDB</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="matrixCorr.html">Matrix Correlation</a></li>
+            <li><a href="heatmap.html">Heatmap</a></li>  
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      
 <br>
 <form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/tissueDeconvolutionByRank.cgi" ENCTYPE="multipart/form-data">
 <strong class = "tooltip">Submit a file:</strong> <br>
@@ -437,5 +471,9 @@ Number of genes from each signature: &nbsp;
         }
         });
     </script>
-</body>
+
+    </div>
+
+  </body>
+
 </html>

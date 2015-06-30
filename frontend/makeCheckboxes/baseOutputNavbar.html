@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="iSigDB allows users to analyze and visualize gene expression data">
+    <meta name="author" content="">
+    <title>iSigDB</title>
+    <link href="bootstrap-3.3.5-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="iSigStyle.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    
     <meta charset="UTF-8">
     <title>iSigDB</title>
 <script src="../js/jquery-1.11.3.min.js"></script>
@@ -54,10 +65,34 @@ function submitCheckboxes() {
 
 </script>
 
-<br>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="iSigDBHomepage.html">iSigDB</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="matrixCorr.html">Matrix Correlation</a></li>
+            <li><a href="heatmap.html">Heatmap</a></li>  
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      
+
 <form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/iSigHeatmap.cgi" ENCTYPE="multipart/form-data">
 <strong class = "tooltip">Submit a file:</strong> <br>
-<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span><strong>File guidelines</strong><br/>The uploaded file must be tab-separated. Columns should correspond to samples and rows should correspond to genes. There is a size limit of 100mb.</span></a>  <br>
+<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer </a>  <br>
 <input type="radio" name="uploadSettings" value="server" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Use a file from the server <br>
 <div id="clientFile" name="clientFile">
 File: <input type="file" name="matrix_file" size="30">
@@ -76,7 +111,7 @@ or <a href="./serverFileUpload.html">upload a file</a>
 <input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
 
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
-checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
+checked> Scale heatmap </a>
 
 <br /><br />
 
@@ -85,7 +120,7 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png
 <br /><br />
 
 <input type="checkbox" name="fixed" id="fixed" value="checked"> Keep colors constant
-<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
+</a>
 <br> <br>
 
 <input type="checkbox" name="null" id="null" value="checked"> Compute null distribution with
@@ -115,7 +150,7 @@ name="num_genes" onchange="genesChanged(this);"><option value="10">10</option><o
 value="25">25</option><option value="50" selected="selected">50</option><option
 value="100">100</option><option value="250">250</option><option
 value="500">500</option><option value="1000">1000</option></select>
-<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
+</a>
 <hr>
 
 <input type="hidden" name="checkedSigs" id="checkedSigs"></input>
@@ -360,5 +395,9 @@ Click on a category to select specific signatures within that category <br />
         }
         });
     </script>
-</body>
+
+    </div>
+
+  </body>
+
 </html>

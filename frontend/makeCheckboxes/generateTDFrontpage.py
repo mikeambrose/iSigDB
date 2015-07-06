@@ -99,26 +99,10 @@ def generateHTML(formatLines, output):
 <head>
     <meta charset="UTF-8">
     <title>iSigDB</title>
-<script src="../js/jquery-1.11.3.min.js"></script>
-<link rel="stylesheet" href="../td.css">
+<script src="js/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" href="td.css">
 <link rel="stylesheet" href="../vakata-jstree-5bece58/dist/themes/default/style.min.css" />
-<link rel="stylesheet" href="../tooltip.css">
-<script>
-        $(document).ready(function(){
-            
-            $('ul.tabs li').click(function(){
-                var tab_id = $(this).attr('data-tab');
-
-                $('ul.tabs li').removeClass('current');
-                $('.tab-content').removeClass('current');
-
-                $(this).addClass('current');
-                $("#"+tab_id).addClass('current');
-            })
-
-        })
-</script>
-
+<link rel="stylesheet" href="tooltip.css">
 <script type="text/javascript">
 
 function toggleVisibility(section) {
@@ -154,7 +138,7 @@ function submitCheckboxes() {
 
 <form id="tissueDeconvolution" name="tissueDeconvolution" method="post" action="/cgi-bin/goTeles/iSigHeatmap.cgi" ENCTYPE="multipart/form-data">
 <strong class = "tooltip">Submit a file:</strong> <br>
-<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span><strong>File guidelines</strong><br/>The uploaded file must be tab-separated. Columns should correspond to samples and rows should correspond to genes. There is a size limit of 100mb.</span></a>  <br>
+<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span><strong>File guidelines</strong><br/>The uploaded file must be tab-separated. Columns should correspond to samples and rows should correspond to genes. There is a size limit of 100mb.</span></a>  <br>
 <input type="radio" name="uploadSettings" value="server" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Use a file from the server <br>
 <div id="clientFile" name="clientFile">
 File: <input type="file" name="matrix_file" size="30">
@@ -173,7 +157,7 @@ or <a href="./serverFileUpload.html">upload a file</a>
 <input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
 
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
-checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
+checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
 
 <br /><br />
 
@@ -182,7 +166,7 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="../questionmark.png
 <br /><br />
 
 <input type="checkbox" name="fixed" id="fixed" value="checked"> Keep colors constant
-<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
+<a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
 <br> <br>
 
 <input type="checkbox" name="null" id="null" value="checked"> Compute null distribution with
@@ -212,7 +196,7 @@ name="num_genes" onchange="genesChanged(this);"><option value="10">10</option><o
 value="25">25</option><option value="50" selected="selected">50</option><option
 value="100">100</option><option value="250">250</option><option
 value="500">500</option><option value="1000">1000</option></select>
-<a href="#" class="tooltip"><img src="../questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
+<a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
 <hr>
 
 <input type="hidden" name="checkedSigs" id="checkedSigs"></input>

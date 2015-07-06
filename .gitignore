@@ -10,3 +10,4 @@ scripts/scratch/*
 *.pyc
 *.swp
 *.swo
+wksp/NewSigs/*

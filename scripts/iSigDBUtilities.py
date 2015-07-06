@@ -6,6 +6,9 @@ from collections import OrderedDict
 import subprocess
 import make_heatmapV4 as make_heatmap
 import os
+import random
+import datetime
+
 def reformatFile(f):
     """Automatically changes f to be in the correct format
     Removes carriage returns (either with blank spaces if there are \r\n line endings
@@ -300,7 +303,7 @@ def getJobID():
     where xxxx is a random four-digit number"""
     randomSeed = zeroExtend(str(random.randint(0,9999)),4)
     currentTime = datetime.datetime.now()
-    return "{0}{1}{2}{3}{4}{5}".format(currentTime.year,currentTime.month,currentTime.day,\
+    return "{0:04d}{1:02d}{2:02d}{3:02d}{4:02d}{5:02d}".format(currentTime.year,currentTime.month,currentTime.day,\
                             currentTime.hour,currentTime.minute,currentTime.second)+randomSeed
 
 def copyFile(f,loc):

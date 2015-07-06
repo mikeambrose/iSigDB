@@ -19,9 +19,9 @@ function hide(section) {
 
 function spear_gene_change() {
     var value = document.getElementById('spear_gene').value;
-    hide('spearGeneTop');
-    hide('spearGeneAll');
-    hide('spearGeneMag');
+    hide('top');
+    hide('all');
+    hide('mag');
     toggleVisibility(value);
 }
 </script>
@@ -61,7 +61,7 @@ Metric for sample clustering: &nbsp;
 <br>
 
 Metric for signature clustering: &nbsp;
-<select id="row_metric" name="row_metric">
+<select id="col_metric" name="col_metric">
 <option value="euclidean">Euclidean Distance</option>
 <option value="pear_cor">Pearson Correlation</option>
 <option value="none">None (Do Not Cluster)</option>
@@ -70,15 +70,15 @@ Metric for signature clustering: &nbsp;
 
 Gene selection metric: &nbsp;
 <select id="spear_gene" name="spear_gene" onchange="spear_gene_change()">
-<option value="spearGeneAll">Use all genes</option>
-<option value="spearGeneTop">Use top genes from each signature</option>
-<option value="spearGeneMag">Use all genes upregulated beyond a certain threshold</option>
+<option value="all">Use all genes</option>
+<option value="top">Use top genes from each signature</option>
+<option value="mag">Use all genes upregulated beyond a certain threshold</option>
 </select>
 <br>
 
-<div id="spearGeneAll"> </div>
+<div id="all"> </div>
 
-<div id="spearGeneTop" style = "display:none">
+<div id="top" style = "display:none">
 Number of genes from each signature: &nbsp;
 <select name="matrix_num_genes" id="matrix_num_genes">
 <option value="10">10</option>
@@ -89,7 +89,7 @@ Number of genes from each signature: &nbsp;
 </select>
 </div>
 
-<div id="spearGeneMag" style = "display:none">
+<div id="mag" style = "display:none">
     Minimum fold change: &nbsp; <select name="matrix_mag" id="matrix_mag">
     <option value="2">2</option>
     <option value="5" selected>5</option>
@@ -102,12 +102,11 @@ Number of genes from each signature: &nbsp;
 
 <strong> Select signature matrix: </strong> <br>
 <input type="radio" name="matrix" id="matrix" value="DermDB">DermDB<br>
-<input type="radio" name="matrix" id="matrix" value="frozen">Frozen RMA perturbation matrix<br>
-<input type="radio" name="matrix" id="matrix" value="RNA-seq">Frozen RMA perturbation matrix<br>
 <input type="radio" name="matrix" id="matrix" value="mba">Mouse body atlas<br>
 <input type="radio" name="matrix" id="matrix" value="hba">Human body atlas<br>
 <input type="radio" name="matrix" id="matrix" value="immgen">Immgen data<br>
 <input type="radio" name="matrix" id="matrix" value="macrophage">Macrophage perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="pca">Human Primary Cell Atlas<br>
 <hr>
 <input type="submit" value="Submit">
 

@@ -8,7 +8,7 @@ import subprocess
 import math
 import iSigDBUtilities as util
 #TODO: uncomment this when on server
-#os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
 import matplotlib
 matplotlib.use('Agg')
 import nullmodel
@@ -38,15 +38,6 @@ def ranked(sams):
 def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
     return {sam:{gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]} for sam in sams}
-'''
-def delta(samSigVals):
-    """for each signature, replace each samples values with the difference between their value
-    and the average value across all samples"""
-    for sig in samSigVals[samSigVals.keys()[0]]:
-        av = util.average([samSigVals[sam][sig] for sam in samSigVals])
-        for sam in samSigVals:
-            samSigVals[sam][sig] = samSigVals[sam][sig] - av
-    return samSigVals'''
 
 def delta(sams):
     """for each sample, replaces the gene's value with the difference between its value and the
@@ -76,7 +67,6 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
                     continue
                 geneVals.append(sams[sam][gene])
             samSigVal[sam][sig] = util.average(geneVals)
-    samSigVal = delta(samSigVal)
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
 
@@ -147,7 +137,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     inpHistFilename = '/home/mike/workspace/PellegriniResearch/output/inputdist.pdf' if isClient\
        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/inputdist_' + jobID + '.pdf'
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/output/Rheatmap.pdf' if isClient\
-        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(jobID)
+        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(jobID)
 
     #get sample values
     sams = util.readMatrix(inputFile,ordered=True)

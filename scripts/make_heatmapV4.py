@@ -53,8 +53,8 @@ If you can't see the heatmap, make sure adblock is disabled and try again.<br>
 <a target="_blank" href="""
     #add links and hidden file location
     baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(baseFile)
-    seed = baseFile[-18:]
-    htmlText += '"' + baseFile+'''Rheatmap.pdf">R heatmap output</a> <br />'''
+    seed = baseFile[-30:-12]
+    htmlText += '"' + baseFile+'''">R heatmap output</a> <br />'''
     if nullFilename:
         htmlText += "\n<a target=\"_blank\" href=" + nullFilename + ">Null model output</a><br>\n"
     if inpHistFilename:

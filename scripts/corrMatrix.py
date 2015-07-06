@@ -133,7 +133,7 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     #run correlation on them
     corrRank(spearmanMatrix,spearmanSams,genes,outFile,version)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
-        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/goTeles_tissueDeconvolution_{0}/{0}Rheatmap.pdf'.format(options.job_id)
+        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
     #pass computation to R/make_heatmap
     util.createHeatmap(outFile,RHeatmapOut,version,"none",rowMetric,colMetric,job_id,invert,True,isClient,None)
 

@@ -1,8 +1,11 @@
+#!/UCSC/Pathways-Auxiliary/UCLApathways-PyPy-20150702/pypy-2.6-linux_x86_64-portable/bin/pypy
 #!/usr/bin/env python
 import os
+import sys
+sys.path.append('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank')
 import corrMatrix
 import cgi
-cgi.maxlen = 100 * 1024**2 #100mb
+cgi.maxlen = 200 * 1024**2 #100mb
 #TODO: add this to the python path
 import iSigDBUtilities as util
 form = cgi.FieldStorage()
@@ -26,11 +29,10 @@ else:
 
 #make directory
 job_id = util.getJobID()
-work_dir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_corrMatrix_{0}'.format(job_id)
+work_dir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{0}'.format(job_id)
 os.makedirs(work_dir)
 output_file = work_dir+'/{0}.txt'.format(job_id)
-with open(userFile) as userInput:
-    util.copyFile(userInput,output_file)
+util.copyFile(userFile,output_file)
 
 #the heatmap metric is called heatmap_metric
 version = form["heatmap_metric"].value
@@ -42,25 +44,27 @@ invertMetric = "invert" in form
 #the gene selection metric is called spear_gene and has values spearGeneAll, spearGeneTop, spearGeneMag
 geneMetric = form["spear_gene"].value
 #spearGeneAll -> nothing
-if geneMetric == 'spearGeneAll':
+if geneMetric == 'all':
     geneVal = None
 #spearGeneTop -> matrix_num_genes
-if geneMetric == 'spearGeneTop':
+if geneMetric == 'top':
     geneVal = int(form["matrix_num_genes"].value)
 #spearGeneMag -> matrix_mag
-if geneMetric == 'spearGeneMag':
+if geneMetric == 'mag':
     geneVal = int(form["matrix_mag"].value)
 
 #the signature matrix is in matrix
 matrix_selected = form["matrix"].value
+matrix_abbrevs = util.loadAbbrevs('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/matrixAssociations.txt')
+matrix_file = matrix_abbrevs[matrix_selected]
 
 #logging
 
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
-logFileDir = '' #TODO: add directory
+logFileDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/useLog.txt' #TODO: add directory
 with open(logFileDir,'a') as logFile:
-    logFile.write('\t'.join([str(x) for x in [userIP,version,interMetric,geneMetric,geneVal,rowMetric,colMetric]]))
+    logFile.write('\t'.join([str(x) for x in [userIP,version,invertMetric,geneMetric,geneVal,rowMetric,colMetric]]))
 
 #TODO: get path to matrix_selected working somehow
 print "Content-type: text/html\n\n"
-corrMatrix.runCorrelation(output_file,version,invertMetric,rowMetric,colMetric,geneMetric,geneVal,matrix_selected,False,job_id,None)
+corrMatrix.runCorrelation(output_file,version,invertMetric,rowMetric,colMetric,geneMetric,geneVal,matrix_file,False,job_id)

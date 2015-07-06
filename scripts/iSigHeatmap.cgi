@@ -3,8 +3,13 @@ import os
 import cgi
 cgi.maxlen = 100 * 1024**2
 #TODO: add to python path
+import sys
+sys.path.append('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank')
 import iSigDBUtilities as util
 import SigAvg as sigComp
+
+form = cgi.FieldStorage()
+
 if 'serverFile' in form and form['serverFile'].value != '':
     #the user has selected a file from the server
     with open('/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/associations.txt')\
@@ -25,23 +30,22 @@ else:
     if not userFile:
         util.displayErrorMessage("No file uploaded",True)
 
-form = cgi.FieldStorage()
-
 jobID = util.getJobID()
-workDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_corrMatrix_{0}'.format(jobID)
+workDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{0}'.format(jobID)
 os.makedirs(workDir)
 outputFile = workDir + '/{0}.txt'.format(jobID)
-with open(userFile) as userInput:
-    util.copyFile(userInput,outputFile)
+util.copyFile(userFile,outputFile)
 
 #write signatures to local abbrevs file
 allAbbrevs = open('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/abbrevs_fixed.txt').read()
 fullToAbbrev = {}
 for line in allAbbrevs.split('\n'):
+    if not line:
+      continue
     abbrev,full=line.split('\t')
     fullToAbbrev[full]=abbrev
 
-if form["checkedSigs"].count(',') == 0:
+if form["checkedSigs"].value.count(',') == 0:
     util.displayErrorMessage("No signatures selected",True)
 
 with open("{0}/abbrevs.txt".format(workDir),'w') as localAbbrevs:
@@ -56,7 +60,7 @@ for option in ["log","delta","rank"]:
 zTransform = "matrix" if "scale_columns" in form else "none"
 fixed = "fixed" in form
 compNull = "null" in form
-numIter = int(form["numNullIter"].value)
+numIter = int(form["nullNumIter"].value)
 invert = "invert" in form
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
@@ -65,8 +69,12 @@ n = int(form["num_genes"].value)
 #logging this call
 
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
-logFileDir = '' #TODO: add directory
+logFileDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/useLog.txt' #TODO: add directory
 with open(logFileDir,'a') as logFile:
     logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,fixed,compNull,numIter,invert,rowMetric,colMetric,n]]))
+
+print """Content-type: text/html
+
+"""
 
 sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,fixed,compNull,False,numIter)

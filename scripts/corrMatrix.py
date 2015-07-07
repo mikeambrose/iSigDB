@@ -58,35 +58,44 @@ def getCommonGenes(candGenes,allSets):
     return commonGenes
 
 #TODO: rethink this with the value-matrix approach
-def getSpearmanGenes(sams,sigs,compType,sigFile=None,n=50):
+def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     """compType determines if all genes will be accessed or only the top genes
     if 'all' is passed in, computes the set of genes which are common to all samples and signatures
     if 'top' is passed in, takes the top n genes from each signature (as determined by the signature
     file) and computes the intersection of all those top genes, and then selects the subset of those
     which are present in all samples and signatures"""
+    assert any([high,low])
+    samGenes = sams[sams.keys()[0]].keys()
     if compType=='all': #picks all genes in common
-        commonGenes = set()
-        candGenes = sams[sams.keys()[0]].keys()
-        return list(getCommonGenes(candGenes,[sigs[sig] for sig in sigs]))
-    elif compType=='top': #picks the top n
-        candGenes = set()
-        #generates a set of candidate genes by picking the top n genes for each sig
-        with open(sigFile) as fullSigs:
-            for line in fullSigs:
-                line = line.split('\t')
-                sig = line[0]
-                if sig in sigs:
-                    candGenes = candGenes.union(set(line[1:n+1]))
-        allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
-        return list(getCommonGenes(candGenes,allSets))
+        return list(getCommonGenes(samGenes,matrix[matrix.keys()[0]].keys()))
+    candGenes = set()
+    #generates a set of candidate genes by picking the top n genes for each sig
+    files = []
+    #TODO: set up base directory properly
+    baseDir = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'
+    if high:
+        files.append(baseDir+'high_'+mName)
+    if low:
+        files.append(baseDir+'low_'+mName)
+    if compType=='top': #picks the top n
+        for fle in files:
+            with open(fle) as sigGenes:
+                for line in sigGenes:
+                    line = line.replace('\n','').split('\t')
+                    candGenes = candGenes.union(set((x.split(',')[0] for x in line[1:n+1])))
+        return list(getCommonGenes(candGenes,samGenes))
     elif compType=='mag': #picks all genes which are up/downregulated by a factor of n
-        candGenes = set()
-        for sig in sigs:
-            for gene in sigs[sig]:
-                if sigs[sig][gene] >= n:# or sigs[sig][gene] <= 1.0/n:
-                    candGenes.add(gene)
-        allSets = [sams[sams.keys()[0]]] + [sigs[sig] for sig in sigs]
-        return list(getCommonGenes(candGenes,allSets))
+        for fle in files:
+            with open(fle) as sigGenes:
+                for line in sigGenes:
+                    line = line.replace('\n','').split('\t')
+                    candGenes = set()
+                    for pair in line:
+                        pair = pair.split(',')
+                        if float(pair[1]) < n:
+                            break
+                        candGenes.add(pair[0])
+        return list(getCommonGenes(candGenes,samGenes))
     else:
         util.displayErrorMessage("Not a valid spearman gene selector " + str(compType))
 

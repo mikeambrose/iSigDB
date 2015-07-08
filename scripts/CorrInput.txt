@@ -1,0 +1,1 @@
+python scripts/corrMatrix.py --version pearson --invert --row euclidean --col euclidean --gene top --gval 50 --matrix sigdir/MATRICES/HumanBodyAtlas.txt --input sigdir/MATRICES/HumanBodyAtlas.txt

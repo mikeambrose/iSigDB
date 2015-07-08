@@ -65,9 +65,9 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     file) and computes the intersection of all those top genes, and then selects the subset of those
     which are present in all samples and signatures"""
     assert any([high,low])
-    samGenes = sams[sams.keys()[0]].keys()
+    samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
-        return list(getCommonGenes(samGenes,matrix[matrix.keys()[0]].keys()))
+        return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
     candGenes = set()
     #generates a set of candidate genes by picking the top n genes for each sig
     files = []
@@ -81,21 +81,21 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
         for fle in files:
             with open(fle) as sigGenes:
                 for line in sigGenes:
-                    line = line.replace('\n','').split('\t')
-                    candGenes = candGenes.union(set((x.split(',')[0] for x in line[1:n+1])))
-        return list(getCommonGenes(candGenes,samGenes))
+                    line = line.replace('\n','').split('\t')[1:]
+                    candGenes = candGenes.union(set(x.split(',')[0].upper() for x in line[:int(n)]))
+        return list(candGenes.intersection(samGenes))
     elif compType=='mag': #picks all genes which are up/downregulated by a factor of n
         for fle in files:
             with open(fle) as sigGenes:
                 for line in sigGenes:
-                    line = line.replace('\n','').split('\t')
+                    line = line.replace('\n','').split('\t')[1:]
                     candGenes = set()
                     for pair in line:
                         pair = pair.split(',')
                         if float(pair[1]) < n:
                             break
                         candGenes.add(pair[0])
-        return list(getCommonGenes(candGenes,samGenes))
+        return list(candGenes.intersection(samGenes))
     else:
         util.displayErrorMessage("Not a valid spearman gene selector " + str(compType))
 
@@ -124,8 +124,8 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     job_id - number generated to uniquely identify task
     """
     #checks for errors and corrects whichever errors it can
-    util.reformatFile(inputFile)
-    util.checkForErrors(inputFile)
+    #util.reformatFile(inputFile)
+    #util.checkForErrors(inputFile)
 
     outFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
             else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
@@ -134,7 +134,10 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     matrix = util.readMatrix(selMatrix,True,False)
     sams = util.readMatrix(inputFile,True,True)
     #find set of genes
-    genes = getSpearmanGenes(sams,matrix,geneMetric,geneVal)
+    genes = getSpearmanGenes(sams,matrix,geneMetric,os.path.basename(selMatrix),geneVal)
+    #for debug purposes
+    #TODO: comment when on server
+    print len(genes)
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes
@@ -160,4 +163,4 @@ if __name__ == '__main__':
     parser.add_option("--matrix",dest="selMatrix",help="matrix selected")
     options, _ = parser.parse_args()
     runCorrelation(options.inputFile,options.version,options.invert,options.row,options.col,\
-                    options.gene,options.geneVal,options.selMatrix,True,None)
+                    options.gene,float(options.geneVal),options.selMatrix,True,None)

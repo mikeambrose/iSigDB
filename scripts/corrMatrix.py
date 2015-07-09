@@ -110,7 +110,7 @@ def getSpearmanDict(inputDict,genes):
         assert len(returnDict[line]) == len(genes)
     return returnDict
 
-def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneVal,selMatrix,\
+def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric,geneVal,selMatrix,\
                     isClient,job_id):
     """Runs Spearman or Pearson correlation on the inputFile
     inputFile - user-uploaded file
@@ -147,7 +147,7 @@ def runCorrelation(inputFile,version,invert,rowMetric,colMetric,geneMetric,geneV
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
     #pass computation to R/make_heatmap
-    util.createHeatmap(outFile,RHeatmapOut,version,"none",rowMetric,colMetric,job_id,invert,True,isClient,None)
+    util.createHeatmap(outFile,RHeatmapOut,version,"none",rowMetric,colMetric,job_id,invert,False,isClient,None,mn=mn,mx=mx)
 
 #this file should always be imported by the server
 #running from the command line is only for testing
@@ -161,6 +161,8 @@ if __name__ == '__main__':
     parser.add_option("--gene",dest="gene",help="gene metric (all, top, mag)")
     parser.add_option("--gval",dest="geneVal",help="value corresponding with gene metric")
     parser.add_option("--matrix",dest="selMatrix",help="matrix selected")
-    options, _ = parser.parse_args()
-    runCorrelation(options.inputFile,options.version,options.invert,options.row,options.col,\
-                    options.gene,float(options.geneVal),options.selMatrix,True,None)
+    parser.add_option("--range",dest="range",help="color scale")
+    op, _ = parser.parse_args()
+    mn,mx = (float(x) for x in op.range.split(','))
+    runCorrelation(op.inputFile,op.version,op.invert,mn,mx,op.row,op.col,\
+                    op.gene,float(op.geneVal),op.selMatrix,True,None)

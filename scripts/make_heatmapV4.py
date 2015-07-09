@@ -112,6 +112,7 @@ ignored line
         c0,c25,c50,c75,c100 = '#ffffff,#e7b5b0,#c4463a,#62231d,#800000'.split(',')
     minVal = givenMinVal if (givenMinVal != None) else minVal
     maxVal = givenMaxVal if (givenMaxVal != None) else maxVal
+    print minVal,maxVal
     htmlText += """</pre>
 <pre id="legendLabel" style="display:none">"""+legendLabel
     htmlText += """</pre>

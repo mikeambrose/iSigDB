@@ -41,6 +41,12 @@ rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 #the invert metric is called invert
 invertMetric = "invert" in form
+#set min and max if the scale checkbox is checked
+if "scale" in form:
+    mn = form["minVal"].value
+    mx = form["maxVal"].value
+else:
+    mn,mx = None,None
 #the gene selection metric is called spear_gene and has values spearGeneAll, spearGeneTop, spearGeneMag
 geneMetric = form["spear_gene"].value
 #spearGeneAll -> nothing
@@ -67,4 +73,4 @@ with open(logFileDir,'a') as logFile:
 
 #TODO: get path to matrix_selected working somehow
 print "Content-type: text/html\n\n"
-corrMatrix.runCorrelation(output_file,version,invertMetric,rowMetric,colMetric,geneMetric,geneVal,matrix_file,False,job_id)
+corrMatrix.runCorrelation(output_file,version,invertMetric,mn,mx,rowMetric,colMetric,geneMetric,geneVal,matrix_file,False,job_id)

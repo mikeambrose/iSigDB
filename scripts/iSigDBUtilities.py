@@ -134,7 +134,7 @@ def writeRegularOutput(samSigVals,outFile,fullNames):
             out.write('\n')
 
 def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,
-                    isClient,nullFilename,inpHistFilename=None):
+                    isClient,nullFilename,inpHistFilename=None,mn=None,mx=None):
     """Calls the R script to cluster and create the heatmap
         matrixFile is the location of the output
         rPdfOutFile is where the R heatmap will be output
@@ -163,7 +163,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
         subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
                         rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
     #only center around zero  for certain input types
-    centerAroundZero = (zTransform=="matrix") or ("delta" in version) or (version in ["pearson","spearman"])
+    centerAroundZero = (zTransform=="matrix") or ("delta" in version) or (version in ["pearson","spearman"] and fixed)
     #if fixed is selected, choose the fixed values
     #TODO: make these reasonable (maybe user-chosen input?)
     maxVal,minVal = None,None
@@ -175,7 +175,10 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
             vals = {"rank_delta":(-10000,10000),"rank_avg":(0,300000),"log":(0,10),"pearson":(-1,1),\
                     "spearman":(-1,1)}
             minVal,maxVal = vals[version]
-            #TODO: fix 'log' referring to both log and values
+    if mn:
+        minVal = mn
+    if mx:
+        maxVal = mx
     #debug, location of html output from make_heatmap
     out = '/home/mike/workspace/PellegriniResearch/output/HighChartsHeatmap.html' if isClient\
             else None

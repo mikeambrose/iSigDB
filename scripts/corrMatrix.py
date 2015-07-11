@@ -72,7 +72,7 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
             candGenes = set()
             for line in topGenes:
                 if not line:    continue
-                candGenes.add(line.split('\t')[0])
+                candGenes.add(line.split('\t')[0].upper())
         return list(samGenes.intersection(candGenes))
 
     candGenes = set()

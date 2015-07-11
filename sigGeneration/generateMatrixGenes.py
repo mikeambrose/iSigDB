@@ -60,7 +60,7 @@ for matrix,abbrev in matrixAbbrevs:
         m.readline() #skip header
         for line in m:
             if 'N/A' in line:   continue
-            line = line.replace('\n','').split('\t')
+            line = line.replace('\n','').upper().split('\t')
             gene, vals = line[0],[float(x) for x in line[1:]]
             geneCovs[gene] = cov(vals)
     geneCovs = geneCovs.items()

@@ -54,7 +54,6 @@ def getCommonGenes(candGenes,allSets):
             commonGenes.add(gene)
     return commonGenes
 
-#TODO: rethink this with the value-matrix approach
 def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     """compType determines if all genes will be accessed or only the top genes
     if 'all' is passed in, computes the set of genes which are common to all samples and signatures
@@ -65,6 +64,17 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
         return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
+
+    elif compType == 'cov':
+        #TODO: fix the directory
+        with open('/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/var_'+mName)\
+            as topGenes:
+            candGenes = set()
+            for line in topGenes:
+                if not line:    continue
+                candGenes.add(line.split('\t')[0])
+        return list(samGenes.intersection(candGenes))
+
     candGenes = set()
     #generates a set of candidate genes by picking the top n genes for each sig
     files = []

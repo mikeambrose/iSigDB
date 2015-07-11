@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
+from collections import OrderedDict
 def getSigGenes(sigFile,selectedSigs,n):
     """Returns dictionary of signature : [top n genes]
     sigFile is the file with the shortened signatures
@@ -28,7 +29,7 @@ def getSigGenes(sigFile,selectedSigs,n):
 
 def ranked(sams):
     """for each sample, replaces the gene's value with its rank"""
-    rankedSams = {}
+    rankedSams = OrderedDict()
     for sam in sams:
         samvals = [sams[sam][gene] for gene in sams[sam]]
         ranks = util.getRanks(tuple(samvals))
@@ -37,7 +38,7 @@ def ranked(sams):
 
 def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
-    return {sam:{gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]} for sam in sams}
+    return OrderedDict({sam:{gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]} for sam in sams})
 
 def delta(sams):
     """for each sample, replaces the gene's value with the difference between its value and the
@@ -56,7 +57,7 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
     compOutput - where to write output
     version - how to process input
     abbrevsDict - dictionary of abbreviation : full name for each signature in sigGenes"""
-    samSigVal = {}
+    samSigVal = OrderedDict()
     for sam in sams:
         samSigVal[sam] = {}
         for sig in sigGenes:
@@ -141,6 +142,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
 
     #get sample values
     sams = util.readMatrix(inputFile,ordered=True)
+
     if 'rank' in version:
         sams = ranked(sams)
     if 'log' in version:

@@ -9,6 +9,7 @@ import os
 from optparse import OptionParser
 import iSigDBUtilities as util
 import math
+from collections import OrderedDict
 
 def corrRank(sigs,sams,geneNames,strOutFile,version):
     """Uses the spearman/pearson coefficient to evaluate the similarity between signatures and samples
@@ -18,18 +19,14 @@ def corrRank(sigs,sams,geneNames,strOutFile,version):
     Similar to other functions, writes to strOutFile with the default output
     No value is returned"""
     #stored as a dictionary of (sig,sam):coef
-    sigSamCoefficient = {}
+    sigSamCoefficient = OrderedDict()
     #dictionary of signature:gene:list of d values corresponding to (sig,gene,sam)
-    for sig in sigs:
-        sigSamCoefficient[sig] = {}
-        for sam in sams:
-            coef = getSpearmanVals(sigs[sig],sams[sam]) if version=="spearman"\
-                                    else getPearsonVals(sigs[sig],sams[sam])
-            sigSamCoefficient[(sig,sam)] = coef
-    #write regular output
-    samSigCoefficient = {}
-    for sig in sigs:
-        samSigCoefficient[sig] = {sam:sigSamCoefficient[(sig,sam)] for sam in sams}
+    samSigCoefficient = OrderedDict()
+    fn = getSpearmanVals if version=="spearman" else getPearsonVals
+    for sam in sams:
+        samSigCoefficient[sam] = {}
+        for sig in sigs:
+            samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
 
@@ -99,9 +96,9 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     else:
         util.displayErrorMessage("Not a valid spearman gene selector " + str(compType))
 
-def getSpearmanDict(inputDict,genes):
+def getSpearmanDict(inputDict,genes,ordered=False):
     """Contructs a matrix of key : values for each gene"""
-    returnDict = {}
+    returnDict = {} if not ordered else OrderedDict()
     for line in inputDict:
         returnDict[line] = []
         for gene in genes:
@@ -141,7 +138,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes
-    spearmanSams, spearmanMatrix = getSpearmanDict(sams,genes), getSpearmanDict(matrix,genes)
+    spearmanSams, spearmanMatrix = getSpearmanDict(sams,genes,True), getSpearmanDict(matrix,genes)
     #run correlation on them
     corrRank(spearmanMatrix,spearmanSams,genes,outFile,version)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\

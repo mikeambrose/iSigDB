@@ -67,6 +67,9 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
                     #the gene does not exist in our input, so it is reported as a N/A
                     continue
                 geneVals.append(sams[sam][gene])
+            if len(geneVals) == 0:
+                print "no genes intersecting with " + sig
+                continue
             samSigVal[sam][sig] = util.average(geneVals)
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)

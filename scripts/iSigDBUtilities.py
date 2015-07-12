@@ -212,7 +212,11 @@ def readMatrix(f,filterAllZero=True,ordered=False):
            (all(float(val)==0 for val in line[1:]) and filterAllZero):
             continue
         #process when there are multiple genes in one line with // operator
-        genes = line[0].upper().split('//')
+        if '///' in line[0]:
+            delim = '///'
+        else:
+            delim = '//'
+        genes = line[0].upper().split(delim)
         genes = [gene.strip() for gene in genes]
         vals = [float(x) for x in line[1:]]
         for gene in genes:

@@ -88,20 +88,18 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
         for fle in files:
             with open(fle) as sigGenes:
                 for line in sigGenes:
-                    line = line.replace('\n','').split('\t')[1:]
+                    line = line.upper().replace('\n','').split('\t')[1:]
                     candGenes = candGenes.union(set(x.split(',')[0].upper() for x in line[:int(n)]))
         return list(candGenes.intersection(samGenes))
     elif compType=='mag': #picks all genes which are up/downregulated by a factor of n
         for fle in files:
             with open(fle) as sigGenes:
                 for line in sigGenes:
-                    line = line.replace('\n','').split('\t')[1:]
-                    candGenes = set()
+                    line = line.upper().replace('\n','').split('\t')[1:]
                     for pair in line:
                         pair = pair.split(',')
-                        if float(pair[1]) < n:
-                            break
-                        candGenes.add(pair[0])
+                        if (float(pair[1]) > n and high) or (float(pair[1]) < 1.0/n and low):
+                            candGenes.add(pair[0])
         return list(candGenes.intersection(samGenes))
     else:
         util.displayErrorMessage("Not a valid spearman gene selector " + str(compType))

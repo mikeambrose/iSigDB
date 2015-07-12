@@ -58,23 +58,26 @@ for option in ["log","delta","rank"]:
     #add option string to version if it's in the form
     version = version + option * (option in form)
 zTransform = "matrix" if "scale_columns" in form else "none"
-fixed = "fixed" in form
 compNull = "null" in form
 numIter = int(form["nullNumIter"].value)
 invert = "invert" in form
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 n = int(form["num_genes"].value)
+mn,mx = None,None
+if "scale" in form:
+    mn = form["mn"].value
+    mx = form["mx"].value
 
 #logging this call
 
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
 logFileDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/useLog.txt' #TODO: add directory
 with open(logFileDir,'a') as logFile:
-    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,fixed,compNull,numIter,invert,rowMetric,colMetric,n]]))
+    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,compNull,numIter,invert,rowMetric,colMetric,n,mn,mx]]))
 
 print """Content-type: text/html
 
 """
 
-sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,fixed,compNull,False,numIter)
+sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx)

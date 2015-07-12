@@ -133,7 +133,7 @@ def writeRegularOutput(samSigVals,outFile,fullNames):
                     out.write('\t'+str(samSigVals[sam][sig]))
             out.write('\n')
 
-def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert
+def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,\
                     isClient,nullFilename,inpHistFilename=None,mn=None,mx=None):
     """Calls the R script to cluster and create the heatmap
         matrixFile is the location of the output

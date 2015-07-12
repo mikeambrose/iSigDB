@@ -106,7 +106,7 @@ def writeInDist(sams,inDistFilename):
     writeInputFileHist(inDistFilename,names,allVals)
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
-                    fixed,computeNull,isClient,nullIterations):
+                    computeNull,isClient,nullIterations,mn,mx):
     """Main function which generates the heatmap
     inputFile - user-provided input
     sigfile - file with most important genes for each signature
@@ -121,10 +121,11 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     jobID - ID of the current job, used for identifying and writing to file
     rowMetric, colMetric - "euclidean", "pearson", "none", used to cluster columns/rows
     invert - invert the axes of the heatmap
-    fixed - fix the color values across multiple iterations
     computeNull - compute the null distribution (only works for rank average, value, log)
     isClient - always false when run on server (debug option)
     nullIterations - number of iterations to run the simulation to find null distribution
+    mn - min value in the heatmap color range (or None to automatically scale)
+    mx - max value in the heatmap color range (or None)
     """
     #checks for errors and corrects whatever errors it can
     util.reformatFile(inputFile)
@@ -162,7 +163,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     abbrevsDict = util.loadAbbrevs(abbrevs)
     sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
     writeValues(sams,sigGenes,compOutput,version,abbrevsDict)
-    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,fixed,isClient,nullFilename,inpHistFilename)
+    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx)
         
 #----------------------------------------------------------------------------
 # main function call
@@ -178,8 +179,9 @@ if __name__ == "__main__":
     parser.add_option("--row_metric", dest="row_metric", help="metric for clustering rows (samples)")
     parser.add_option("--col_metric", dest="col_metric", help="metric for clustering columns (signatures)")
     parser.add_option("--invert",default=False,dest="invert",action="store_true",help="heatmap columns/rows swtiched")
-    parser.add_option("--fixed",default=False, dest="fixed",action="store_true", help="use fixed color axis")
     parser.add_option("--null",default=False,action="store_true", dest="null", help="compute null model")
     parser.add_option("--nullIter",dest="nullIterations",help="how many iterations to use in null model")
+    parser.add_option("--range",dest="range",help="range of output")
     (options, args) = parser.parse_args()
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.fixed,options.null,True,options.nullIterations if options.null else None)
+    mn,mx = options.range.split(',') if options.range != "None" else (None,None)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,options.nullIterations if options.null else None,mn,mx)

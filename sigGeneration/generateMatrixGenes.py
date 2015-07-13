@@ -7,7 +7,7 @@ sig\tgene,val\tgene,val\t...
 """
 import glob
 import math
-matrixAbbrevs = [("Immgen.txt","IMGN_"),("HumanBodyAtlas.txt","HBA_"),("MouseBodyAtlas.txt",""),("MacrophageActivation.txt","MA_")]#,("SkinDiseases.txt","")]
+matrixAbbrevs = [("Immgen.txt","IMGN_"),("HumanBodyAtlas.txt","HBA_"),("MouseBodyAtlas.txt",""),("MacrophageActivation.txt","MA_"),("SkinDiseases.txt","")]
 matrixPath = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/{matrix}'
 highGenePath = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/high_{matrix}'
 lowGenePath = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/low_{matrix}'

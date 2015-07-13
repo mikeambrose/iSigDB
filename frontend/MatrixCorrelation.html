@@ -22,6 +22,7 @@ function spear_gene_change() {
     hide('top');
     hide('all');
     hide('mag');
+    hide('cov');
     toggleVisibility(value);
 }
 </script>
@@ -73,10 +74,12 @@ Gene selection metric: &nbsp;
 <option value="all">Use all genes</option>
 <option value="top">Use top genes from each signature</option>
 <option value="mag">Use all genes upregulated beyond a certain threshold</option>
+<option value="cov">Use top genes ranked by covariance across the matrix</option>
 </select>
 <br>
 
 <div id="all"> </div>
+<div id="cov" style="display:none"></div>
 
 <div id="top" style = "display:none">
 Number of genes from each signature: &nbsp;

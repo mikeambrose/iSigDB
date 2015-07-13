@@ -31,6 +31,7 @@ for matrix,abbrev in matrixAbbrevs:
     with open(matrixPath.format(matrix=matrix)) as m:
         signatures = m.readline().replace('\n','').split('\t')[1:]
     for sig in signatures:
+        print "looking at signature {0}".format(sig)
         sigHighGenes[sig] = {}
         sigLowGenes[sig] = {}
         try:
@@ -38,7 +39,7 @@ for matrix,abbrev in matrixAbbrevs:
         except Exception:
             print "failure to find signature {sig} in {matrix}".format(sig=sig,matrix=matrix)
             exit()
-        geneVals = open(allSignatures[i]).read().split('\n')
+        geneVals = open(allSignatures[i]).read().upper().split('\n')
         for j in range(len(geneVals)):
             line = geneVals[j]
             if not line:    continue

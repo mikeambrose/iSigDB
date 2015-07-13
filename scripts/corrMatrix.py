@@ -61,13 +61,14 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     file) and computes the intersection of all those top genes, and then selects the subset of those
     which are present in all samples and signatures"""
     assert any([high,low])
+    #TODO: set up base directory properly
+    baseDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
     samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
         return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
 
     elif compType == 'cov':
-        #TODO: fix the directory
-        with open('/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/var_'+mName)\
+        with open('{0}var_{1}'.format(baseDir,mName))\
             as topGenes:
             candGenes = set()
             for line in topGenes:
@@ -78,8 +79,6 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     candGenes = set()
     #generates a set of candidate genes by picking the top n genes for each sig
     files = []
-    #TODO: set up base directory properly
-    baseDir = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'
     if high:
         files.append(baseDir+'high_'+mName)
     if low:
@@ -88,6 +87,8 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
         for fle in files:
             with open(fle) as sigGenes:
                 for line in sigGenes:
+                    if not line:
+                        continue
                     line = line.upper().replace('\n','').split('\t')[1:]
                     candGenes = candGenes.union(set(x.split(',')[0].upper() for x in line[:int(n)]))
         return list(candGenes.intersection(samGenes))
@@ -95,11 +96,17 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
         for fle in files:
             with open(fle) as sigGenes:
                 for line in sigGenes:
+                    if line == "\n":
+                        continue
+                    lineDebug = line
                     line = line.upper().replace('\n','').split('\t')[1:]
                     for pair in line:
                         pair = pair.split(',')
-                        if (float(pair[1]) > n and high) or (float(pair[1]) < 1.0/n and low):
-                            candGenes.add(pair[0])
+                        try:
+                            if (float(pair[1]) > n and high) or (float(pair[1]) < 1.0/n and low):
+                                candGenes.add(pair[0])
+                        except Exception:
+                            util.displayErrorMessage(repr(lineDebug))
         return list(candGenes.intersection(samGenes))
     else:
         util.displayErrorMessage("Not a valid spearman gene selector " + str(compType))
@@ -142,7 +149,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     genes = getSpearmanGenes(sams,matrix,geneMetric,os.path.basename(selMatrix),geneVal)
     #for debug purposes
     #TODO: comment when on server
-    print len(genes)
+    #print len(genes)
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes

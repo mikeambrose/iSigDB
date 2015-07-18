@@ -50,8 +50,7 @@ else:
 #the gene selection metric is called spear_gene and has values spearGeneAll, spearGeneTop, spearGeneMag
 geneMetric = form["spear_gene"].value
 #spearGeneAll -> nothing
-if geneMetric == 'all':
-    geneVal = None
+geneVal = None
 #spearGeneTop -> matrix_num_genes
 if geneMetric == 'top':
     geneVal = int(form["matrix_num_genes"].value)

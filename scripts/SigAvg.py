@@ -38,7 +38,10 @@ def ranked(sams):
 
 def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
-    return OrderedDict({sam:{gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]} for sam in sams})
+    logSams = OrderedDict()
+    for sam in sams:
+        logSams[sam] = {gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]}
+    return logSams
 
 def delta(sams):
     """for each sample, replaces the gene's value with the difference between its value and the

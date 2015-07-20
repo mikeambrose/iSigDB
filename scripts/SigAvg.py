@@ -14,7 +14,7 @@ matplotlib.use('Agg')
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
-def getSigGenes(sigFile,selectedSigs,n):
+def getSigGenes(sigFile,selectedSigs,n,isHuman=True):
     """Returns dictionary of signature : [top n genes]
     sigFile is the file with the shortened signatures
     n is the number of genes"""
@@ -24,7 +24,13 @@ def getSigGenes(sigFile,selectedSigs,n):
             splitLine = line.strip("\n").split("\t")
             sig = splitLine[0]
             if sig in selectedSigs:
-                sigGenes[sig] = splitLine[1:n+1]
+                sigGenes[sig] = []
+                for gene in splitLine[1:n+1]:
+                    if '##' in gene:
+                        humanGene,mouseGene = gene.split('##')
+                        sigGenes[sig].append(humanGene if isHuman else mouseGene)
+                    else:
+                        sigGenes[sig].append(gene)
     return sigGenes
 
 def ranked(sams):
@@ -112,7 +118,7 @@ def writeInDist(sams,inDistFilename):
     writeInputFileHist(inDistFilename,names,allVals)
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
-                    computeNull,isClient,nullIterations,mn,mx):
+                    computeNull,isClient,nullIterations,mn,mx,isHuman=True):
     """Main function which generates the heatmap
     inputFile - user-provided input
     sigfile - file with most important genes for each signature
@@ -167,7 +173,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         nullFilename = None
 
     abbrevsDict = util.loadAbbrevs(abbrevs)
-    sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
+    sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n,isHuman) 
     writeValues(sams,sigGenes,compOutput,version,abbrevsDict)
     util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx)
         
@@ -188,6 +194,7 @@ if __name__ == "__main__":
     parser.add_option("--null",default=False,action="store_true", dest="null", help="compute null model")
     parser.add_option("--nullIter",dest="nullIterations",help="how many iterations to use in null model")
     parser.add_option("--range",dest="range",help="range of output")
+    parser.add_option("--mouse",dest="isHuman",action="store_false",default=True,help="mouse input")
     (options, args) = parser.parse_args()
     mn,mx = options.range.split(',') if options.range != "None" else (None,None)
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,options.nullIterations if options.null else None,mn,mx)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,options.nullIterations if options.null else None,mn,mx,options.isHuman)

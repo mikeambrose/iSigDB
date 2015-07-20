@@ -8,6 +8,7 @@ import make_heatmapV4 as make_heatmap
 import os
 import random
 import datetime
+import re
 
 def reformatFile(f):
     """Automatically changes f to be in the correct format
@@ -15,7 +16,6 @@ def reformatFile(f):
         or with newlines if there are just \r line endings)
     Replaces commas with semicolons
     Removes empty lines
-    Splits genes with // into two lines
     """
     s = open(f).read()
     s,ch1 = replaceNewlines(s)
@@ -222,11 +222,7 @@ def readMatrix(f,filterAllZero=True,ordered=False):
            (all(float(val)==0 for val in line[1:]) and filterAllZero):
             continue
         #process when there are multiple genes in one line with // operator
-        if '///' in line[0]:
-            delim = '///'
-        else:
-            delim = '//'
-        genes = line[0].upper().split(delim)
+        genes = re.split(" ?//+ ?",line[0].upper())
         genes = [gene.strip() for gene in genes]
         vals = [float(x) for x in line[1:]]
         for gene in genes:

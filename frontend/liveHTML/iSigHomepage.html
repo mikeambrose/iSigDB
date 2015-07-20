@@ -49,7 +49,7 @@ File: <input type="file" name="matrix_file" size="30">
 </div>
 <div id="serverFile" name="serverFile" style="display:none">
 Filename: <select id="serverFileName" name="serverFileName">
-{FILES GO HERE}
+{files}
 </select>
 or <a href="./serverFileUpload.html">upload a file</a>
 </div>
@@ -72,6 +72,8 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" w
 <input type="checkbox" name="fixed" id="fixed" value="checked"> Keep colors constant
 <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
 <br> <br>
+
+<input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>
 
 <input type="checkbox" name="null" id="null" value="checked"> Compute null distribution with
 <input type="number" name="nullNumIter" id="nullNumIter" min="1" max="100000" value="10000"> iterations
@@ -207,118 +209,7 @@ Click on a category to select specific signatures within that category <br />
 </li><li id="MBA_mast_cells_IgE">MBA_mast_cells_IgE
 </li><li id="MBA_mast_cells_IgE+antigen_1hr">MBA_mast_cells_IgE+antigen_1hr
 </li><li id="MBA_mast_cells_IgE+antigen_6hr">MBA_mast_cells_IgE+antigen_6hr
-</li></ul></li></ul></li><li id="Human">Human
-<ul><li id="Human Tissue">Human Tissue
-<ul><li id="DermDB_Normal skin">DermDB_Normal skin
-</li><li id="DermDB_Psoriasis">DermDB_Psoriasis
-</li><li id="DermDB_Burn">DermDB_Burn
-</li><li id="DermDB_Acute wound (0h after injury)">DermDB_Acute wound (0h after injury)
-</li><li id="DermDB_Post-operative wound (3; 7 days after injury)">DermDB_Post-operative wound (3; 7 days after injury)
-</li><li id="DermDB_Stevens Johnson syndrome (blister cells)">DermDB_Stevens Johnson syndrome (blister cells)
-</li><li id="DermDB_Reversal reaction (leprosy)">DermDB_Reversal reaction (leprosy)
-</li><li id="DermDB_Lepromatous leprosy">DermDB_Lepromatous leprosy
-</li><li id="DermDB_Tuberculoid leprosy">DermDB_Tuberculoid leprosy
-</li><li id="DermDB_Erythema nodosum leprosum ">DermDB_Erythema nodosum leprosum 
-</li><li id="DermDB_Allergic contact dermatitis">DermDB_Allergic contact dermatitis
-</li><li id="DermDB_Irritant contact dermatitis">DermDB_Irritant contact dermatitis
-</li><li id="DermDB_Atopic dermatitis">DermDB_Atopic dermatitis
-</li><li id="DermDB_Mycosis fungoides">DermDB_Mycosis fungoides
-</li><li id="DermDB_Squamous cell carcinoma">DermDB_Squamous cell carcinoma
-</li><li id="DermDB_Basal cell carcinoma">DermDB_Basal cell carcinoma
-</li><li id="DermDB_Melanoma">DermDB_Melanoma
-</li><li id="DermDB_Cutaneous sarcoidosis">DermDB_Cutaneous sarcoidosis
-</li><li id="DermDB_Chancroid">DermDB_Chancroid
-</li><li id="DermDB_Alopecia areata">DermDB_Alopecia areata
-</li><li id="DermDB_Discoid Lupus Erythematosus">DermDB_Discoid Lupus Erythematosus
-</li><li id="DermDB_Acne">DermDB_Acne
-</li><li id="DermDB_Non-lesional acne">DermDB_Non-lesional acne
-</li><li id="RTLEP_ENL2">RTLEP_ENL2
-</li><li id="RTLEP_LL2">RTLEP_LL2
-</li><li id="RTLEP_RR2">RTLEP_RR2
-</li><li id="RTLEP_TL2">RTLEP_TL2
-</li><li id="WRS_Dermis">WRS_Dermis
-</li><li id="WRS_Subcutaneous_adipose">WRS_Subcutaneous_adipose
-</li></ul></li><li id="Human Cell type">Human Cell type
-<ul><li id="WRS_B_cell">WRS_B_cell
-</li><li id="WRS_CD138+Plasma_Cell">WRS_CD138+Plasma_Cell
-</li><li id="WRS_CD34+cell">WRS_CD34+cell
-</li><li id="WRS_CD3+T-cell">WRS_CD3+T-cell
-</li><li id="WRS_CD4+T-cell">WRS_CD4+T-cell
-</li><li id="WRS_CD8+T-cell">WRS_CD8+T-cell
-</li><li id="WRS_Dendritic_cell">WRS_Dendritic_cell
-</li><li id="WRS_Eosinophil">WRS_Eosinophil
-</li><li id="WRS_Epidermis">WRS_Epidermis
-</li><li id="WRS_Fibroblast">WRS_Fibroblast
-</li><li id="WRS_Gamma_Delta_T-cell">WRS_Gamma_Delta_T-cell
-</li><li id="WRS_Keratinocyte">WRS_Keratinocyte
-</li><li id="WRS_Lymph_endothelial_cell">WRS_Lymph_endothelial_cell
-</li><li id="WRS_Macrophage">WRS_Macrophage
-</li><li id="WRS_Monocyte">WRS_Monocyte
-</li><li id="WRS_NK_T-cell">WRS_NK_T-cell
-</li><li id="WRS_NK_cell">WRS_NK_cell
-</li><li id="WRS_Neutrophil">WRS_Neutrophil
-</li><li id="WRS_Platelet">WRS_Platelet
-</li><li id="WRS_Regulatory_T-cell">WRS_Regulatory_T-cell
-</li><li id="WRS_Reticulocyte">WRS_Reticulocyte
-</li><li id="WRS_Vascular_endothelial_cell">WRS_Vascular_endothelial_cell
-</li><li id="TH_Th17">TH_Th17
-</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
-</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
-</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
-</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
-</li></ul></li><li id="Human Perturbation">Human Perturbation
-<ul><li id="MacCyto_adPBMC_IL4_6h">MacCyto_adPBMC_IL4_6h
-</li><li id="MacCyto_adPBMC_IL4_24h">MacCyto_adPBMC_IL4_24h
-</li><li id="MacCyto_adPBMC_IL10_6h">MacCyto_adPBMC_IL10_6h
-</li><li id="MacCyto_adPBMC_IL10_24h">MacCyto_adPBMC_IL10_24h
-</li><li id="MacCyto_adPBMC_IL15_6h">MacCyto_adPBMC_IL15_6h
-</li><li id="MacCyto_adPBMC_IL15_24h">MacCyto_adPBMC_IL15_24h
-</li><li id="MacCytoT0_adPBMC_IL4_6h">MacCytoT0_adPBMC_IL4_6h
-</li><li id="MacCytoT0_adPBMC_IL4_24h">MacCytoT0_adPBMC_IL4_24h
-</li><li id="MacCytoT0_adPBMC_IL10_6h">MacCytoT0_adPBMC_IL10_6h
-</li><li id="MacCytoT0_adPBMC_IL10_24h">MacCytoT0_adPBMC_IL10_24h
-</li><li id="MacCytoT0_adPBMC_IL15_6h">MacCytoT0_adPBMC_IL15_6h
-</li><li id="MacCytoT0_adPBMC_IL15_24h">MacCytoT0_adPBMC_IL15_24h
-</li><li id="IL-6_MDMd7_IL6_4h">IL-6_MDMd7_IL6_4h
-</li><li id="NOD_adPBMC_NOD2L_6h">NOD_adPBMC_NOD2L_6h
-</li><li id="NOD_adPBMC_NOD2L_24h">NOD_adPBMC_NOD2L_24h
-</li><li id="NOD_adPBMC_TLR2L_6h">NOD_adPBMC_TLR2L_6h
-</li><li id="NOD_adPBMC_TLR2L_24h">NOD_adPBMC_TLR2L_24h
-</li><li id="NOD_adPBMC_NOD2L+TLR2L_6h">NOD_adPBMC_NOD2L+TLR2L_6h
-</li><li id="NOD_adPBMC_NOD2L+TLR2L_24h">NOD_adPBMC_NOD2L+TLR2L_24h
-</li><li id="INF_MDMd5_IFNB_2h">INF_MDMd5_IFNB_2h
-</li><li id="INF_MDMd5_IFNB_6h">INF_MDMd5_IFNB_6h
-</li><li id="INF_MDMd5_IFNB_24h">INF_MDMd5_IFNB_24h
-</li><li id="INF_MDMd5_IFNG_2h">INF_MDMd5_IFNG_2h
-</li><li id="INF_MDMd5_IFNG_6h">INF_MDMd5_IFNG_6h
-</li><li id="INF_MDMd5_IFNG_24h">INF_MDMd5_IFNG_24h
-</li><li id="INF_MDMd5_TLR2L_2h">INF_MDMd5_TLR2L_2h
-</li><li id="INF_MDMd5_TLR2L_6h">INF_MDMd5_TLR2L_6h
-</li><li id="INF_MDMd5_TLR2L_24h">INF_MDMd5_TLR2L_24h
-</li><li id="VITD_adPBMC_ATRA_18h">VITD_adPBMC_ATRA_18h
-</li><li id="VITD_adPBMC_1;25D_18h">VITD_adPBMC_1;25D_18h
-</li><li id="NHEK_IL26">NHEK_IL26
-</li><li id="TH_Th17">TH_Th17
-</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
-</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
-</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
-</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
-</li><li id="KC_NHEK_IFNG_24hA">KC_NHEK_IFNG_24hA
-</li><li id="KC_NHEK_IFNG_24hB">KC_NHEK_IFNG_24hB
-</li><li id="KC_NHEK_IL22_4d">KC_NHEK_IL22_4d
-</li><li id="KC_NHEK_IFNG10_4d">KC_NHEK_IFNG10_4d
-</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
-</li><li id="KC_HaCaT_IFNG+TNF_24h">KC_HaCaT_IFNG+TNF_24h
-</li><li id="KC_NHEK_IL17A+TNF1_24h">KC_NHEK_IL17A+TNF1_24h
-</li><li id="KC_NHEK_IL17A+TNF10_24h">KC_NHEK_IL17A+TNF10_24h
-</li><li id="KC_HaCaT_TNF10_4h">KC_HaCaT_TNF10_4h
-</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
-</li><li id="KC_NHEK_IL17A_24h">KC_NHEK_IL17A_24h
-</li><li id="KC_NHEK_IFNG10_24h">KC_NHEK_IFNG10_24h
-</li><li id="GM_mono_GMCSF_3h">GM_mono_GMCSF_3h
-</li><li id="GM_mono_GMCSF_12h">GM_mono_GMCSF_12h
-</li></ul></li></ul></li><li id="New Signatures (still to be sorted)">New Signatures (still to be sorted)
-<ul><li id="ImmGen">ImmGen
+</li></ul></li><li id="ImmGen">ImmGen
 <ul><li id="IMGN_NK_MCMV1_Sp">IMGN_NK_MCMV1_Sp
 </li><li id="IMGN_MF_Thio5_II+480int_PC">IMGN_MF_Thio5_II+480int_PC
 </li><li id="IMGN_NK_49CI-_Sp">IMGN_NK_49CI-_Sp
@@ -533,6 +424,116 @@ Click on a category to select specific signatures within that category <br />
 </li><li id="IMGN_B_Fo_MLN">IMGN_B_Fo_MLN
 </li><li id="IMGN_T_4FP3-_Sp">IMGN_T_4FP3-_Sp
 </li><li id="IMGN_T_4int8+_Th ">IMGN_T_4int8+_Th 
+</li></ul></li></ul></li><li id="Human">Human
+<ul><li id="Human Tissue">Human Tissue
+<ul><li id="DermDB_Normal skin">DermDB_Normal skin
+</li><li id="DermDB_Psoriasis">DermDB_Psoriasis
+</li><li id="DermDB_Burn">DermDB_Burn
+</li><li id="DermDB_Acute wound (0h after injury)">DermDB_Acute wound (0h after injury)
+</li><li id="DermDB_Post-operative wound (3; 7 days after injury)">DermDB_Post-operative wound (3; 7 days after injury)
+</li><li id="DermDB_Stevens Johnson syndrome (blister cells)">DermDB_Stevens Johnson syndrome (blister cells)
+</li><li id="DermDB_Reversal reaction (leprosy)">DermDB_Reversal reaction (leprosy)
+</li><li id="DermDB_Lepromatous leprosy">DermDB_Lepromatous leprosy
+</li><li id="DermDB_Tuberculoid leprosy">DermDB_Tuberculoid leprosy
+</li><li id="DermDB_Erythema nodosum leprosum ">DermDB_Erythema nodosum leprosum 
+</li><li id="DermDB_Allergic contact dermatitis">DermDB_Allergic contact dermatitis
+</li><li id="DermDB_Irritant contact dermatitis">DermDB_Irritant contact dermatitis
+</li><li id="DermDB_Atopic dermatitis">DermDB_Atopic dermatitis
+</li><li id="DermDB_Mycosis fungoides">DermDB_Mycosis fungoides
+</li><li id="DermDB_Squamous cell carcinoma">DermDB_Squamous cell carcinoma
+</li><li id="DermDB_Basal cell carcinoma">DermDB_Basal cell carcinoma
+</li><li id="DermDB_Melanoma">DermDB_Melanoma
+</li><li id="DermDB_Cutaneous sarcoidosis">DermDB_Cutaneous sarcoidosis
+</li><li id="DermDB_Chancroid">DermDB_Chancroid
+</li><li id="DermDB_Alopecia areata">DermDB_Alopecia areata
+</li><li id="DermDB_Discoid Lupus Erythematosus">DermDB_Discoid Lupus Erythematosus
+</li><li id="DermDB_Acne">DermDB_Acne
+</li><li id="DermDB_Non-lesional acne">DermDB_Non-lesional acne
+</li><li id="RTLEP_ENL2">RTLEP_ENL2
+</li><li id="RTLEP_LL2">RTLEP_LL2
+</li><li id="RTLEP_RR2">RTLEP_RR2
+</li><li id="RTLEP_TL2">RTLEP_TL2
+</li><li id="WRS_Dermis">WRS_Dermis
+</li><li id="WRS_Subcutaneous_adipose">WRS_Subcutaneous_adipose
+</li></ul></li><li id="Human Cell type">Human Cell type
+<ul><li id="WRS_B_cell">WRS_B_cell
+</li><li id="WRS_CD138+Plasma_Cell">WRS_CD138+Plasma_Cell
+</li><li id="WRS_CD34+cell">WRS_CD34+cell
+</li><li id="WRS_CD3+T-cell">WRS_CD3+T-cell
+</li><li id="WRS_CD4+T-cell">WRS_CD4+T-cell
+</li><li id="WRS_CD8+T-cell">WRS_CD8+T-cell
+</li><li id="WRS_Dendritic_cell">WRS_Dendritic_cell
+</li><li id="WRS_Eosinophil">WRS_Eosinophil
+</li><li id="WRS_Epidermis">WRS_Epidermis
+</li><li id="WRS_Fibroblast">WRS_Fibroblast
+</li><li id="WRS_Gamma_Delta_T-cell">WRS_Gamma_Delta_T-cell
+</li><li id="WRS_Keratinocyte">WRS_Keratinocyte
+</li><li id="WRS_Lymph_endothelial_cell">WRS_Lymph_endothelial_cell
+</li><li id="WRS_Macrophage">WRS_Macrophage
+</li><li id="WRS_Monocyte">WRS_Monocyte
+</li><li id="WRS_NK_T-cell">WRS_NK_T-cell
+</li><li id="WRS_NK_cell">WRS_NK_cell
+</li><li id="WRS_Neutrophil">WRS_Neutrophil
+</li><li id="WRS_Platelet">WRS_Platelet
+</li><li id="WRS_Regulatory_T-cell">WRS_Regulatory_T-cell
+</li><li id="WRS_Reticulocyte">WRS_Reticulocyte
+</li><li id="WRS_Vascular_endothelial_cell">WRS_Vascular_endothelial_cell
+</li><li id="TH_Th17">TH_Th17
+</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
+</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
+</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
+</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
+</li></ul></li><li id="Human Perturbation">Human Perturbation
+<ul><li id="MacCyto_adPBMC_IL4_6h">MacCyto_adPBMC_IL4_6h
+</li><li id="MacCyto_adPBMC_IL4_24h">MacCyto_adPBMC_IL4_24h
+</li><li id="MacCyto_adPBMC_IL10_6h">MacCyto_adPBMC_IL10_6h
+</li><li id="MacCyto_adPBMC_IL10_24h">MacCyto_adPBMC_IL10_24h
+</li><li id="MacCyto_adPBMC_IL15_6h">MacCyto_adPBMC_IL15_6h
+</li><li id="MacCyto_adPBMC_IL15_24h">MacCyto_adPBMC_IL15_24h
+</li><li id="MacCytoT0_adPBMC_IL4_6h">MacCytoT0_adPBMC_IL4_6h
+</li><li id="MacCytoT0_adPBMC_IL4_24h">MacCytoT0_adPBMC_IL4_24h
+</li><li id="MacCytoT0_adPBMC_IL10_6h">MacCytoT0_adPBMC_IL10_6h
+</li><li id="MacCytoT0_adPBMC_IL10_24h">MacCytoT0_adPBMC_IL10_24h
+</li><li id="MacCytoT0_adPBMC_IL15_6h">MacCytoT0_adPBMC_IL15_6h
+</li><li id="MacCytoT0_adPBMC_IL15_24h">MacCytoT0_adPBMC_IL15_24h
+</li><li id="IL-6_MDMd7_IL6_4h">IL-6_MDMd7_IL6_4h
+</li><li id="NOD_adPBMC_NOD2L_6h">NOD_adPBMC_NOD2L_6h
+</li><li id="NOD_adPBMC_NOD2L_24h">NOD_adPBMC_NOD2L_24h
+</li><li id="NOD_adPBMC_TLR2L_6h">NOD_adPBMC_TLR2L_6h
+</li><li id="NOD_adPBMC_TLR2L_24h">NOD_adPBMC_TLR2L_24h
+</li><li id="NOD_adPBMC_NOD2L+TLR2L_6h">NOD_adPBMC_NOD2L+TLR2L_6h
+</li><li id="NOD_adPBMC_NOD2L+TLR2L_24h">NOD_adPBMC_NOD2L+TLR2L_24h
+</li><li id="INF_MDMd5_IFNB_2h">INF_MDMd5_IFNB_2h
+</li><li id="INF_MDMd5_IFNB_6h">INF_MDMd5_IFNB_6h
+</li><li id="INF_MDMd5_IFNB_24h">INF_MDMd5_IFNB_24h
+</li><li id="INF_MDMd5_IFNG_2h">INF_MDMd5_IFNG_2h
+</li><li id="INF_MDMd5_IFNG_6h">INF_MDMd5_IFNG_6h
+</li><li id="INF_MDMd5_IFNG_24h">INF_MDMd5_IFNG_24h
+</li><li id="INF_MDMd5_TLR2L_2h">INF_MDMd5_TLR2L_2h
+</li><li id="INF_MDMd5_TLR2L_6h">INF_MDMd5_TLR2L_6h
+</li><li id="INF_MDMd5_TLR2L_24h">INF_MDMd5_TLR2L_24h
+</li><li id="VITD_adPBMC_ATRA_18h">VITD_adPBMC_ATRA_18h
+</li><li id="VITD_adPBMC_1;25D_18h">VITD_adPBMC_1;25D_18h
+</li><li id="NHEK_IL26">NHEK_IL26
+</li><li id="TH_Th17">TH_Th17
+</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
+</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
+</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
+</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
+</li><li id="KC_NHEK_IFNG_24hA">KC_NHEK_IFNG_24hA
+</li><li id="KC_NHEK_IFNG_24hB">KC_NHEK_IFNG_24hB
+</li><li id="KC_NHEK_IL22_4d">KC_NHEK_IL22_4d
+</li><li id="KC_NHEK_IFNG10_4d">KC_NHEK_IFNG10_4d
+</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
+</li><li id="KC_HaCaT_IFNG+TNF_24h">KC_HaCaT_IFNG+TNF_24h
+</li><li id="KC_NHEK_IL17A+TNF1_24h">KC_NHEK_IL17A+TNF1_24h
+</li><li id="KC_NHEK_IL17A+TNF10_24h">KC_NHEK_IL17A+TNF10_24h
+</li><li id="KC_HaCaT_TNF10_4h">KC_HaCaT_TNF10_4h
+</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
+</li><li id="KC_NHEK_IL17A_24h">KC_NHEK_IL17A_24h
+</li><li id="KC_NHEK_IFNG10_24h">KC_NHEK_IFNG10_24h
+</li><li id="GM_mono_GMCSF_3h">GM_mono_GMCSF_3h
+</li><li id="GM_mono_GMCSF_12h">GM_mono_GMCSF_12h
 </li></ul></li><li id="MacrophageActivation">MacrophageActivation
 <ul><li id="MA_M1_2_GMCSF_24h">MA_M1_2_GMCSF_24h
 </li><li id="MA_iTreg">MA_iTreg
@@ -703,8 +704,7 @@ Click on a category to select specific signatures within that category <br />
 <ul><li id="Lep_RR">Lep_RR
 </li><li id="Lep_LL">Lep_LL
 </li><li id="Lep_BT">Lep_BT
-</li></ul></li></ul></li></ul></div>
-
+</li></ul></li></ul></li>
 <input type="submit" id="tissueDeconvolutionSubmit" name="tissueDeconvolutionSubmit" onclick="submitCheckboxes()" value="Submit" />
 
 </form>

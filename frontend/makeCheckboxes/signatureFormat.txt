@@ -96,117 +96,6 @@ Mouse
         MBA_mast_cells_IgE
         MBA_mast_cells_IgE+antigen_1hr
         MBA_mast_cells_IgE+antigen_6hr
-Human
-    Human Tissue
-        DermDB_Normal skin
-        DermDB_Psoriasis
-        DermDB_Burn
-        DermDB_Acute wound (0h after injury)
-        DermDB_Post-operative wound (3; 7 days after injury)
-        DermDB_Stevens Johnson syndrome (blister cells)
-        DermDB_Reversal reaction (leprosy)
-        DermDB_Lepromatous leprosy
-        DermDB_Tuberculoid leprosy
-        DermDB_Erythema nodosum leprosum 
-        DermDB_Allergic contact dermatitis
-        DermDB_Irritant contact dermatitis
-        DermDB_Atopic dermatitis
-        DermDB_Mycosis fungoides
-        DermDB_Squamous cell carcinoma
-        DermDB_Basal cell carcinoma
-        DermDB_Melanoma
-        DermDB_Cutaneous sarcoidosis
-        DermDB_Chancroid
-        DermDB_Alopecia areata
-        DermDB_Discoid Lupus Erythematosus
-        DermDB_Acne
-        DermDB_Non-lesional acne
-        RTLEP_ENL2
-        RTLEP_LL2
-        RTLEP_RR2
-        RTLEP_TL2
-        WRS_Dermis
-        WRS_Subcutaneous_adipose
-    Human Cell type
-        WRS_B_cell
-        WRS_CD138+Plasma_Cell
-        WRS_CD34+cell
-        WRS_CD3+T-cell
-        WRS_CD4+T-cell
-        WRS_CD8+T-cell
-        WRS_Dendritic_cell
-        WRS_Eosinophil
-        WRS_Epidermis
-        WRS_Fibroblast
-        WRS_Gamma_Delta_T-cell
-        WRS_Keratinocyte
-        WRS_Lymph_endothelial_cell
-        WRS_Macrophage
-        WRS_Monocyte
-        WRS_NK_T-cell
-        WRS_NK_cell
-        WRS_Neutrophil
-        WRS_Platelet
-        WRS_Regulatory_T-cell
-        WRS_Reticulocyte
-        WRS_Vascular_endothelial_cell
-        TH_Th17
-        TH_Th1_Harvard
-        TH_Th1_Rank_Relative
-        TH_Th2_Harvard
-        TH_Th2_Rank_Relative
-    Human Perturbation
-        MacCyto_adPBMC_IL4_6h
-        MacCyto_adPBMC_IL4_24h
-        MacCyto_adPBMC_IL10_6h
-        MacCyto_adPBMC_IL10_24h
-        MacCyto_adPBMC_IL15_6h
-        MacCyto_adPBMC_IL15_24h
-        MacCytoT0_adPBMC_IL4_6h
-        MacCytoT0_adPBMC_IL4_24h
-        MacCytoT0_adPBMC_IL10_6h
-        MacCytoT0_adPBMC_IL10_24h
-        MacCytoT0_adPBMC_IL15_6h
-        MacCytoT0_adPBMC_IL15_24h
-        IL-6_MDMd7_IL6_4h
-        NOD_adPBMC_NOD2L_6h
-        NOD_adPBMC_NOD2L_24h
-        NOD_adPBMC_TLR2L_6h
-        NOD_adPBMC_TLR2L_24h
-        NOD_adPBMC_NOD2L+TLR2L_6h
-        NOD_adPBMC_NOD2L+TLR2L_24h
-        INF_MDMd5_IFNB_2h
-        INF_MDMd5_IFNB_6h
-        INF_MDMd5_IFNB_24h
-        INF_MDMd5_IFNG_2h
-        INF_MDMd5_IFNG_6h
-        INF_MDMd5_IFNG_24h
-        INF_MDMd5_TLR2L_2h
-        INF_MDMd5_TLR2L_6h
-        INF_MDMd5_TLR2L_24h
-        VITD_adPBMC_ATRA_18h
-        VITD_adPBMC_1;25D_18h
-        NHEK_IL26
-        TH_Th17
-        TH_Th1_Harvard
-        TH_Th1_Rank_Relative
-        TH_Th2_Harvard
-        TH_Th2_Rank_Relative
-        KC_NHEK_IFNG_24hA
-        KC_NHEK_IFNG_24hB
-        KC_NHEK_IL22_4d
-        KC_NHEK_IFNG10_4d
-        KC_NHEK_IFNG20_24h
-        KC_HaCaT_IFNG+TNF_24h
-        KC_NHEK_IL17A+TNF1_24h
-        KC_NHEK_IL17A+TNF10_24h
-        KC_HaCaT_TNF10_4h
-        KC_NHEK_IFNG20_24h
-        KC_NHEK_IL17A_24h
-        KC_NHEK_IFNG10_24h
-        GM_mono_GMCSF_3h
-        GM_mono_GMCSF_12h
-New Signatures (still to be sorted)
     ImmGen
         IMGN_NK_MCMV1_Sp
         IMGN_MF_Thio5_II+480int_PC
@@ -422,6 +311,116 @@ New Signatures (still to be sorted)
         IMGN_B_Fo_MLN
         IMGN_T_4FP3-_Sp
         IMGN_T_4int8+_Th 
+Human
+    Human Tissue
+        DermDB_Normal skin
+        DermDB_Psoriasis
+        DermDB_Burn
+        DermDB_Acute wound (0h after injury)
+        DermDB_Post-operative wound (3; 7 days after injury)
+        DermDB_Stevens Johnson syndrome (blister cells)
+        DermDB_Reversal reaction (leprosy)
+        DermDB_Lepromatous leprosy
+        DermDB_Tuberculoid leprosy
+        DermDB_Erythema nodosum leprosum 
+        DermDB_Allergic contact dermatitis
+        DermDB_Irritant contact dermatitis
+        DermDB_Atopic dermatitis
+        DermDB_Mycosis fungoides
+        DermDB_Squamous cell carcinoma
+        DermDB_Basal cell carcinoma
+        DermDB_Melanoma
+        DermDB_Cutaneous sarcoidosis
+        DermDB_Chancroid
+        DermDB_Alopecia areata
+        DermDB_Discoid Lupus Erythematosus
+        DermDB_Acne
+        DermDB_Non-lesional acne
+        RTLEP_ENL2
+        RTLEP_LL2
+        RTLEP_RR2
+        RTLEP_TL2
+        WRS_Dermis
+        WRS_Subcutaneous_adipose
+    Human Cell type
+        WRS_B_cell
+        WRS_CD138+Plasma_Cell
+        WRS_CD34+cell
+        WRS_CD3+T-cell
+        WRS_CD4+T-cell
+        WRS_CD8+T-cell
+        WRS_Dendritic_cell
+        WRS_Eosinophil
+        WRS_Epidermis
+        WRS_Fibroblast
+        WRS_Gamma_Delta_T-cell
+        WRS_Keratinocyte
+        WRS_Lymph_endothelial_cell
+        WRS_Macrophage
+        WRS_Monocyte
+        WRS_NK_T-cell
+        WRS_NK_cell
+        WRS_Neutrophil
+        WRS_Platelet
+        WRS_Regulatory_T-cell
+        WRS_Reticulocyte
+        WRS_Vascular_endothelial_cell
+        TH_Th17
+        TH_Th1_Harvard
+        TH_Th1_Rank_Relative
+        TH_Th2_Harvard
+        TH_Th2_Rank_Relative
+    Human Perturbation
+        MacCyto_adPBMC_IL4_6h
+        MacCyto_adPBMC_IL4_24h
+        MacCyto_adPBMC_IL10_6h
+        MacCyto_adPBMC_IL10_24h
+        MacCyto_adPBMC_IL15_6h
+        MacCyto_adPBMC_IL15_24h
+        MacCytoT0_adPBMC_IL4_6h
+        MacCytoT0_adPBMC_IL4_24h
+        MacCytoT0_adPBMC_IL10_6h
+        MacCytoT0_adPBMC_IL10_24h
+        MacCytoT0_adPBMC_IL15_6h
+        MacCytoT0_adPBMC_IL15_24h
+        IL-6_MDMd7_IL6_4h
+        NOD_adPBMC_NOD2L_6h
+        NOD_adPBMC_NOD2L_24h
+        NOD_adPBMC_TLR2L_6h
+        NOD_adPBMC_TLR2L_24h
+        NOD_adPBMC_NOD2L+TLR2L_6h
+        NOD_adPBMC_NOD2L+TLR2L_24h
+        INF_MDMd5_IFNB_2h
+        INF_MDMd5_IFNB_6h
+        INF_MDMd5_IFNB_24h
+        INF_MDMd5_IFNG_2h
+        INF_MDMd5_IFNG_6h
+        INF_MDMd5_IFNG_24h
+        INF_MDMd5_TLR2L_2h
+        INF_MDMd5_TLR2L_6h
+        INF_MDMd5_TLR2L_24h
+        VITD_adPBMC_ATRA_18h
+        VITD_adPBMC_1;25D_18h
+        NHEK_IL26
+        TH_Th17
+        TH_Th1_Harvard
+        TH_Th1_Rank_Relative
+        TH_Th2_Harvard
+        TH_Th2_Rank_Relative
+        KC_NHEK_IFNG_24hA
+        KC_NHEK_IFNG_24hB
+        KC_NHEK_IL22_4d
+        KC_NHEK_IFNG10_4d
+        KC_NHEK_IFNG20_24h
+        KC_HaCaT_IFNG+TNF_24h
+        KC_NHEK_IL17A+TNF1_24h
+        KC_NHEK_IL17A+TNF10_24h
+        KC_HaCaT_TNF10_4h
+        KC_NHEK_IFNG20_24h
+        KC_NHEK_IL17A_24h
+        KC_NHEK_IFNG10_24h
+        GM_mono_GMCSF_3h
+        GM_mono_GMCSF_12h
     MacrophageActivation
         MA_M1_2_GMCSF_24h
         MA_iTreg

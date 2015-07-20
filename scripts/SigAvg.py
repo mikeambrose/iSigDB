@@ -77,7 +77,6 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict):
                     continue
                 geneVals.append(sams[sam][gene])
             if len(geneVals) == 0:
-                print "no genes intersecting with " + sig
                 continue
             samSigVal[sam][sig] = util.average(geneVals)
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)

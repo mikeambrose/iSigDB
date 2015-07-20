@@ -11,3 +11,4 @@ scripts/scratch/*
 *.swp
 *.swo
 wksp/NewSigs/*
+wksp/test*

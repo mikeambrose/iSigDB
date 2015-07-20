@@ -10,8 +10,9 @@ from optparse import OptionParser
 import iSigDBUtilities as util
 import math
 from collections import OrderedDict
+import subprocess
 
-def corrRank(sigs,sams,geneNames,strOutFile,version):
+def corrRank(sigs,sams,strOutFile,version):
     """Uses the spearman/pearson coefficient to evaluate the similarity between signatures and samples
     sigs is a dictionary where each entry has the n genes chosen for analysis
     sams is in the same format as sigDict, but has samples as keys instead of signatures
@@ -29,6 +30,24 @@ def corrRank(sigs,sams,geneNames,strOutFile,version):
             samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
+def decomp(sigs,sams,outFile):
+    """Runs the matrix decomposition on signatures/samples using DeconRNASeq
+    sigs/sams/outFile same as in corrRank"""
+    #TODO: pass in isClient somehow
+    isClient = True
+    #first we write both matrices to a tab-delimited file
+    #TODO: fix directory
+    sigpath = "/home/mike/workspace/PellegriniResearch/scripts/scratch/sigMatrix.txt"
+    sampath = "/home/mike/workspace/PellegriniResearch/scripts/scratch/samMatrix.txt"
+    util.writeRegularOutput(util.invertDict(sigs),sigpath)
+    util.writeRegularOutput(util.invertDict(sams),sampath)
+    #next, we call the R script, which writes to the directory
+    rscriptPath = "Rscript" if isClient\
+                else "/UCSC/Pathways-Auxiliary/UCLApathways-R-3.1.1/R-3.1.1/bin/Rscript"
+    FNULL = open(os.devnull,'w')
+    decompScriptPath = "/home/mike/workspace/PellegriniResearch/scripts/decomp.R"
+    #if this is silently failing, it might be something with the rscript - remove the redirect to null
+    subprocess.call([rscriptPath,decompScriptPath,sigpath,sampath,outFile],stdout=FNULL,stderr=FNULL)
 
 def getSpearmanVals(v1,v2):
     """Returns the spearman correlation coefficient between v1 and v2"""
@@ -75,7 +94,6 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
                 if not line:    continue
                 candGenes.add(line.split('\t')[0].upper())
         return list(samGenes.intersection(candGenes))
-
     candGenes = set()
     #generates a set of candidate genes by picking the top n genes for each sig
     files = []
@@ -148,14 +166,16 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     #find set of genes
     genes = getSpearmanGenes(sams,matrix,geneMetric,os.path.basename(selMatrix),geneVal)
     #for debug purposes
-    #TODO: comment when on server
-    #print len(genes)
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes
     spearmanSams, spearmanMatrix = getSpearmanDict(sams,genes,True), getSpearmanDict(matrix,genes)
-    #run correlation on them
-    corrRank(spearmanMatrix,spearmanSams,genes,outFile,version)
+    if version in ["spearman","pearson"]:
+        #run correlation on them
+        corrRank(spearmanMatrix,spearmanSams,outFile,version)
+    else:
+        #TODO: add ability to filter on genes
+        decomp(matrix,sams,outFile)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
     #pass computation to R/make_heatmap

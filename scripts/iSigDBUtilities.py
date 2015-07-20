@@ -109,7 +109,17 @@ def writeDetailedOutput(sigGenes,samVals,outFile,fullNames,deltaSigs=None):
 
 average = lambda lst: sum(lst) / float(len(lst))
 
-def writeRegularOutput(samSigVals,outFile,fullNames):
+def invertDict(d):
+    """Changes d from a:b:val to b:a:val"""
+    newD = {}
+    for a in d:
+        for b in d[a]:
+            if b not in newD:
+                newD[b] = {}
+            newD[b][a] = d[a][b]
+    return newD    
+
+def writeRegularOutput(samSigVals,outFile,fullNames={}):
     """Writes regular output to outFile
     samSigVals is a dictionary of sample : signature : value
         the value can be a list, in which case it is averaged, or a single value

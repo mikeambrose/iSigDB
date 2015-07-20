@@ -1,23 +1,25 @@
 def readEnsemblDict(filename):
     ensGene = {}
+    allGenes = set()
     with open(filename) as f:
         f.readline()
         for line in f:
             ens,gene = line.upper().replace('\n','').split('\t') 
             if not gene:    continue
+            allGenes.add(gene)
             if ens in ensGene:
                 ensGene[ens].append(gene)
             else:
                 ensGene[ens] = [gene]
-    return ensGene
+    return ensGene,allGenes
 
 def getMouseHumanDicts(human,mouse,both):
     """Finds the set of all mappings which are one-to-one, excluding genes which map
         only to themselves
     'human','mouse','both' are their respective Ensembl filenames
         (constants contain the expected filenames)"""
-    human = readEnsemblDict(human)
-    mouse = readEnsemblDict(mouse)
+    human,humanGenes = readEnsemblDict(human)
+    mouse,mouseGenes = readEnsemblDict(mouse)
     humanToMouse = {}
     mouseToHuman = {}
     with open(both) as f:
@@ -45,13 +47,21 @@ def getMouseHumanDicts(human,mouse,both):
                 d[gene] = list(set(d[gene]))
     #remove gene->gene mappings
     for d in [humanToMouse,mouseToHuman]:
-        keycopy = d.keys()
-        for gene in keycopy:
+        for gene in d.keys():
             if d[gene][0] == gene:
                 del d[gene]
             else:
                 d[gene] = d[gene][0]
+    #if a gene is defined as both a mouse and human gene, remove it
+    for gene in humanToMouse.keys():
+        if gene in mouseGenes:
+            del humanToMouse[gene]
+    for gene in mouseToHuman.keys():
+        if gene in humanGenes:
+            del mouseToHuman[gene]
     return mouseToHuman,humanToMouse
+
+
 
 human = 'MouseHumanTranslation/BioMart_EnsemblGenes80_HomoSapiensGenesGRCh38.p2_EnsemblGeneID_HGNCsymbol.txt'
 mouse = 'MouseHumanTranslation/BioMart_EnsemblGenes80_MusMusculusGenesGRCm38.p3_EnsemblGeneID_MGIsymbol.txt'

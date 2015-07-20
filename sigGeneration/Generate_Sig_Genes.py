@@ -4,24 +4,7 @@ from optparse import OptionParser
 import numpy as np
 import glob
 import os
-"""def readSigFiles(lFiles):
-    dTisToFCToGene = {}
-    for strFile in lFiles:
-        head,tail = os.path.split(strFile)
-        strTis =  tail.split('--')[0]
-        dTisToFCToGene[strTis]={}
-        f = open(strFile,'r')
-        for strLine in f:
-            strGene,strRatio = strLine.rstrip().split('\t')
-            strGene = strGene.upper()
-            if strRatio == '0':
-                continue
-            flogFC = float(strRatio)
-            if not dTisToFCToGene[strTis].has_key(flogFC):
-                dTisToFCToGene[strTis][flogFC] = []
-            dTisToFCToGene[strTis][flogFC].append(strGene)
-        f.close()
-    return dTisToFCToGene"""
+import MouseHumanDict as mhd
 
 def readSigFiles(files):
     """Returns a dictionary of signature name : gene : value"""
@@ -41,41 +24,41 @@ def getTopNGenes(sigGeneVals,sig,n):
     allGeneVals.sort(key=lambda x:-x[1])
     return [x[0] for x in allGeneVals[:n]]
 
-"""def getSigToGene(dTisToFCToGene,nGeneCount):
-    dSigToGene = {}
-    #load UP signatures
-    for strTis in dTisToFCToGene.keys():
-        dSigToGene[strTis] = []
-        nCurGeneCount = 0
-        for fFC in sorted(dTisToFCToGene[strTis].keys(),reverse=True):
-            for strCurGene in dTisToFCToGene[strTis][fFC]:
-                nCurGeneCount+=1
-                dSigToGene[strTis].append(strCurGene)
-                if nCurGeneCount >= nGeneCount:
-                    break
-            if nCurGeneCount >= nGeneCount:
-                break
-    return dSigToGene"""
+def geneStr(gene,mouseToHuman,humanToMouse):
+    assert not (gene in humanToMouse and gene in mouseToHuman)
+    if gene in mouseToHuman:
+        return "{0}##{1}".format(mouseToHuman[gene],gene)
+    elif gene in humanToMouse:
+        return "{0}##{1}".format(gene,humanToMouse[gene])
+    else:
+        return gene
 
 def writeSigGenes(sigDir,n,output):
     allSigs = glob.glob(sigDir+'/*--*')
+    mouseToHuman,humanToMouse = mhd.getMouseHumanDicts(mhd.human,mhd.mouse,mhd.both)
     sigGeneVals = readSigFiles(allSigs)
+    questionableHumanGenes = set()
+    questionableMouseGenes = set()
     with open(output,'w') as out:
         for sig in sigGeneVals:
             topGenes = getTopNGenes(sigGeneVals,sig,n)
-            out.write("{sig}\t{genes}\n".format(sig=sig,genes="\t".join(topGenes)))
-
-"""def writeSigGenes(strSigFile,nGeneCount,output):
-    allSigs = glob.glob(strSigFile+'/*--*')
-    dGroupTisToFCToGene = readSigFiles(lstrGroupsOnly)
-    dGroupSigToGene = getSigToGene(dGroupTisToFCToGene,nGeneCount)
-    with open(output,'w') as out:
-    	for sig in dGroupSigToGene:
-            out.write(sig+"\t")
-            for gene in dGroupSigToGene[sig][:-1]:
-                out.write(gene+"\t")
-            out.write(dGroupSigToGene[sig][-1][0]+"\n")"""
-
+            #nonessential - checking how many genes for each signature are 'human' and 'mouse'
+            mouseGenes = sum(g in mouseToHuman for g in topGenes)
+            humanGenes = sum(g in humanToMouse for g in topGenes)
+            if mouseGenes != 0 and humanGenes != 0:
+                if humanGenes > mouseGenes:
+                    for gene in mouseToHuman:
+                        if gene in topGenes:
+                            questionableHumanGenes.add(gene)
+                if mouseGenes > humanGenes:
+                    for gene in humanToMouse:
+                        if gene in topGenes:
+                            questionableMouseGenes.add(gene)
+            #end nonessential section
+            out.write("{sig}\t{genes}\n".format(sig=sig,genes="\t".join(\
+                                    geneStr(g,mouseToHuman,humanToMouse) for g in topGenes)))
+    print "'mouse' genes found in human signatures: ",questionableHumanGenes
+    print "'human' genes found in mouse signatures: ",questionableMouseGenes
 
 if __name__ == "__main__":
     parser = OptionParser()

@@ -85,7 +85,6 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
         return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
-
     elif compType == 'cov':
         with open('{0}var_{1}'.format(baseDir,mName))\
             as topGenes:
@@ -154,8 +153,8 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     job_id - number generated to uniquely identify task
     """
     #checks for errors and corrects whichever errors it can
-    #util.reformatFile(inputFile)
-    #util.checkForErrors(inputFile)
+    util.reformatFile(inputFile)
+    util.checkForErrors(inputFile)
 
     outFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
             else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\

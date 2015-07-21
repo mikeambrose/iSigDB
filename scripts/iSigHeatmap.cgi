@@ -64,6 +64,7 @@ invert = "invert" in form
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 n = int(form["num_genes"].value)
+species = form["species"].value
 mn,mx = None,None
 if "scale" in form:
     mn = form["mn"].value
@@ -74,10 +75,10 @@ if "scale" in form:
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
 logFileDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/useLog.txt' #TODO: add directory
 with open(logFileDir,'a') as logFile:
-    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,compNull,numIter,invert,rowMetric,colMetric,n,mn,mx]]))
+    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,compNull,numIter,invert,rowMetric,colMetric,n,mn,mx,species]]))
 
 print """Content-type: text/html
 
 """
 
-sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx)
+sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,species)

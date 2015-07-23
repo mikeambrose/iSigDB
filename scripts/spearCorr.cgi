@@ -1,12 +1,10 @@
 #!/UCSC/Pathways-Auxiliary/UCLApathways-PyPy-20150702/pypy-2.6-linux_x86_64-portable/bin/pypy
-#!/usr/bin/env python
 import os
 import sys
 sys.path.append('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank')
 import corrMatrix
 import cgi
 cgi.maxlen = 200 * 1024**2 #100mb
-#TODO: add this to the python path
 import iSigDBUtilities as util
 form = cgi.FieldStorage()
 #the default file is named matrix_file
@@ -49,14 +47,9 @@ else:
     mn,mx = None,None
 #the gene selection metric is called spear_gene and has values spearGeneAll, spearGeneTop, spearGeneMag
 geneMetric = form["spear_gene"].value
-#spearGeneAll -> nothing
-geneVal = None
-#spearGeneTop -> matrix_num_genes
-if geneMetric == 'top':
-    geneVal = int(form["matrix_num_genes"].value)
-#spearGeneMag -> matrix_mag
-if geneMetric == 'mag':
-    geneVal = int(form["matrix_mag"].value)
+#depending on the geneMetric, we look at different forms for the gene value
+geneVal = {'all':None,'top':int(form["matrix_num_genes"].value,'mag':int(form["matrix_mag"].value,\
+            'cov':int(form["matrix_cov"].value)}[geneMetric]
 
 #the signature matrix is in matrix
 matrix_selected = form["matrix"].value
@@ -70,6 +63,5 @@ logFileDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads
 with open(logFileDir,'a') as logFile:
     logFile.write('\t'.join([str(x) for x in [userIP,version,invertMetric,geneMetric,geneVal,rowMetric,colMetric]]))
 
-#TODO: get path to matrix_selected working somehow
 print "Content-type: text/html\n\n"
 corrMatrix.runCorrelation(output_file,version,invertMetric,mn,mx,rowMetric,colMetric,geneMetric,geneVal,matrix_file,False,job_id)

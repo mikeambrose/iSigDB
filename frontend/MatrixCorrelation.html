@@ -79,25 +79,33 @@ Gene selection metric: &nbsp;
 <br>
 
 <div id="all"> </div>
-<div id="cov" style="display:none"></div>
 
 <div id="top" style = "display:none">
-Number of genes from each signature: &nbsp;
-<select name="matrix_num_genes" id="matrix_num_genes">
-<option value="10">10</option>
-<option value="25">25</option>
-<option value="50" selected>50</option>
-<option value="100">100</option>
-<option value="250">250</option>
-</select>
+    Number of genes from each signature: &nbsp;
+    <select name="matrix_num_genes" id="matrix_num_genes">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="250">250</option>
+    </select>
 </div>
 
 <div id="mag" style = "display:none">
     Minimum fold change: &nbsp; <select name="matrix_mag" id="matrix_mag">
-    <option value="2">2</option>
-    <option value="5" selected>5</option>
-    <option value="10">10</option>
-    <option value="50">50</option>
+        <option value="2">2</option>
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="50">50</option>
+    </select>
+</div>
+
+<div id="cov" style="display:none">
+    Number of genes:&nbsp; <select name="matrix_cov" id="matrix_cov">
+        <option value="500">500</option>
+        <option value="1000">1000<option>
+        <option value="2500">2500<option>
+        <option value="5000">5000<option>
     </select>
 </div>
 

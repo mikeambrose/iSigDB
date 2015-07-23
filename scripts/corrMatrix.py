@@ -81,17 +81,21 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     which are present in all samples and signatures"""
     assert any([high,low])
     #TODO: set up base directory properly
-    baseDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
+    #baseDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
+    baseDir = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'
     samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
         return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
     elif compType == 'cov':
-        with open('{0}var_{1}'.format(baseDir,mName))\
-            as topGenes:
+        k = 1
+        with open('{0}var_{1}'.format(baseDir,mName)) as topGenes:
             candGenes = set()
             for line in topGenes:
                 if not line:    continue
                 candGenes.add(line.split('\t')[0].upper())
+                k += 1
+                if n != None and k > n:
+                    break
         return list(samGenes.intersection(candGenes))
     candGenes = set()
     #generates a set of candidate genes by picking the top n genes for each sig
@@ -140,7 +144,7 @@ def getSpearmanDict(inputDict,genes,ordered=False):
     return returnDict
 
 def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric,geneVal,selMatrix,\
-                    isClient,job_id):
+                    isClient,job_id,low):
     """Runs Spearman or Pearson correlation on the inputFile
     inputFile - user-uploaded file
     version - either "pearson" or "spearman"
@@ -151,6 +155,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     sigMatrix - which matrix is selected
     isClient- debug flag, always False when run on server
     job_id - number generated to uniquely identify task
+    low - whether or not to include low genes
     """
     #checks for errors and corrects whichever errors it can
     util.reformatFile(inputFile)
@@ -163,8 +168,8 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     matrix = util.readMatrix(selMatrix,True,False)
     sams = util.readMatrix(inputFile,True,True)
     #find set of genes
-    genes = getSpearmanGenes(sams,matrix,geneMetric,os.path.basename(selMatrix),geneVal)
-    #for debug purposes
+    genes = getSpearmanGenes(sams,matrix,geneMetric,os.path.basename(selMatrix),geneVal,high=True,low=low)
+    print "Using {0} genes".format(len(genes))
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
     #restrict matrix/samples to only that set of genes
@@ -193,7 +198,8 @@ if __name__ == '__main__':
     parser.add_option("--gval",dest="geneVal",help="value corresponding with gene metric")
     parser.add_option("--matrix",dest="selMatrix",help="matrix selected")
     parser.add_option("--range",dest="range",help="color scale")
+    parser.add_option("--low",dest="low",default=False,action="store_true",help="use low genes in addition to high genes")
     op, _ = parser.parse_args()
     mn,mx = (float(x) for x in op.range.split(','))
     runCorrelation(op.inputFile,op.version,op.invert,mn,mx,op.row,op.col,\
-                    op.gene,float(op.geneVal),op.selMatrix,True,None)
+                    op.gene,float(op.geneVal),op.selMatrix,True,None,op.low)

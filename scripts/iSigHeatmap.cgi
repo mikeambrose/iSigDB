@@ -60,15 +60,31 @@ for option in ["log","delta","rank"]:
 zTransform = "matrix" if "scale_columns" in form else "none"
 compNull = "null" in form
 numIter = int(form["nullNumIter"].value)
+if not 1 <= numIter <= 100000:
+    util.displayErrorMessage("The number of iterations of the null distribution must be between 1 and 100000")
 invert = "invert" in form
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
-n = int(form["num_genes"].value)
+rowColAcceptable = ["euclidean","pear_cor","none"]
+for met in rowMetric,colMetric:
+    if met not in rowColAcceptable:
+        util.displayErrorMessage("Not a valid clustering metric: {0}".format(met),True)
+n = form["num_genes"].value
+acceptableN = [str(x) for x in [10,25,50,100,250,500,1000]]
+if n not in acceptableN:
+    util.displayErrorMessage("Not a valid number of genes: {0}".format(n),True)
+n = int(n)
 species = form["species"].value
+acceptableSpecies = ["human","mouse"]
+if species not in acceptableSpecies:
+    util.displayErrorMessage("Not a valid species: {0}".format(species),True)
 mn,mx = None,None
 if "scale" in form:
-    mn = form["mn"].value
-    mx = form["mx"].value
+    try:
+        mn = float(form["mn"].value)
+        mx = float(form["mx"].value)
+    except Exception:
+        util.displayErrorMessage("Min and max color range must be numbers")
 
 #logging this call
 

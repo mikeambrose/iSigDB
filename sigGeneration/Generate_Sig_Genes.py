@@ -33,9 +33,9 @@ def geneStr(gene,mouseToHuman,humanToMouse):
     else:
         return gene
 
-def writeSigGenes(sigDir,n,output):
+def writeSigGenes(sigDir,n,output,m):
     allSigs = glob.glob(sigDir+'/*--*')
-    mouseToHuman,humanToMouse = mhd.getMouseHumanDicts(mhd.human,mhd.mouse,mhd.both)
+    mouseToHuman,humanToMouse = mhd.getMouseHumanDicts(m+mhd.human,m+mhd.mouse,m+mhd.both)
     sigGeneVals = readSigFiles(allSigs)
     questionableHumanGenes = set()
     questionableMouseGenes = set()
@@ -64,6 +64,7 @@ if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-s", "--sig", dest="sig", help="signature directory")
     parser.add_option("-n", dest="n", help="max number of genes")
+    parser.add_option("-m",dest="m",help="mouse-human file directory")
     parser.add_option("-o","--output",dest="output",help="output dictionary location")
     options,_ = parser.parse_args()
-    writeSigGenes(options.sig,int(options.n),options.output)
+    writeSigGenes(options.sig,int(options.n),options.output,options.m)

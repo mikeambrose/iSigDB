@@ -63,6 +63,6 @@ def getMouseHumanDicts(human,mouse,both):
 
 
 
-human = 'MouseHumanTranslation/BioMart_EnsemblGenes80_HomoSapiensGenesGRCh38.p2_EnsemblGeneID_HGNCsymbol.txt'
-mouse = 'MouseHumanTranslation/BioMart_EnsemblGenes80_MusMusculusGenesGRCm38.p3_EnsemblGeneID_MGIsymbol.txt'
-both = 'MouseHumanTranslation/BioMart_EnsemblGenes80_MusMusculusGenesGRCm38.p3_EnsemblGeneID_HumanEnsemblGeneID.txt'
+human = 'BioMart_EnsemblGenes80_HomoSapiensGenesGRCh38.p2_EnsemblGeneID_HGNCsymbol.txt'
+mouse = 'BioMart_EnsemblGenes80_MusMusculusGenesGRCm38.p3_EnsemblGeneID_MGIsymbol.txt'
+both = 'BioMart_EnsemblGenes80_MusMusculusGenesGRCm38.p3_EnsemblGeneID_HumanEnsemblGeneID.txt'

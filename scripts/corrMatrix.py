@@ -30,15 +30,18 @@ def corrRank(sigs,sams,strOutFile,version):
             samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
-def decomp(sigs,sams,outFile,job_id):
+def decomp(sigs,sams,outFile,genes,job_id,isClient):
     """Runs the matrix decomposition on signatures/samples using DeconRNASeq
     sigs/sams/outFile same as in corrRank"""
-    #TODO: pass in isClient somehow
-    isClient = True
     #first we write both matrices to a tab-delimited file
     #TODO: fix directory
     sigpath = "/home/mike/workspace/PellegriniResearch/scripts/scratch/sigMatrix.txt"
     sampath = "/home/mike/workspace/PellegriniResearch/scripts/scratch/samMatrix.txt"
+    for d in [sigs[sig] for sig in sigs] + [sams[sam] for sam in sams]:
+        for gene in d.keys():
+            if gene not in genes:
+                del d[gene]
+    import pdb; pdb.set_trace()
     util.writeRegularOutput(util.invertDict(sigs),sigpath)
     util.writeRegularOutput(util.invertDict(sams),sampath)
     #next, we call the R script, which writes to the directory
@@ -179,7 +182,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
         corrRank(spearmanMatrix,spearmanSams,outFile,version)
     else:
         #TODO: add ability to filter on genes
-        decomp(matrix,sams,outFile,job_id)
+        decomp(matrix,sams,outFile,genes,job_id,isClient)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
     #pass computation to R/make_heatmap

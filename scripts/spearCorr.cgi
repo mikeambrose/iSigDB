@@ -34,15 +34,14 @@ util.copyFile(userFile,output_file)
 
 #the heatmap metric is called heatmap_metric
 version = form["heatmap_metric"].value
-versionRestrictions = ["pearson","spearman","devonv"]
+versionRestrictions = ["pearson","spearman","deconv"]
 if version not in versionRestrictions:
     util.displayErrorMessage("Invalid version selected - {0}".format(version),True)
 #the row and column metrics are called row_metric and col_metric
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 rowColRestrictions = ["euclidean","pear_cor","none"]
-for met in rowMetric,colMetric:
-    if met not in rowColRestrctions:
+    if met not in rowColRestrictions:
         util.displayErrorMessage("Invalid metric selected - {0}".format(met),True)
 #the invert metric is called invert
 invertMetric = "invert" in form
@@ -56,16 +55,16 @@ if "scale" in form:
             if not -1 <= x <= 1:
                 util.displayErrorMessage("Invalid range for color axes - must range from -1 to 1",True)
         except Exception:
-            util.displayErrorMessage("Color axis ranges must be a number")
+            util.displayErrorMessage("Color axis ranges must be a number",True)
 
 else:
     mn,mx = None,None
 #the gene selection metric is called spear_gene and has values spearGeneAll, spearGeneTop, spearGeneMag
 geneMetric = form["spear_gene"].value
 #depending on the geneMetric, we look at different forms for the gene value
-geneValues = {'all':None,'top':int(form["matrix_num_genes"].value,'mag':int(form["matrix_mag"].value,\
+geneValues = {'all':None,'top':int(form["matrix_num_genes"].value),'mag':int(form["matrix_mag"].value),\
             'cov':int(form["matrix_cov"].value)}
-geneRestrictions = {'all':[None],'top':[10,25,50,100,250],'mag':[2,5,10,50],'cov':[500,1000,2500,5000]}
+geneRestrictions = {'all':[None],'top':[10,25,50,100,250,1000],'mag':[2,5,10,50],'cov':[500,1000,2500,5000]}
 geneVal = geneVales[geneMetric]
 if geneVal not in geneRestrictions[geneMetric]:
     util.displayErrorMessage("Invalid options selected - number of genes cannot be {0} when in mode {1}".format(geneVal,geneRestrictions),True)
@@ -83,4 +82,4 @@ with open(logFileDir,'a') as logFile:
     logFile.write('\t'.join([str(x) for x in ['matrix',userIP,version,invertMetric,geneMetric,geneVal,rowMetric,colMetric]]))
 
 print "Content-type: text/html\n\n"
-corrMatrix.runCorrelation(output_file,version,invertMetric,mn,mx,rowMetric,colMetric,geneMetric,geneVal,matrix_file,False,job_id)
+corrMatrix.runCorrelation(output_file,version,invertMetric,mn,mx,rowMetric,colMetric,geneMetric,geneVal,matrix_file,False,job_id,False)

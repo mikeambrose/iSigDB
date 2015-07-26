@@ -69,10 +69,6 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" w
 
 <br /><br />
 
-<input type="checkbox" name="fixed" id="fixed" value="checked"> Keep colors constant
-<a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>If unchecked, the colors in the heatmap will rescale to fit the input data better. However, if you wish to compare different heatmaps, it is better to check this option so that their colors correspond to the same values</span></a>
-<br> <br>
-
 <input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>
 
 <input type="checkbox" name="null" id="null" value="checked"> Compute null distribution with
@@ -103,13 +99,14 @@ value="25">25</option><option value="50" selected="selected">50</option><option
 value="100">100</option><option value="250">250</option><option
 value="500">500</option><option value="1000">1000</option></select>
 <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
-<hr>
-<br> <br>
-
+<br><br>
 Input species:&nbsp;<select name="species" id="species">
 <option value="human">human</option>
 <option value="mouse">mouse</option>
 </select>
+<hr>
+<br> <br>
+
 
 <input type="hidden" name="checkedSigs" id="checkedSigs"></input>
 
@@ -118,6 +115,7 @@ Click on a category to select specific signatures within that category <br />
 <div id="sigs">
 <ul>
 {checkboxes}
+</div>
 <input type="submit" id="tissueDeconvolutionSubmit" name="tissueDeconvolutionSubmit" onclick="submitCheckboxes()" value="Submit" />
 
 </form>

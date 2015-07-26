@@ -30,7 +30,7 @@ def corrRank(sigs,sams,strOutFile,version):
             samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
-def decomp(sigs,sams,outFile):
+def decomp(sigs,sams,outFile,job_id):
     """Runs the matrix decomposition on signatures/samples using DeconRNASeq
     sigs/sams/outFile same as in corrRank"""
     #TODO: pass in isClient somehow
@@ -179,7 +179,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
         corrRank(spearmanMatrix,spearmanSams,outFile,version)
     else:
         #TODO: add ability to filter on genes
-        decomp(matrix,sams,outFile)
+        decomp(matrix,sams,outFile,job_id)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
     #pass computation to R/make_heatmap

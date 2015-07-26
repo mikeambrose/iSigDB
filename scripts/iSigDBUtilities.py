@@ -184,7 +184,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
     out = '/home/mike/workspace/PellegriniResearch/output/HighChartsHeatmap.html' if isClient\
             else None
     #whether or not to include the detailed output
-    includeDetailed = version not in ['pearson','spearman']
+    includeDetailed = version not in ['pearson','spearman','deconv']
     #if we have a null filename, replace it with the html-accessable one
     if nullFilename:
         nullFilename="http://pathways-pellegrini.mcdb.ucla.edu//submit/img/" +\

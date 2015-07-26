@@ -12,3 +12,4 @@ scripts/scratch/*
 *.swo
 wksp/NewSigs/*
 wksp/test*
+matrixAnalysis/*

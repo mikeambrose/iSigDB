@@ -78,6 +78,7 @@ species = form["species"].value
 acceptableSpecies = ["human","mouse"]
 if species not in acceptableSpecies:
     util.displayErrorMessage("Not a valid species: {0}".format(species),True)
+sigGenesFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/{0}SigGenes.txt'.format("Human" if species == "human" else "Mouse")
 mn,mx = None,None
 if "scale" in form:
     try:
@@ -85,7 +86,7 @@ if "scale" in form:
         mx = float(form["mx"].value)
     except Exception:
         util.displayErrorMessage("Min and max color range must be numbers")
-
+av = "av" in form
 #logging this call
 
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
@@ -97,4 +98,4 @@ print """Content-type: text/html
 
 """
 
-sigComp.generateHeatmap(outputFile,'/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/SigGenes.txt',"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,species)
+sigComp.generateHeatmap(outputFile,sigGenesFile,"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,av)

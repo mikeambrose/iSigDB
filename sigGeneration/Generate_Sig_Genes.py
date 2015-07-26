@@ -18,9 +18,9 @@ def readSigFiles(files):
                 sigGeneVals[sigName][gene] = float(val)
     return sigGeneVals
 
-def getTopNGenes(sigGeneVals,sig,n):
+def getTopNGenes(geneVals,n):
     """Get the top n genes in the signature"""
-    allGeneVals = sigGeneVals[sig].items()
+    allGeneVals = geneVals.items()
     allGeneVals.sort(key=lambda x:-x[1])
     return [x[0] for x in allGeneVals[:n]]
 
@@ -33,38 +33,51 @@ def geneStr(gene,mouseToHuman,humanToMouse):
     else:
         return gene
 
-def writeSigGenes(sigDir,n,output,m):
+def writeSigGenes(sigDir,n,humanOutput,mouseOutput,transDir):
     allSigs = glob.glob(sigDir+'/*--*')
-    mouseToHuman,humanToMouse = mhd.getMouseHumanDicts(m+mhd.human,m+mhd.mouse,m+mhd.both)
+    mouseToHuman,humanToMouse = mhd.getMouseHumanDicts(transDir+mhd.human,transDir+mhd.mouse,transDir+mhd.both)
     sigGeneVals = readSigFiles(allSigs)
-    questionableHumanGenes = set()
-    questionableMouseGenes = set()
-    with open(output,'w') as out:
-        for sig in sigGeneVals:
-            topGenes = getTopNGenes(sigGeneVals,sig,n)
-            #nonessential - checking how many genes for each signature are 'human' and 'mouse'
-            mouseGenes = sum(g in mouseToHuman for g in topGenes)
-            humanGenes = sum(g in humanToMouse for g in topGenes)
-            if mouseGenes != 0 and humanGenes != 0:
-                if humanGenes > mouseGenes:
-                    for gene in mouseToHuman:
-                        if gene in topGenes:
-                            questionableHumanGenes.add(gene)
-                if mouseGenes > humanGenes:
-                    for gene in humanToMouse:
-                        if gene in topGenes:
-                            questionableMouseGenes.add(gene)
-            #end nonessential section
-            out.write("{sig}\t{genes}\n".format(sig=sig,genes="\t".join(\
-                                    geneStr(g,mouseToHuman,humanToMouse) for g in topGenes)))
-    print "'mouse' genes found in human signatures: ",questionableHumanGenes
-    print "'human' genes found in mouse signatures: ",questionableMouseGenes
+    with open(humanOutput,'w') as hOut:
+        with open(mouseOutput,'w') as mOut:
+            for sig in sigGeneVals:
+                #human output
+                humanGeneCount = sum(gene in humanToMouse for gene in sigGeneVals[sig])
+                mouseGeneCount = sum(gene in mouseToHuman for gene in sigGeneVals[sig])
+                isHuman = humanGeneCount > mouseGeneCount
+                print "Classifing signature {0} as {1}".format(sig,"human" if isHuman else "mouse")
+                if isHuman:
+                    topGenes = getTopNGenes(sigGeneVals[sig],n)
+                else:
+                    ambiguousGenes = set()
+                    mGeneVals = {}
+                    for gene in sigGeneVals[sig]:
+                        if gene in mouseToHuman:
+                            if mouseToHuman[gene] in mGeneVals and mouseToHuman[gene] not in ambiguousGenes:
+                                print "conflicting/ambiguous gene {0} in {1} - removing".format(mouseToHuman[gene],sig,gene)
+                                ambiguousGenes.add(mouseToHuman[gene])
+                            mGeneVals[mouseToHuman[gene]] = sigGeneVals[sig][gene]
+                    topGenes = getTopNGenes(mGeneVals,n)
+                hOut.write("{sig}\t{genes}\n".format(sig=sig,genes="\t".join(topGenes)))
+                #mouse output
+                if not isHuman:
+                    topGenes = getTopNGenes(sigGeneVals[sig],n)
+                else:
+                    hGeneVals = {}
+                    for gene in sigGeneVals[sig]:
+                        if gene in humanToMouse:
+                            if humanToMouse[gene] in hGeneVals:
+                                print "conflicting/ambiguous gene {0} in {1} - removing".format(mouseToHuman[gene],sig)
+                                del hGeneVals[humanToMouse[gene]]
+                            hGeneVals[humanToMouse[gene]] = sigGeneVals[sig][gene]
+                    topGenes = getTopNGenes(hGeneVals,n)
+                mOut.write("{sig}\t{genes}\n".format(sig=sig,genes="\t".join(topGenes)))
 
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-s", "--sig", dest="sig", help="signature directory")
     parser.add_option("-n", dest="n", help="max number of genes")
-    parser.add_option("-m",dest="m",help="mouse-human file directory")
-    parser.add_option("-o","--output",dest="output",help="output dictionary location")
+    parser.add_option("-d",dest="d",help="mouse-human file directory")
+    parser.add_option("-x",dest="humanOutput",help="human output location")
+    parser.add_option("-m",dest="mouseOutput",help="mouse output location")
     options,_ = parser.parse_args()
-    writeSigGenes(options.sig,int(options.n),options.output,options.m)
+    writeSigGenes(options.sig,int(options.n),options.humanOutput,options.mouseOutput,options.d)

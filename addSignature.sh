@@ -4,7 +4,8 @@
 SIGS='/home/mike/workspace/PellegriniResearch/sigdir/SIGS/'
 ABBREVS='/home/mike/workspace/PellegriniResearch/sigdir/abbrevs_test.txt'
 SIG_SCRIPT='/home/mike/workspace/PellegriniResearch/sigGeneration/Generate_Sig_Genes.py'
-SIGGENES='/home/mike/workspace/PellegriniResearch/sigdir/SigGenesTest.txt'
+HUMANSIGGENES='/home/mike/workspace/PellegriniResearch/sigdir/HumanSigGenes.txt'
+MOUSESIGGENES='/home/mike/workspace/PellegriniResearch/sigdir/MouseSigGenes.txt'
 MOUSEDIR='/home/mike/workspace/PellegriniResearch/sigGeneration/MouseHumanTranslation/'
 FORMAT='/home/mike/workspace/PellegriniResearch/frontend/makeCheckboxes/signatureFormat.txt'
 WEB_SCRIPT='/home/mike/workspace/PellegriniResearch/frontend/makeCheckboxes/generateTDFrontpage.py'
@@ -28,7 +29,7 @@ echo -e "Done adding new signatures to $ABBREVS \n\n"
 #SigGenes
 echo "Generating $SIGGENES (condensed signature file)"
 echo "This could take a while..."
-python $SIG_SCRIPT -s $SIGS -n 1000 -m $MOUSEDIR -o $SIGGENES
+python $SIG_SCRIPT -s $SIGS -n 1000 -d $MOUSEDIR -x $HUMANSIGGENES -m $MOUSESIGGENES
 echo -e "Done generating $SIGGENES \n\n"
 
 #website

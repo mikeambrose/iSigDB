@@ -101,12 +101,23 @@ def writeInputFileHist(filename,sigNames,allValues,num_buckets=100):
         matplotlib.pyplot.close()
     pdf.close()
 
-def writeNull(sams,nullFilename,n,numIter):
+def writeNull(sams,nullFilename,n,numIter,genes=None):
     """Writes the null distribution of inputFile to nullFilename
     n is the number of genes we're averaging over
+    numIter is the number of iterations
+    genes is the set of genes which we're considering
     """
     names = [sam for sam in sorted(sams.keys())]
-    allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
+    if not genes:
+        allVals = [[sams[sam][gene] for gene in sams[sam]] for sam in names]
+    else:
+        allVals = []
+        for sam in sams:
+            genevals = []
+            for gene in genes:
+                if gene in sams[sam]:
+                    genevals.append(sams[sam][gene])
+            allVals.append(genevals)
     writeNullModelHists(nullFilename,names,allVals,n,numIter)
 
 def writeInDist(sams,inDistFilename):
@@ -165,14 +176,18 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     #computing sample distribution
     writeInDist(sams,inpHistFilename)
 
-    #computing null distribution
-    if computeNull and zTransform != 'matrix' and 'delta' not in version:
-        writeNull(sams,nullFilename,n,nullIterations)
-    else:
-        nullFilename = None
-
+    #get signatures
     abbrevsDict = util.loadAbbrevs(abbrevs)
     sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
+
+    #computing null distribution
+    if computeNull and zTransform != 'matrix' and 'delta' not in version:
+        allSigGenes = set()
+        for sig in sigGenes:
+            allSigGenes = allSigGenes.union(set(sigGenes[sig]))
+        writeNull(sams,nullFilename,n,nullIterations,allSigGenes)
+    else:
+        nullFilename = None
     writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av)
     util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx)
         
@@ -195,4 +210,4 @@ if __name__ == "__main__":
     parser.add_option("--range",dest="range",help="range of output")
     (options, args) = parser.parse_args()
     mn,mx = options.range.split(',') if options.range != "None" else (None,None)
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,options.nullIterations if options.null else None,mn,mx)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,int(options.nullIterations) if options.null else None,mn,mx)

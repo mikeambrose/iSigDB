@@ -30,17 +30,20 @@ def corrRank(sigs,sams,strOutFile,version):
             samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
-def decomp(sigs,sams,outFile,job_id):
+def decomp(sigs,sams,outFile,job_id,isClient,genes):
     """Runs the matrix decomposition on signatures/samples using DeconRNASeq
     sigs/sams/outFile same as in corrRank"""
-    #TODO: pass in isClient somehow
-    isClient = False
     #first we write both matrices to a tab-delimited file
-    #TODO: fix directory
     sigpath = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
-                                +job_id+'/'+job_id+'.sigs.txt'
+                                +job_id+'/'+job_id+'.sigs.txt' if not isClient else\
+              '/home/mike/workspace/PellegriniResearch/scripts/scratch/sigs.txt'
     sampath = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
-                                +job_id+'/'+job_id+'.sams.txt'
+                                +job_id+'/'+job_id+'.sams.txt' if not isClient else\
+              '/home/mike/workspace/PellegriniResearch/scripts/scratch/sams.txt'
+    for d in [sigs[sig] for sig in sigs] + [sams[sam] for sam in sams]:
+        for gene in d.keys():
+            if gene not in genes:
+                del d[gene]
     util.writeRegularOutput(util.invertDict(sigs),sigpath)
     util.writeRegularOutput(util.invertDict(sams),sampath)
     #next, we call the R script, which writes to the directory
@@ -82,9 +85,8 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     file) and computes the intersection of all those top genes, and then selects the subset of those
     which are present in all samples and signatures"""
     assert any([high,low])
-    #TODO: set up base directory properly
-    baseDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
-    #baseDir = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'
+    #baseDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
+    baseDir = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'
     samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
         return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
@@ -180,8 +182,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
         #run correlation on them
         corrRank(spearmanMatrix,spearmanSams,outFile,version)
     else:
-        #TODO: add ability to filter on genes
-        decomp(matrix,sams,outFile,job_id)
+        decomp(matrix,sams,outFile,job_id,isClient,genes)
     RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
         else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
     #pass computation to R/make_heatmap
@@ -204,4 +205,4 @@ if __name__ == '__main__':
     op, _ = parser.parse_args()
     mn,mx = (float(x) for x in op.range.split(','))
     runCorrelation(op.inputFile,op.version,op.invert,mn,mx,op.row,op.col,\
-                    op.gene,float(op.geneVal),op.selMatrix,True,None,op.low)
+                    op.gene,float(op.geneVal),op.selMatrix,True,'',op.low)

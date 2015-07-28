@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>iSigDB Spearman and Pearson Correlation</title>
+<script type="text/javascript">
+function toggleVisibility(section) {
+    var section = document.getElementById(section);
+    if (section.style.display == 'block' || section.style.display == ''){
+        section.style.display = 'none';
+    } else {
+        section.style.display = 'block';
+    }
+}
+
+function hide(section) {
+    var section = document.getElementById(section);
+    section.style.display = 'none';
+}
+
+function spear_gene_change() {
+    var value = document.getElementById('spear_gene').value;
+    hide('top');
+    hide('all');
+    hide('mag');
+    hide('cov');
+    toggleVisibility(value);
+}
+</script>
+</head>
+<body>
+<form method="post" action="/cgi-bin/goTeles/spearCorr.cgi" ENCTYPE="multipart/form-data">
+<strong class = "tooltip">Submit a file:</strong> <br>
+<input type="radio" name="uploadSettings" value="client" checked="checked" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Upload a file from your computer <br>
+<input type="radio" name="uploadSettings" value="server" onchange="toggleVisibility('clientFile');toggleVisibility('serverFile');">Use a file from the server <br>
+<div id="clientFile" name="clientFile">
+File: <input type="file" name="matrix_file" size="30">
+</div>
+<div id="serverFile" name="serverFile" style="display:none">
+Filename: 
+<select id="serverFileName" name="serverFileName">
+{FILES GO HERE}
+</select>
+or <a href="./serverFileUpload.html">upload a file</a>
+</div>
+<hr>
+
+<div id="corrMatrixSection" class="tab-content">
+Compute matrix based on: <select id="heatmap_metric" name="heatmap_metric">
+<option value="pearson">Pearson Correlation</option>
+<option value="spearman">Spearman Correlation</option>
+<option value="deconv">Deconvolution</option>
+</select> <br> <br>
+
+<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br> <br>
+<input type="checkbox" name="scale" id="scale" value="checked" checked>Set the color scale from <input type="number" id="minVal" name="minVal" value=0 max=1 min=-1> to <input type="number" id="maxVal" name="maxVal" value=1 max=1 min=-1> <br> <br>
+
+Metric for sample clustering: &nbsp;
+<select id="row_metric" name="row_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br>
+
+Metric for signature clustering: &nbsp;
+<select id="col_metric" name="col_metric">
+<option value="euclidean">Euclidean Distance</option>
+<option value="pear_cor">Pearson Correlation</option>
+<option value="none">None (Do Not Cluster)</option>
+</select>
+<br> <br>
+
+Gene selection metric: &nbsp;
+<select id="spear_gene" name="spear_gene" onchange="spear_gene_change()">
+<option value="all">Use all genes</option>
+<option value="top">Use top genes from each signature</option>
+<option value="mag">Use all genes upregulated beyond a certain threshold</option>
+<option value="cov">Use top genes ranked by covariance across the matrix</option>
+</select>
+<br>
+
+<div id="all"> </div>
+
+<div id="top" style = "display:none">
+    Number of genes from each signature: &nbsp;
+    <select name="matrix_num_genes" id="matrix_num_genes">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="250">250</option>
+        <option value="1000">1000</option>
+    </select>
+</div>
+
+<div id="mag" style = "display:none">
+    Minimum fold change: &nbsp; <select name="matrix_mag" id="matrix_mag">
+        <option value="2">2</option>
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="50">50</option>
+    </select>
+</div>
+
+<div id="cov" style="display:none">
+    Number of genes:&nbsp; <select name="matrix_cov" id="matrix_cov">
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+        <option value="2500">2500</option>
+        <option value="5000">5000</option>
+    </select>
+</div>
+
+<hr>
+
+<strong> Select signature matrix: </strong> <br>
+<input type="radio" name="matrix" id="matrix" value="DermDB">DermDB<br>
+<input type="radio" name="matrix" id="matrix" value="mba">Mouse body atlas<br>
+<input type="radio" name="matrix" id="matrix" value="hba">Human body atlas<br>
+<input type="radio" name="matrix" id="matrix" value="immgen">Immgen data<br>
+<input type="radio" name="matrix" id="matrix" value="macrophage">Macrophage perturbation matrix<br>
+<input type="radio" name="matrix" id="matrix" value="pca">Human Primary Cell Atlas<br>
+<hr>
+<input type="submit" value="Submit">
+
+</form>
+</body>
+</html>
+

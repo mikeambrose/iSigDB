@@ -175,7 +175,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
     #copy the R output file into somewhere readable
     #TODO: set directory of this properly
     rDownloadableOut = "/home/mike/workspace/PellegriniResearch/scripts/scratch/rDownload.txt" if isClient\
-                else ' '
+                else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/data/'+jobID+'.data.txt'
     with open(rTxtOutFile) as f:
         copyFile(f,rDownloadableOut)
 
@@ -199,7 +199,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
     if inpHistFilename:
         inpHistFilename="http://pathways-pellegrini.mcdb.ucla.edu/submit/img/" +\
                             os.path.basename(inpHistFilename)
-    rDownloadableFilename = "http://pathways-pellegrini.mcdb.ucla.edu/submit/img/"+\
+    rDownloadableFilename = "http://pathways-pellegrini.mcdb.ucla.edu/submit/data/"+\
                             os.path.basename(rDownloadableOut)
 
     #pass control to make_heatmap

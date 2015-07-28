@@ -54,7 +54,7 @@ with open("{0}/abbrevs.txt".format(workDir),'w') as localAbbrevs:
         if full in fullToAbbrev: #filters out headers like 'mouse', 'human'
             localAbbrevs.write("{0}\t{1}\n".format(fullToAbbrev[full],full))
 version = ''
-for option in ["log","delta","rank"]:
+for option in ["log","delta","rank","sig"]:
     #add option string to version if it's in the form
     version = version + option * (option in form)
 zTransform = "matrix" if "scale_columns" in form else "none"

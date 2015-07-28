@@ -41,6 +41,7 @@ if version not in versionRestrictions:
 rowMetric = form["row_metric"].value
 colMetric = form["col_metric"].value
 rowColRestrictions = ["euclidean","pear_cor","none"]
+for met in [rowMetric,colMetric]:
     if met not in rowColRestrictions:
         util.displayErrorMessage("Invalid metric selected - {0}".format(met),True)
 #the invert metric is called invert
@@ -65,7 +66,7 @@ geneMetric = form["spear_gene"].value
 geneValues = {'all':None,'top':int(form["matrix_num_genes"].value),'mag':int(form["matrix_mag"].value),\
             'cov':int(form["matrix_cov"].value)}
 geneRestrictions = {'all':[None],'top':[10,25,50,100,250,1000],'mag':[2,5,10,50],'cov':[500,1000,2500,5000]}
-geneVal = geneVales[geneMetric]
+geneVal = geneValues[geneMetric]
 if geneVal not in geneRestrictions[geneMetric]:
     util.displayErrorMessage("Invalid options selected - number of genes cannot be {0} when in mode {1}".format(geneVal,geneRestrictions),True)
 

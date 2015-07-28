@@ -8,7 +8,7 @@ import subprocess
 import math
 import iSigDBUtilities as util
 #TODO: uncomment this when on server
-#os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
 import matplotlib
 matplotlib.use('Agg')
 import nullmodel
@@ -17,7 +17,7 @@ from collections import OrderedDict
 #TODO: uncomment when on server
 import sys
 #sys.path.append("/UCSC/Pathways-Auxiliary/UCLApathways-SciPy-Installed-DL-20150602/scipy-0.15.1/lib/python2.7/site-packages")
-import scipy.stats
+#import scipy.stats
 def getSigGenes(sigFile,selectedSigs,n):
     """Returns dictionary of signature : [top n genes]
     sigFile is the file with the shortened signatures
@@ -90,7 +90,7 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
             nullDist = nullVals[sam]
             for sig in samSigVal[sam]:
                 numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
-                samSigVal[sam][sig] = 1-numGreaterThan/float(len(nullDist))
+                samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
 

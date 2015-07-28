@@ -59,9 +59,9 @@ def writeMatrix(data,output):
 def readMatrix(infile):
     f = open(infile).read().split('\n')[:-1]
     f = [x.split(',') for x in f]
-    f[0] = [l[1:-1] for l in f[0]]
-    for i in range(1,len(f)):
-        f[i][0] = f[i][0][1:-1]
+    #f[0] = [l[1:-1] for l in f[0]]
+    #for i in range(1,len(f)):
+    #    f[i][0] = f[i][0][1:-1]
     return f
     
 

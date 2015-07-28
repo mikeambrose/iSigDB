@@ -14,6 +14,10 @@ matplotlib.use('Agg')
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
+#TODO: uncomment when on server
+import sys
+#sys.path.append("/UCSC/Pathways-Auxiliary/UCLApathways-SciPy-Installed-DL-20150602/scipy-0.15.1/lib/python2.7/site-packages")
+import scipy.stats
 def getSigGenes(sigFile,selectedSigs,n):
     """Returns dictionary of signature : [top n genes]
     sigFile is the file with the shortened signatures
@@ -55,7 +59,7 @@ def delta(sams):
             sams[sam][gene] = sams[sam][gene] - av
     return sams
 
-def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True):
+def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=None):
     """Writes the values after computation by version to compOutput
     inputFile - user-provided input file
     sigGenes - dictionary of signature : list of genes in signature
@@ -78,16 +82,28 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True):
                 samSigVal[sam][sig] = util.average(geneVals)
             else:
                 samSigVal[sam][sig] = sum(geneVals)
+    if 'sig' in version:
+        #replace each value with it's significance as computed by the null distribution
+        if not nullVals:
+            util.displayErrorMessage("sig option without computing null distribution")
+        for sam in samSigVal:
+            nullDist = nullVals[sam]
+            for sig in samSigVal[sam]:
+                numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
+                samSigVal[sam][sig] = 1-numGreaterThan/float(len(nullDist))
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
 
 def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=100):
     """Writes each of the histograms to a pdf
     sigNames[i] should correspond with allValues[i]"""
+    nullVals = {}
     pdf = PdfPages(filename) #version-dependent, but this seems to work for all versions
     for i in range(len(allValues)):
-        nullmodel.getStatistics(allValues[i],n,pdf,sigNames[i],num_iter,num_buckets)
+        sigVals = nullmodel.getStatistics(allValues[i],n,pdf,sigNames[i],num_iter,num_buckets)
+        nullVals[sigNames[i]] = sigVals
     pdf.close()
+    return nullVals
 
 def writeInputFileHist(filename,sigNames,allValues,num_buckets=100):
     """Writes the distribution of each input signature
@@ -106,6 +122,7 @@ def writeNull(sams,nullFilename,n,numIter,genes=None):
     n is the number of genes we're averaging over
     numIter is the number of iterations
     genes is the set of genes which we're considering
+    returns a dictionary of sample:values simulated
     """
     names = [sam for sam in sorted(sams.keys())]
     if not genes:
@@ -118,7 +135,7 @@ def writeNull(sams,nullFilename,n,numIter,genes=None):
                 if gene in sams[sam]:
                     genevals.append(sams[sam][gene])
             allVals.append(genevals)
-    writeNullModelHists(nullFilename,names,allVals,n,numIter)
+    return writeNullModelHists(nullFilename,names,allVals,n,numIter)
 
 def writeInDist(sams,inDistFilename):
     """Writes the distribution of the input samples to inDistFilename"""
@@ -185,10 +202,11 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         allSigGenes = set()
         for sig in sigGenes:
             allSigGenes = allSigGenes.union(set(sigGenes[sig]))
-        writeNull(sams,nullFilename,n,nullIterations,allSigGenes)
+        nullVals = writeNull(sams,nullFilename,n,nullIterations,allSigGenes)
     else:
         nullFilename = None
-    writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av)
+        nullVals = None
+    writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
     util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx)
         
 #----------------------------------------------------------------------------

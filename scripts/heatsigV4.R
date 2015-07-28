@@ -75,12 +75,12 @@ if (rowClust && colClust) {
 }
 
 if (numRows != 1){
-  write.csv(permRmamat,outTxtFile)
+  write.csv(permRmamat,outTxtFile,quote=FALSE)
 } else {
   fixedMatrix = t(as.matrix(permRmamat))
   colnames(fixedMatrix) = names(permRmamat)
   rownames(fixedMatrix) = rownames(rma)
-  write.csv(fixedMatrix,file=outTxtFile)
+  write.csv(fixedMatrix,file=outTxtFile,quote=FALSE)
 }
 
 pdf(outFile, height = 2.5 + (0.5 * numRows), width = 3.6 + (0.1 * numCols), paper = "special", onefile = FALSE)

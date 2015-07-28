@@ -9,6 +9,7 @@ import os
 import random
 import datetime
 import re
+import math
 
 def reformatFile(f):
     """Automatically changes f to be in the correct format
@@ -108,6 +109,7 @@ def writeDetailedOutput(sigGenes,samVals,outFile,fullNames,deltaSigs=None):
             out.write('\n')
 
 average = lambda lst: sum(lst) / float(len(lst))
+stdev = lambda lst,av: math.sqrt(sum(x**2 for x in lst)/float(len(lst)) - av**2)
 
 def invertDict(d):
     """Changes d from a:b:val to b:a:val"""
@@ -164,14 +166,19 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
                 else "/UCSC/Pathways-Auxiliary/UCLApathways-R-3.1.1/R-3.1.1/bin/Rscript"
     heatsigPath = "/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R" if isClient\
                 else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatsigV4.R'
+
     #call R and stuff all output
-    if isClient:
-        subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
-                    rowMetric,colMetric,rTxtOutFile])
-    else:
-        FNULL = open(os.devnull, 'w')
-        subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
-                        rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
+    FNULL = open(os.devnull, 'w')
+    subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
+                    rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
+
+    #copy the R output file into somewhere readable
+    #TODO: set directory of this properly
+    rDownloadableOut = "/home/mike/workspace/PellegriniResearch/scripts/scratch/rDownload.txt" if isClient\
+                else ' '
+    with open(rTxtOutFile) as f:
+        copyFile(f,rDownloadableOut)
+
     #only center around zero  for certain input types
     centerAroundZero = (zTransform=="matrix") or ("delta" in version)
     #if fixed is selected, choose the fixed values
@@ -187,13 +194,16 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
     includeDetailed = version not in ['pearson','spearman','deconv']
     #if we have a null filename, replace it with the html-accessable one
     if nullFilename:
-        nullFilename="http://pathways-pellegrini.mcdb.ucla.edu//submit/img/" +\
+        nullFilename="http://pathways-pellegrini.mcdb.ucla.edu/submit/img/" +\
                             os.path.basename(nullFilename)
     if inpHistFilename:
-        inpHistFilename="http://pathways-pellegrini.mcdb.ucla.edu//submit/img/" +\
+        inpHistFilename="http://pathways-pellegrini.mcdb.ucla.edu/submit/img/" +\
                             os.path.basename(inpHistFilename)
+    rDownloadableFilename = "http://pathways-pellegrini.mcdb.ucla.edu/submit/img/"+\
+                            os.path.basename(rDownloadableOut)
+
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename)
+    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename)
 
 def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:

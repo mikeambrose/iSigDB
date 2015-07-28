@@ -9,23 +9,19 @@ def avN(vals,n):
     return sum(subset)/float(n)
 
 def getStatistics(vals,n,pdf,title,num_iter=100000,num_buckets=1000):
-    """Returns the approximate mean, standard deviation, and 95th, 99th, and 99.9th percentile values
-    of the distribution created by averaging n values from vals
-    Also writes a histogram of the distribution to imageLoc"""
+    """Returns the simulated values of the distribution of averaging n values from vals
+    Also writes a histogram of the distribution to pdf"""
     avs = []
     for _ in range(num_iter):
         avs.append(avN(vals,n))
     mean = sum(avs)/float(num_iter)
     std = sqrt(sum(x**2 for x in avs)/float(num_iter)-mean**2)
     avs.sort()
-    p95 = avs[int(num_iter*0.95)]
-    p99 = avs[int(num_iter*0.99)]
-    p999 = avs[int(num_iter*0.999)]
     plt.hist(avs,num_buckets)
     plt.title(title)
     pdf.savefig()
     plt.close()
-    return mean,std,p95,p99,p999
+    return avs
 
 if __name__ == '__main__':
     parser = OptionParser()

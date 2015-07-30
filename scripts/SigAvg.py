@@ -8,7 +8,7 @@ import subprocess
 import math
 import iSigDBUtilities as util
 #TODO: uncomment this when on server
-os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+#os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
 import matplotlib
 matplotlib.use('Agg')
 import nullmodel
@@ -91,8 +91,21 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
             for sig in samSigVal[sam]:
                 numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
                 samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
+    if 'pval' in version:
+        #add tooltips with the p-value
+        tooltips = {}
+        for sam in samSigVal:
+            tooltips[sam] = {}
+            nullDist = nullVals[sam]
+            for sig in samSigVal[sam]:
+                numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
+                signame = sig if sig not in abbrevsDict else abbrevsDict[sig]
+                tooltips[sam][signame] = numGreaterThan/float(len(nullDist))
+    else:
+        tooltips = None
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
+    return tooltips
 
 def writeNullModelHists(filename,sigNames,allValues,n,num_iter=100000,num_buckets=100):
     """Writes each of the histograms to a pdf
@@ -206,8 +219,8 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     else:
         nullFilename = None
         nullVals = None
-    writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
-    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx)
+    tooltips = writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
+    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips)
         
 #----------------------------------------------------------------------------
 # main function call

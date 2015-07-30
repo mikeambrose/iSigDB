@@ -146,7 +146,7 @@ def writeRegularOutput(samSigVals,outFile,fullNames={}):
             out.write('\n')
 
 def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,\
-                    isClient,nullFilename,inpHistFilename=None,mn=None,mx=None):
+                    isClient,nullFilename,inpHistFilename=None,mn=None,mx=None,tooltips=None):
     """Calls the R script to cluster and create the heatmap
         matrixFile is the location of the output
         rPdfOutFile is where the R heatmap will be output
@@ -203,7 +203,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
                             os.path.basename(rDownloadableOut)
 
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename)
+    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips)
 
 def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:

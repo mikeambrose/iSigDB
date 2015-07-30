@@ -3,6 +3,16 @@
 $(function () {
 xlabels = document.getElementById('xlabels').innerHTML.split(',');
 ylabels = document.getElementById('ylabels').innerHTML.split(',');
+//get dictionary of tooltips
+rawTooltips = document.getElementById('tooltips').innerHTML.split('\n');
+tooltips = {};
+for (var i = 0; i < rawTooltips.length; i++){
+    line = rawTooltips[i].split(',');
+    if (!tooltips.hasOwnProperty(line[0])){
+        tooltips[line[0]] = {}
+    }
+    tooltips[line[0]][line[1]] = line[2];
+}
 
 //document.getElementById('container').css('cursor','crosshair');
     /**
@@ -144,8 +154,9 @@ ylabels = document.getElementById('ylabels').innerHTML.split(',');
        // },
 	tooltip: {
             formatter: function () {
-                return '<b>' + this.series.xAxis.categories[this.point.x] + ', ' +
-                    this.series.yAxis.categories[this.point.y] + ', ' + this.point.value + '</b>';
+                return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
+                    this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b><br>" +
+                    "p-value: <b>" + tooltips[this.point.y][this.point.x] + "</b>";
             },
             //crosshairs: [true,true]
             },

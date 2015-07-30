@@ -21,7 +21,7 @@ HTML_BASE = """<!DOCTYPE HTML>
         </style>
 """
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None,rDownloadFilename=None):
+def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None,rDownloadFilename=None,tooltips=None):
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
@@ -106,6 +106,16 @@ ignored line
             else:
                 htmlText += str(i-1) + "," + str(j-1) + "," + f[i][j] + "\n"
         htmlText = htmlText[:-1] + '\n'
+    #and add tooltips
+    htmlText += """</pre>
+<pre id="tooltips" style="display:none">"""
+    if tooltips:
+        for j in range(len(yLabels)):
+            for i in range(len(xLabels)):
+                if not invertHeatmap:
+                    htmlText += str(j)+","+str(i)+","+str(tooltips[yLabels[j]][xLabels[i]])+"\n"
+                else:
+                    htmlText += str(i)+","+str(j)+","+str(tooltips[yLabels[j]][xLabels[i]])+"\n"
     if centerAroundZero:
         maxVal = max(abs(maxVal),abs(minVal))
         minVal = -maxVal

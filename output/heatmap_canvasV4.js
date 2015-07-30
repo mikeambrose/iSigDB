@@ -148,17 +148,18 @@ for (var i = 0; i < rawTooltips.length; i++){
                     [0.75,document.getElementById('color75').innerHTML],
                     [1,document.getElementById('color100').innerHTML]
                 ],
-                //minColor: '#FFFFFF',
-                //maxColor: Highcharts.getOptions().colors[0]
             },
-       // },
 	tooltip: {
             formatter: function () {
-                return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
-                    this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b><br>" +
-                    "p-value: <b>" + tooltips[this.point.y][this.point.x] + "</b>";
+                if (tooltips.hasOwnProperty(this.point.x)){
+                    return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
+                        this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b><br>" +
+                        "p-value: <b>" + tooltips[this.point.y][this.point.x] + "</b>";
+                } else {
+                    return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
+                        this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b>";
+                }
             },
-            //crosshairs: [true,true]
             },
         series: [{
             turboThreshold: 0

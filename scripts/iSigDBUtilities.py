@@ -146,7 +146,8 @@ def writeRegularOutput(samSigVals,outFile,fullNames={}):
             out.write('\n')
 
 def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,\
-                    isClient,nullFilename,inpHistFilename=None,mn=None,mx=None,tooltips=None):
+                    isClient,nullFilename,inpHistFilename=None,mn=None,mx=None,tooltips=None,\
+                    color=None):
     """Calls the R script to cluster and create the heatmap
         matrixFile is the location of the output
         rPdfOutFile is where the R heatmap will be output
@@ -157,6 +158,10 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
         fixed controls whether or not the axes are fixed
         isClient is a debug flag, always passed as False on the server
         nullFilename is the location of the null distribution pdf
+        inpHistFilename is the location of the input distribution pdf
+        mn,mx are the min and max of the color axes
+        tooltips are the p-value hoverover tooltips
+        color is the value for the color range
     """
     if not isClient:
         rTxtOutFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+jobID+'/'+jobID+'.matrixForHC.txt'
@@ -203,7 +208,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
                             os.path.basename(rDownloadableOut)
 
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips)
+    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips,color)
 
 def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:
@@ -324,3 +329,22 @@ def copyFile(f,loc):
     with open(loc,'wb') as out:
         out.write(f.read())
 
+def getOptionsUsed(ver,n,zTransform,rowMetric,colMetric,invert,computeNull,nullIterations,mn,mx,av):
+    """A string corresponding to which options were selected"""
+    options = []
+    if 'rank' in ver:
+        options.append("Rank the input")
+    if 'log' in ver:
+        options.append("Log-transform the input")
+    if 'delta' in ver:
+        options.append("Show the difference across each row")
+    if 'sig' in ver:
+        options.append("Show significance")
+    if invert:
+        options.append("Signatures on vertical axis")
+    if mn:
+        options.append("Set color axes to range from {0} to {1}".format(mn,mx))
+    options.append("Row clustering metric: {0}".format(rowMetric))
+    options.append("Column clustering metric: {0}".format(colMetric))
+    options.append("Number of genes: {0}".format(n))
+    return "\n".join(options) 

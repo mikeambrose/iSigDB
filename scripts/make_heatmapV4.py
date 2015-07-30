@@ -21,7 +21,7 @@ HTML_BASE = """<!DOCTYPE HTML>
         </style>
 """
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None,rDownloadFilename=None,tooltips=None):
+def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None,rDownloadFilename=None,tooltips=None,color=None):
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
@@ -116,12 +116,14 @@ ignored line
                     htmlText += str(j)+","+str(i)+","+str(tooltips[yLabels[j]][xLabels[i]])+"\n"
                 else:
                     htmlText += str(i)+","+str(j)+","+str(tooltips[yLabels[j]][xLabels[i]])+"\n"
-    if centerAroundZero:
+    if (centerAroundZero and color==None) or color=='bwr':
         maxVal = max(abs(maxVal),abs(minVal))
         minVal = -maxVal
         c0,c25,c50,c75,c100 = '#00005C,#3060cf,#ffffff,#c4463a,#800000'.split(',')
-    else:
+    elif color==None or color=='wr':
         c0,c25,c50,c75,c100 = '#ffffff,#e7b5b0,#c4463a,#62231d,#800000'.split(',')
+    elif color=='rw':
+        c0,c25,c50,c75,c100 = '#800000,#62231d,#c4463a,#e7b5b0,#ffffff'.split(',')
     minVal = givenMinVal if (givenMinVal != None) else minVal
     maxVal = givenMaxVal if (givenMaxVal != None) else maxVal
     htmlText += """</pre>

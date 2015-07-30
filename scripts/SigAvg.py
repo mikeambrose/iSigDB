@@ -14,8 +14,7 @@ matplotlib.use('Agg')
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
-#TODO: uncomment when on server
-import sys
+#import sys
 #sys.path.append("/UCSC/Pathways-Auxiliary/UCLApathways-SciPy-Installed-DL-20150602/scipy-0.15.1/lib/python2.7/site-packages")
 #import scipy.stats
 def getSigGenes(sigFile,selectedSigs,n):
@@ -157,7 +156,7 @@ def writeInDist(sams,inDistFilename):
     writeInputFileHist(inDistFilename,names,allVals)
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
-                    computeNull,isClient,nullIterations,mn,mx,av=True):
+                    computeNull,isClient,nullIterations,mn,mx,av,color):
     """Main function which generates the heatmap
     inputFile - user-provided input
     sigfile - file with most important genes for each signature
@@ -178,6 +177,11 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     mn - min value in the heatmap color range (or None to automatically scale)
     mx - max value in the heatmap color range (or None)
     av - whether to average the values (if True) or report the sum (if False)
+    color - which color axis to use
+        'bwr' goes blue->white->red
+        'wr' goes white->red
+        'rw' goes red->white
+        None sets it automatically depending on what computation options were selected
     """
     #checks for errors and corrects whatever errors it can
     util.reformatFile(inputFile)
@@ -220,7 +224,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         nullFilename = None
         nullVals = None
     tooltips = writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
-    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips)
+    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips,color)
         
 #----------------------------------------------------------------------------
 # main function call
@@ -239,6 +243,8 @@ if __name__ == "__main__":
     parser.add_option("--null",default=False,action="store_true", dest="null", help="compute null model")
     parser.add_option("--nullIter",dest="nullIterations",help="how many iterations to use in null model")
     parser.add_option("--range",dest="range",help="range of output")
+    parser.add_option("--color",dest="color",help="color axis")
     (options, args) = parser.parse_args()
     mn,mx = options.range.split(',') if options.range != "None" else (None,None)
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,int(options.nullIterations) if options.null else None,mn,mx)
+    color = options.color if options.color != 'None' else None
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,int(options.nullIterations) if options.null else None,mn,mx,True,color)

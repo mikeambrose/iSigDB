@@ -147,7 +147,7 @@ def writeRegularOutput(samSigVals,outFile,fullNames={}):
 
 def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,\
                     isClient,nullFilename,inpHistFilename=None,mn=None,mx=None,tooltips=None,\
-                    color=None):
+                    color=None,optionStr=''):
     """Calls the R script to cluster and create the heatmap
         matrixFile is the location of the output
         rPdfOutFile is where the R heatmap will be output
@@ -162,6 +162,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
         mn,mx are the min and max of the color axes
         tooltips are the p-value hoverover tooltips
         color is the value for the color range
+        optionStr is the string describing the options which were used to generate the signature
     """
     if not isClient:
         rTxtOutFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+jobID+'/'+jobID+'.matrixForHC.txt'
@@ -208,7 +209,7 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
                             os.path.basename(rDownloadableOut)
 
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips,color)
+    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips,color,optionStr)
 
 def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:
@@ -329,22 +330,20 @@ def copyFile(f,loc):
     with open(loc,'wb') as out:
         out.write(f.read())
 
-def getOptionsUsed(ver,n,zTransform,rowMetric,colMetric,invert,computeNull,nullIterations,mn,mx,av):
+def getOptionsUsed(ver,n,zTransform,rowMetric,colMetric):
     """A string corresponding to which options were selected"""
     options = []
     if 'rank' in ver:
-        options.append("Rank the input")
+        options.append("<b>rank</b> the input")
     if 'log' in ver:
-        options.append("Log-transform the input")
+        options.append("<b>log-transform</b> the input")
     if 'delta' in ver:
-        options.append("Show the difference across each row")
+        options.append("show the <b>delta</b> across each row")
     if 'sig' in ver:
-        options.append("Show significance")
-    if invert:
-        options.append("Signatures on vertical axis")
-    if mn:
-        options.append("Set color axes to range from {0} to {1}".format(mn,mx))
-    options.append("Row clustering metric: {0}".format(rowMetric))
-    options.append("Column clustering metric: {0}".format(colMetric))
-    options.append("Number of genes: {0}".format(n))
-    return "\n".join(options) 
+        options.append("show <b>significance</b>")
+    if zTransform == 'matrix':
+        options.append("<b>scale</b> heatmap")
+    options.append("row clustering metric: <b>{0}</b>".format(rowMetric))
+    options.append("column clustering metric: <b>{0}</b>".format(colMetric))
+    options.append("number of genes: <b>{0}</b>".format(n))
+    return ", ".join(options) 

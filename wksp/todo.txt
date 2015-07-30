@@ -1,3 +1,2 @@
 fix up sig_heatmapV4.cgi
-set color axes
 display heatmap options selected

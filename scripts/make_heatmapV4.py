@@ -21,7 +21,31 @@ HTML_BASE = """<!DOCTYPE HTML>
         </style>
 """
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename='',inpHistFilename=None,rDownloadFilename=None,tooltips=None,color=None):
+def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename=None,inpHistFilename=None,rDownloadFilename=None,tooltips=None,color=None,optionStr=''):
+    """Generates the html for the heatmap page (for both signature- and matrix- based but not detailed)
+    dataFile is the r-style output
+    outFile is a debug argument - it should always be called with None on the server
+        if given a filename, instead of printing the html, it will write it to that file
+    legendLabel is the label for the color legend
+    invertHeatmap dictates whether the signatures are on the y- or x-axis
+    centerAroundZero is true when delta, normalize, and a few other options are selected
+        it makes min and max on either side of the axis
+    givenMin/MaxVal set the color axis values
+    baseFile is the R heatmap output and also how we get the seed
+    includeDetailed dictates whether or not the detailed signature view is included
+        it is false whenever called from the matrix tool, since there is no detail there
+    nullFilename is the name of the file containing the null distribution
+        if it is '' or None, that file is not attached
+    inpHistFilename is the name of the file containing the input distribution
+        same rules as nullFilename
+    rDownloadFilename has the data download from R
+        same rules as nullFilename
+    tooltips is a dictionary of xLabel:yLabel:p-value
+        if none, not attached
+    color is a color string which dictates what colors the color axis holds
+        options are rwb (red->white->blue), wr (white->red), rw (red->white)
+    optionStr is a human-readable description of the options selected to make the heatmap
+    """
     f = open(dataFile).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
@@ -39,16 +63,18 @@ def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerArou
     htmlText += """
         <script src="""+'"'+base_loc+"""/heatmap_canvasV4.js">
     </script>
-    </head>
-    <body>
-    <h1>Results</h1>
 <script src=""" + '"'+base_loc+"""/HighCharts/js/highcharts.js"></script>
 <script src="""+ '"'+base_loc+"""/HighCharts/js/modules/data.js"></script>
 <script src="""+'"'+base_loc+"""/HighCharts/js/modules/heatmap.js"></script>
 <script src="""+'"'+base_loc+"""/HighCharts/js/modules/exporting.js"></script>
-
+    </head>
+    <body>
+    <h1>Results</h1>
 <div id="container"></div> <br />
-If you can't see the heatmap, make sure adblock is disabled and try again.<br>
+If you can't see the heatmap, make sure adblock is disabled and try again.<br>"""
+    if optionStr != '':
+        htmlText += "Selected options: {0}<br>".format(optionStr)
+    htmlText += """
 <b>Downloads: </b> <br />
 <a target="_blank" href="""
     #add links and hidden file location

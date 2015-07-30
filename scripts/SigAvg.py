@@ -224,7 +224,8 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         nullFilename = None
         nullVals = None
     tooltips = writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
-    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips,color)
+    optionsUsed = util.getOptionsUsed(version,n,zTransform,rowMetric,colMetric)
+    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips,color,optionsUsed)
         
 #----------------------------------------------------------------------------
 # main function call

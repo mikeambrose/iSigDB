@@ -87,15 +87,21 @@ if "scale" in form:
     except Exception:
         util.displayErrorMessage("Min and max color range must be numbers")
 av = "av" in form
+acceptableColors = ["none","bwr","wr","rw"]
+if form["color"].value not in acceptableColors:
+    util.displayErrorMessage("Color not found {0}".format(form["color"])
+color = form["color"]
+if color == "none":
+    color = None
 #logging this call
 
 userIP = cgi.escape(os.environ["REMOTE_ADDR"])
 logFileDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/useLog.txt' #TODO: add directory
 with open(logFileDir,'a') as logFile:
-    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,compNull,numIter,invert,rowMetric,colMetric,n,mn,mx,species]]))
+    logFile.write('\t'.join([str(x) for x in [userIP,version,zTransform,compNull,numIter,invert,rowMetric,colMetric,n,mn,mx,species,color]]))
 
 print """Content-type: text/html
 
 """
 
-sigComp.generateHeatmap(outputFile,sigGenesFile,"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,av)
+sigComp.generateHeatmap(outputFile,sigGenesFile,"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,av,color)

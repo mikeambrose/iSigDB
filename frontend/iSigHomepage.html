@@ -48,10 +48,14 @@ function submitCheckboxes() {
 File: <input type="file" name="matrix_file" size="30">
 </div>
 <div id="serverFile" name="serverFile" style="display:none">
-Filename: <select id="serverFileName" name="serverFileName">
-{files}
+Matrix: <select id="serverFileName" name="serverFileName">
+<option value="DermDB">DermDB</option>
+<option value="mba">Mouse body atlas</option>
+<option value="hba">Human body atlas</option>
+<option value="immgen">Immgen data</option>
+<option value="macrophage">Macrophage perturbation</option>
+<option value="pca">Human primary cell atlas</option>
 </select>
-or <a href="./serverFileUpload.html">upload a file</a>
 </div>
 <hr>
 
@@ -61,11 +65,12 @@ Input species:&nbsp;<select name="species" id="species">
 <option value="human">human</option>
 <option value="mouse">mouse</option>
 </select>
+<br><br>
 
 <input type="checkbox" name="rank" id="rank"> Rank the input by sample instead of using values <br> <br>
 <input type="checkbox" name="log" id="log"> Log-transform the input (or ranks) <br> <br>
 <input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
-<input type="checkbox" name="sig" id="sig">Show significance (must uncheck 'scale' and 'show difference' and check 'null')<br><br>
+<input type="checkbox" name="sig" id="sig">Show significance (must uncheck 'scale', 'show difference' and check 'null', 'show average value')<br><br>
 
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
 checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
@@ -77,7 +82,7 @@ checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" w
 <br><br>
 
 <input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>
-Set color axes to range from <select name="color" id="color">
+Set the color of the heatmap to range from <select name="color" id="color">
     <option value="none">default</option>
     <option value="bwr">blue to white to red</option>
     <option value="wr">white to red</option>
@@ -89,7 +94,7 @@ Set color axes to range from <select name="color" id="color">
 <br><br>
 
 <input type="checkbox" name="av" id="av" checked> Report average value across the signature instead of sum
-
+<br><br>
 Metric for sample clustering: &nbsp;
 <select id="row_metric" name="row_metric">
 <option value="euclidean">Euclidean Distance</option>

@@ -10,20 +10,16 @@ import SigAvg as sigComp
 
 form = cgi.FieldStorage()
 
-if 'serverFile' in form and form['serverFile'].value != '':
+if form["uploadSettings"].value == 'server':
     #the user has selected a file from the server
-    with open('/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/associations.txt')\
-        as assoc:
-        assoc.readline() #skip header line
-        userFile = None
-        for line in assoc:
-            if line.split('\t')[0] == form['serverFile'].value:
-                userFileLoc = line.replace("\n","").split('\t')[1]
-                userFile = open('/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/iSigDB_uploads/'+\
-                            userFileLoc)
-                break
-        if not userFile:
-            util.displayErrorMessage("No such file found",True)
+    valid = ["DermDB","mba","hba","immgen","macrophage","pca"]
+    matrix = form["serverFileName"].value
+    if matrix not in valid:
+        util.displayErrorMessage("Not a valid matrix {0}".format(matrix),True)
+    matrix_abbrevs = util.loadAbbrevs('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/matrixAssociations.txt')
+    matrix_file = matrix_abbrevs[matrix_selected]
+    userFile = open(matrix_file)
+
 else:
     #get the file from the regular upload
     userFile = form["matrix_file"].file

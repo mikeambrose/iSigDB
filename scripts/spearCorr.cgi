@@ -72,6 +72,9 @@ if geneVal not in geneRestrictions[geneMetric]:
 
 #the signature matrix is in matrix
 matrix_selected = form["matrix"].value
+valid = ["DermDB","mba","hba","immgen","macrophage","pca"]
+if matrix_selected not in valid:
+    util.displayErrorMessage("Not a valid matrix {0}".format(matrix_selected,True))
 matrix_abbrevs = util.loadAbbrevs('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/matrixAssociations.txt')
 matrix_file = matrix_abbrevs[matrix_selected]
 

@@ -1,5 +1,8 @@
+#!/usr/bin/env python
 import cgi
 import cgitb
+import sys
+sys.path.append('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank')
 import detailedHeatmap
 cgitb.enable()
 form = cgi.FieldStorage()

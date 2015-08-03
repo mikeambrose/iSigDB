@@ -17,7 +17,7 @@ if form["uploadSettings"].value == 'server':
     if matrix not in valid:
         util.displayErrorMessage("Not a valid matrix {0}".format(matrix),True)
     matrix_abbrevs = util.loadAbbrevs('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/matrixAssociations.txt')
-    matrix_file = matrix_abbrevs[matrix_selected]
+    matrix_file = matrix_abbrevs[matrix]
     userFile = open(matrix_file)
 
 else:
@@ -50,7 +50,7 @@ with open("{0}/abbrevs.txt".format(workDir),'w') as localAbbrevs:
         if full in fullToAbbrev: #filters out headers like 'mouse', 'human'
             localAbbrevs.write("{0}\t{1}\n".format(fullToAbbrev[full],full))
 version = ''
-for option in ["log","delta","rank","sig"]:
+for option in ["log","delta","rank","sig","null"]:
     #add option string to version if it's in the form
     version = version + option * (option in form)
 zTransform = "matrix" if "scale_columns" in form else "none"
@@ -85,8 +85,8 @@ if "scale" in form:
 av = "av" in form
 acceptableColors = ["none","bwr","wr","rw"]
 if form["color"].value not in acceptableColors:
-    util.displayErrorMessage("Color not found {0}".format(form["color"])
-color = form["color"]
+    util.displayErrorMessage("Color not found {0}".format(form["color"].value))
+color = form["color"].value
 if color == "none":
     color = None
 #logging this call

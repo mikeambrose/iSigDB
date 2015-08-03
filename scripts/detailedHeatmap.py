@@ -116,6 +116,7 @@ def generateCanvas(dataFile,outFile,signature,invert,rowClustMethod,colClustMeth
 <script src="""+ '"'+base_loc+"""/HighCharts/js/modules/data.js"></script>
 <script src="""+'"'+base_loc+"""/HighCharts/js/modules/heatmap.js"></script>
 <script src="""+'"'+base_loc+"""/HighCharts/js/modules/exporting.js"></script>
+<span id="tooltips"></span>
 <div id="container"></div> <br />
 <a href="http://pathways-pellegrini.mcdb.ucla.edu/submit/img/goTeles_tissueDeconvolution_"""+seed+'RDetailHeatmap.pdf"'+""">R Heatmap Output</a><br>
 <b>Signature genes not found in input</b>:<br>

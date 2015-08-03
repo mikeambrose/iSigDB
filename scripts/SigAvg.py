@@ -4,7 +4,6 @@ Feel free to email with any questions!
 """
 import os
 from optparse import OptionParser
-import subprocess
 import math
 import iSigDBUtilities as util
 #TODO: uncomment this when on server
@@ -14,9 +13,7 @@ matplotlib.use('Agg')
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
-#import sys
-#sys.path.append("/UCSC/Pathways-Auxiliary/UCLApathways-SciPy-Installed-DL-20150602/scipy-0.15.1/lib/python2.7/site-packages")
-#import scipy.stats
+
 def getSigGenes(sigFile,selectedSigs,n):
     """Returns dictionary of signature : [top n genes]
     sigFile is the file with the shortened signatures
@@ -45,7 +42,7 @@ def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
     logSams = OrderedDict()
     for sam in sams:
-        logSams[sam] = {gene:math.log(sams[sam][gene]+1,10) for gene in sams[sam]}
+        logSams[sam] = {gene:math.log10(sams[sam][gene]+1) for gene in sams[sam]}
     return logSams
 
 def delta(sams):
@@ -90,7 +87,7 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
             for sig in samSigVal[sam]:
                 numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
                 samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
-    if 'pval' in version:
+    if 'null' in version:
         #add tooltips with the p-value
         tooltips = {}
         for sam in samSigVal:

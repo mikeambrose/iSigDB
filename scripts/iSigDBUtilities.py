@@ -207,9 +207,10 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
                             os.path.basename(inpHistFilename)
     rDownloadableFilename = "http://pathways-pellegrini.mcdb.ucla.edu/submit/data/"+\
                             os.path.basename(rDownloadableOut)
+    template = "/home/mike/workspace/PellegriniResearch/scripts/heatmapTemplate.html" if isClient else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatmapTemplate.html'
 
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips,color,optionStr)
+    make_heatmap.generateCanvas(rTxtOutFile, out,template,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips,color,optionStr)
 
 def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:

@@ -11,7 +11,7 @@ def replaceSections(html,replacements):
         html = html.replace("{"+replacement+"}",replacements[replacement])
     return html
 
-def generateCanvas(dataFile,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename=None,inpHistFilename=None,rDownloadFilename=None,tooltips=None,color=None,optionStr=''):
+def generateCanvas(dataFile,outFile,template,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename=None,inpHistFilename=None,rDownloadFilename=None,tooltips=None,color=None,optionStr=''):
     """Generates the html for the heatmap page (for both signature- and matrix- based but not detailed)
     dataFile is the r-style output
     outFile is a debug argument - it should always be called with None on the server
@@ -123,7 +123,6 @@ Metric for gene clustering: &nbsp;
                     tooltipText += str(j)+","+str(i)+","+str(tooltips[yLabels[j]][xLabels[i]])+"\n"
                 else:
                     tooltipText += str(i)+","+str(j)+","+str(tooltips[yLabels[j]][xLabels[i]])+"\n"
-        htmlText = htmlText.replace("{tooltips}",tooltipText)
         replacements['tooltips'] = tooltipText
     else:
         replacements['tooltips'] = ''
@@ -157,7 +156,7 @@ Metric for gene clustering: &nbsp;
     replacements['c50'] = c50
     replacements['c75'] = c75
     replacements['c100'] = c100
-    htmlText = open('/home/mike/workspace/PellegriniResearch/scripts/heatmapTemplate.html').read()
+    htmlText = open(template).read()
     htmlText = replaceSections(htmlText,replacements)
     if outFile:
         with open(outFile,'w') as f_out:

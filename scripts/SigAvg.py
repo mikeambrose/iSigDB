@@ -13,6 +13,7 @@ matplotlib.use('Agg')
 import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
+import bisect
 
 def getSigGenes(sigFile,selectedSigs,n):
     """Returns dictionary of signature : [top n genes]
@@ -78,15 +79,6 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
                 samSigVal[sam][sig] = util.average(geneVals)
             else:
                 samSigVal[sam][sig] = sum(geneVals)
-    if 'sig' in version:
-        #replace each value with it's significance as computed by the null distribution
-        if not nullVals:
-            util.displayErrorMessage("sig option without computing null distribution")
-        for sam in samSigVal:
-            nullDist = nullVals[sam]
-            for sig in samSigVal[sam]:
-                numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
-                samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
     if 'null' in version:
         #add tooltips with the p-value
         tooltips = {}
@@ -94,9 +86,13 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
             tooltips[sam] = {}
             nullDist = nullVals[sam]
             for sig in samSigVal[sam]:
-                numGreaterThan = sum(val > samSigVal[sam][sig] for val in nullDist)
+                currentLoc = bisect.bisect_left(nullDist,samSigVal[sam][sig])
+                numGreaterThan = len(nullDist)-currentLoc
                 signame = sig if sig not in abbrevsDict else abbrevsDict[sig]
                 tooltips[sam][signame] = numGreaterThan/float(len(nullDist))
+                if 'sig' in version:
+                    #replace the value itself
+                    samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
     else:
         tooltips = None
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
@@ -212,7 +208,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     sigGenes = getSigGenes(sigfile,abbrevsDict.keys(),n) 
 
     #computing null distribution
-    if computeNull and zTransform != 'matrix' and 'delta' not in version:
+    if computeNull:
         allSigGenes = set()
         for sig in sigGenes:
             allSigGenes = allSigGenes.union(set(sigGenes[sig]))

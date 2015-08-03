@@ -60,7 +60,6 @@ Matrix: <select id="serverFileName" name="serverFileName">
 <hr>
 
 <strong>Heatmap options<a href="OptionDescriptions.html">[Help]</a>:</strong><br><br>
-<br><br>
 Input species:&nbsp;<select name="species" id="species">
 <option value="human">human</option>
 <option value="mouse">mouse</option>
@@ -72,29 +71,6 @@ Input species:&nbsp;<select name="species" id="species">
 <input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
 <input type="checkbox" name="sig" id="sig">Show significance (must uncheck 'scale', 'show difference' and check 'null', 'show average value')<br><br>
 
-<input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
-checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
-
-<br><br>
-
-<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis
-
-<br><br>
-
-<input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>
-Set the color of the heatmap to range from <select name="color" id="color">
-    <option value="none">default</option>
-    <option value="bwr">blue to white to red</option>
-    <option value="wr">white to red</option>
-    <option value="rw">red to white</option>
-</select> <br> <br>
-
-<input type="checkbox" name="null" id="null" value="checked"> Compute null distribution with
-<input type="number" name="nullNumIter" id="nullNumIter" min="1" max="100000" value="10000"> iterations
-<br><br>
-
-<input type="checkbox" name="av" id="av" checked> Report average value across the signature instead of sum
-<br><br>
 Metric for sample clustering: &nbsp;
 <select id="row_metric" name="row_metric">
 <option value="euclidean">Euclidean Distance</option>
@@ -119,6 +95,29 @@ value="25">25</option><option value="50" selected="selected">50</option><option
 value="100">100</option><option value="250">250</option><option
 value="500">500</option><option value="1000">1000</option></select>
 <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>How many genes from each signature will be compared against the input file.</span></a>
+<br>
+<input type="button" name="showAdvanced" value="Advanced Options" onclick="toggleVisibility('advancedOptions')"> <br>
+<div id="advancedOptions" style="display:none">
+<input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
+checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
+<br><br>
+<input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br><br>
+<input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>
+Set the color of the heatmap to range from <select name="color" id="color">
+    <option value="none">default</option>
+    <option value="bwr">blue to white to red</option>
+    <option value="wr">white to red</option>
+    <option value="rw">red to white</option>
+</select> <br> <br>
+
+<input type="checkbox" name="null" id="null" checked> Compute null distribution with
+<input type="number" name="nullNumIter" id="nullNumIter" min="1" max="100000" value="10000"> iterations
+<br><br>
+<input type="checkbox" name="av" id="av" checked> Report average value across the signature instead of sum
+<br><br>
+
+</div>
+
 <hr>
 <br> <br>
 

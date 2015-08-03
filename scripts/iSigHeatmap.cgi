@@ -19,10 +19,12 @@ if form["uploadSettings"].value == 'server':
     matrix_abbrevs = util.loadAbbrevs('/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/matrixAssociations.txt')
     matrix_file = matrix_abbrevs[matrix]
     userFile = open(matrix_file)
+    fileName = matrix
 
 else:
     #get the file from the regular upload
     userFile = form["matrix_file"].file
+    fileName = form["matrix_file"].name
     if not userFile:
         util.displayErrorMessage("No file uploaded",True)
 
@@ -100,4 +102,4 @@ print """Content-type: text/html
 
 """
 
-sigComp.generateHeatmap(outputFile,sigGenesFile,"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,av,color)
+sigComp.generateHeatmap(outputFile,sigGenesFile,"{0}/abbrevs.txt".format(workDir),n,version,zTransform,jobID,rowMetric,colMetric,invert,compNull,False,numIter,mn,mx,av,color,fileName)

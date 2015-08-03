@@ -153,7 +153,7 @@ def writeInDist(sams,inDistFilename):
     writeInputFileHist(inDistFilename,names,allVals)
 
 def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetric,colMetric,invert,\
-                    computeNull,isClient,nullIterations,mn,mx,av,color):
+                    computeNull,isClient,nullIterations,mn,mx,av,color,fileName):
     """Main function which generates the heatmap
     inputFile - user-provided input
     sigfile - file with most important genes for each signature
@@ -221,7 +221,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         nullFilename = None
         nullVals = None
     tooltips = writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
-    optionsUsed = util.getOptionsUsed(version,n,zTransform,rowMetric,colMetric)
+    optionsUsed = util.getOptionsUsed(version,n,zTransform,rowMetric,colMetric,fileName)
     util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips,color,optionsUsed)
         
 #----------------------------------------------------------------------------
@@ -245,4 +245,4 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
     mn,mx = options.range.split(',') if options.range != "None" else (None,None)
     color = options.color if options.color != 'None' else None
-    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,int(options.nullIterations) if options.null else None,mn,mx,True,color)
+    generateHeatmap(options.input,options.sigfile,options.abbrev,int(options.n),options.version,options.zTransform,None,options.row_metric,options.col_metric,options.invert,options.null,True,int(options.nullIterations) if options.null else None,mn,mx,True,color,options.input)

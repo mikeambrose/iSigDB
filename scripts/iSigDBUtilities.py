@@ -330,20 +330,20 @@ def copyFile(f,loc):
     with open(loc,'wb') as out:
         out.write(f.read())
 
-def getOptionsUsed(ver,n,zTransform,rowMetric,colMetric):
+def getOptionsUsed(ver,n,zTransform,rowMetric,colMetric,fileName):
     """A string corresponding to which options were selected"""
     options = []
     if 'rank' in ver:
-        options.append("<b>rank</b> the input")
+        options.append("<b>rank</b>")
     if 'log' in ver:
-        options.append("<b>log-transform</b> the input")
+        options.append("<b>log-transform</b>")
     if 'delta' in ver:
-        options.append("show the <b>delta</b> across each row")
+        options.append("<b>delta</b>")
     if 'sig' in ver:
-        options.append("show <b>significance</b>")
+        options.append("<b>significance</b>")
     if zTransform == 'matrix':
-        options.append("<b>scale</b> heatmap")
-    options.append("row clustering metric: <b>{0}</b>".format(rowMetric))
-    options.append("column clustering metric: <b>{0}</b>".format(colMetric))
-    options.append("number of genes: <b>{0}</b>".format(n))
-    return ", ".join(options) 
+        options.append("<b>scale</b>")
+    options.append("<b>{0}</b> row cluster".format(rowMetric))
+    options.append("<b>{0}</b> col cluster".format(colMetric))
+    options.append("<b>{0}</b> genes".format(n))
+    return fileName+"<br>"+", ".join(options) 

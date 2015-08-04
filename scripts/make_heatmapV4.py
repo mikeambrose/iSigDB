@@ -11,9 +11,9 @@ def replaceSections(html,replacements):
         html = html.replace("{"+replacement+"}",replacements[replacement])
     return html
 
-def generateCanvas(dataFile,outFile,template,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,baseFile='',includeDetailed=True,nullFilename=None,inpHistFilename=None,rDownloadFilename=None,tooltips=None,color=None,optionStr=''):
+def generateCanvas(C,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=False,givenMinVal=None,givenMaxVal=None,includeDetailed=True,showNull=False,showInput=False,showRDownload=False,tooltips=None,color=None,optionStr=''):
     """Generates the html for the heatmap page (for both signature- and matrix- based but not detailed)
-    dataFile is the r-style output
+    C is the set of constants
     outFile is a debug argument - it should always be called with None on the server
         if given a filename, instead of printing the html, it will write it to that file
     legendLabel is the label for the color legend
@@ -21,15 +21,9 @@ def generateCanvas(dataFile,outFile,template,legendLabel='',invertHeatmap=True,c
     centerAroundZero is true when delta, normalize, and a few other options are selected
         it makes min and max on either side of the axis
     givenMin/MaxVal set the color axis values
-    baseFile is the R heatmap output and also how we get the seed
     includeDetailed dictates whether or not the detailed signature view is included
         it is false whenever called from the matrix tool, since there is no detail there
-    nullFilename is the name of the file containing the null distribution
-        if it is '' or None, that file is not attached
-    inpHistFilename is the name of the file containing the input distribution
-        same rules as nullFilename
-    rDownloadFilename has the data download from R
-        same rules as nullFilename
+    show{Null,Input,RDownload} dictate whether or not their respective elements are linked to
     tooltips is a dictionary of xLabel:yLabel:p-value
         if none, not attached
     color is a color string which dictates what colors the color axis holds
@@ -37,7 +31,7 @@ def generateCanvas(dataFile,outFile,template,legendLabel='',invertHeatmap=True,c
     optionStr is a human-readable description of the options selected to make the heatmap
     """
     replacements = {}
-    f = open(dataFile).read().split('\n')
+    f = open(C.R_TXT).read().split('\n')
     f = [x.split(',') for x in f]
     while not f[-1] or not any(f[-1]):    del f[-1]
     # the first row is the x labels
@@ -56,19 +50,22 @@ def generateCanvas(dataFile,outFile,template,legendLabel='',invertHeatmap=True,c
     else:
         replacements["options"] = ''
     #add links and hidden file location
-    baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(baseFile)
+    baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(C.R_HEATMAP)
     seed = baseFile[-30:-12]
     replacements['rPdf'] = baseFile
-    if nullFilename:
+    if showNull:
+        nullFilename="{0}img/{1}".format(C.ACCESIBLE_LINK,os.path.basename(C.NULL_PDF))
         replacements['null'] = "<a target=\"_blank\" href=" + nullFilename + ">Null model output</a><br>\n"
     else:
         replacements['null'] = ''
-    if inpHistFilename:
+    if showInput:
+        inpHistFilename="{0}img/{1}".format(C.ACCESIBLE_LINK,os.path.basename(C.INPUT_DIST_PDF))
         replacements["inpHist"] = "<a target=\"_blank\" href=" + inpHistFilename + ">Input distribution</a><br>\n"
     else:
         replacements["inpHist"] = ''
-    if rDownloadFilename:
-        replacements["rDownload"] = "\n<a target=\"_blank\" href=" + rDownloadFilename + ">Raw values</a><br>\n"
+    if showRDownload:
+        rDownloadableFilename = "{0}/data/{1}".format(C.ACCESIBLE_LINK,os.path.basename(C.R_DOWNLOAD))
+        replacements["rDownload"] = "\n<a target=\"_blank\" href=" + rDownloadableFilename + ">Raw values</a><br>\n"
     else:
         replacements["rDownload"] = ''
     if includeDetailed:
@@ -156,7 +153,7 @@ Metric for gene clustering: &nbsp;
     replacements['c50'] = c50
     replacements['c75'] = c75
     replacements['c100'] = c100
-    htmlText = open(template).read()
+    htmlText = open(C.HEATMAP_TEMPLATE).read()
     htmlText = replaceSections(htmlText,replacements)
     if outFile:
         with open(outFile,'w') as f_out:

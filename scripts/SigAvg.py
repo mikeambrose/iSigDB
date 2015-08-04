@@ -1,5 +1,5 @@
 """File which does the actual analysis for the signature visualization
-Written/modified by Mike Ambrose, mikeambrose@berkeley.edu
+   Written/modified by Mike Ambrose, mikeambrose@berkeley.edu
 Feel free to email with any questions!
 """
 import os
@@ -14,6 +14,7 @@ import nullmodel
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import OrderedDict
 import bisect
+import iSigDBConstants
 
 def getSigGenes(sigFile,selectedSigs,n):
     """Returns dictionary of signature : [top n genes]
@@ -183,15 +184,8 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
     util.reformatFile(inputFile)
     util.checkForErrors(inputFile)
 
-    #set up filenames
-    compOutput = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
-       else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{0}/{0}.matrix.txt'.format(jobID)
-    nullFilename = '/home/mike/workspace/PellegriniResearch/output/nulldist.pdf' if isClient\
-       else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/nulldist_' + jobID + '.pdf'
-    inpHistFilename = '/home/mike/workspace/PellegriniResearch/output/inputdist.pdf' if isClient\
-       else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/inputdist_' + jobID + '.pdf'
-    RHeatmapOut ='/home/mike/workspace/PellegriniResearch/output/Rheatmap.pdf' if isClient\
-        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(jobID)
+    #set up constants
+    C = iSigDBConstants.Constants(jobID)
 
     #get sample values
     sams = util.readMatrix(inputFile,ordered=True)
@@ -204,7 +198,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         sams = delta(sams)
 
     #computing sample distribution
-    writeInDist(sams,inpHistFilename)
+    writeInDist(sams,C.INPUT_DIST_PDF)
 
     #get signatures
     abbrevsDict = util.loadAbbrevs(abbrevs)
@@ -215,13 +209,12 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         allSigGenes = set()
         for sig in sigGenes:
             allSigGenes = allSigGenes.union(set(sigGenes[sig]))
-        nullVals = writeNull(sams,nullFilename,n,nullIterations,allSigGenes)
+        nullVals = writeNull(sams,C.NULL_PDF,n,nullIterations,allSigGenes)
     else:
-        nullFilename = None
         nullVals = None
-    tooltips = writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av,nullVals)
+    tooltips = writeValues(sams,sigGenes,C.COMP_OUTPUT,version,abbrevsDict,av,nullVals)
     optionsUsed = util.getOptionsUsed(version,n,zTransform,rowMetric,colMetric,fileName)
-    util.createHeatmap(compOutput,RHeatmapOut,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,nullFilename,inpHistFilename,mn,mx,tooltips,color,optionsUsed)
+    util.createHeatmap(C,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,computeNull,True,True,mn,mx,tooltips,color,optionsUsed)
         
 #----------------------------------------------------------------------------
 # main function call

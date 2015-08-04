@@ -11,6 +11,7 @@ import iSigDBUtilities as util
 import math
 from collections import OrderedDict
 import subprocess
+import iSigDBConstants
 
 def corrRank(sigs,sams,strOutFile,version):
     """Uses the spearman/pearson coefficient to evaluate the similarity between signatures and samples
@@ -30,29 +31,20 @@ def corrRank(sigs,sams,strOutFile,version):
             samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
-def decomp(sigs,sams,outFile,job_id,isClient,genes):
+def decomp(sigs,sams,job_id,C,genes):
     """Runs the matrix decomposition on signatures/samples using DeconRNASeq
     sigs/sams/outFile same as in corrRank"""
     #first we write both matrices to a tab-delimited file
-    sigpath = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
-                                +job_id+'/'+job_id+'.sigs.txt' if not isClient else\
-              '/home/mike/workspace/PellegriniResearch/scripts/scratch/sigs.txt'
-    sampath = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
-                                +job_id+'/'+job_id+'.sams.txt' if not isClient else\
-              '/home/mike/workspace/PellegriniResearch/scripts/scratch/sams.txt'
     for d in [sigs[sig] for sig in sigs] + [sams[sam] for sam in sams]:
         for gene in d.keys():
             if gene not in genes:
                 del d[gene]
-    util.writeRegularOutput(util.invertDict(sigs),sigpath)
-    util.writeRegularOutput(util.invertDict(sams),sampath)
+    util.writeRegularOutput(util.invertDict(sigs),C.DECOMP_SIGS)
+    util.writeRegularOutput(util.invertDict(sams),C.DECOMP_SAMS)
     #next, we call the R script, which writes to the directory
-    rscriptPath = "Rscript" if isClient\
-                else "/UCSC/Pathways-Auxiliary/UCLApathways-R-3.1.1/R-3.1.1/bin/Rscript"
     FNULL = open(os.devnull,'w')
-    decompScriptPath = "/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/decomp.R"
     #if this is silently failing, it might be something with the rscript - remove the redirect to null
-    subprocess.call([rscriptPath,decompScriptPath,sigpath,sampath,outFile],stdout=FNULL,stderr=FNULL)
+    subprocess.call([C.RSCRIPT,C.DECOMP_SCRIPT_PATH,C.DECOMP_SIGS,C.DECOMP_SAMS,C.COMP_OUTPUT],stdout=FNULL,stderr=FNULL)
 
 def getSpearmanVals(v1,v2):
     """Returns the spearman correlation coefficient between v1 and v2"""
@@ -148,7 +140,7 @@ def getSpearmanDict(inputDict,genes,ordered=False):
     return returnDict
 
 def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric,geneVal,selMatrix,\
-                    isClient,job_id,low):
+                    isClient,jobID,low):
     """Runs Spearman or Pearson correlation on the inputFile
     inputFile - user-uploaded file
     version - either "pearson" or "spearman"
@@ -158,16 +150,16 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     geneVal - corresponding value to go along with geneMetric
     sigMatrix - which matrix is selected
     isClient- debug flag, always False when run on server
-    job_id - number generated to uniquely identify task
+    jobID - number generated to uniquely identify task
     low - whether or not to include low genes
     """
     #checks for errors and corrects whichever errors it can
     util.reformatFile(inputFile)
     util.checkForErrors(inputFile)
 
-    outFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/output.txt' if isClient\
-            else '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'\
-                                +job_id+'/'+job_id+'.matrix.txt'
+    #get constants
+    C = iSigDBConstants.Constants(jobID)
+
     #read matrix and sample files
     matrix = util.readMatrix(selMatrix,True,False)
     sams = util.readMatrix(inputFile,True,True)
@@ -180,13 +172,11 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     spearmanSams, spearmanMatrix = getSpearmanDict(sams,genes,True), getSpearmanDict(matrix,genes)
     if version in ["spearman","pearson"]:
         #run correlation on them
-        corrRank(spearmanMatrix,spearmanSams,outFile,version)
+        corrRank(spearmanMatrix,spearmanSams,C.COMP_OUTPUT,version)
     else:
-        decomp(matrix,sams,outFile,job_id,isClient,genes)
-    RHeatmapOut ='/home/mike/workspace/PellegriniResearch/scripts/scratch/Rheatmap.pdf' if isClient\
-        else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/img/{0}Rheatmap.pdf'.format(job_id)
+        decomp(matrix,sams,jobID,C,genes)
     #pass computation to R/make_heatmap
-    util.createHeatmap(outFile,RHeatmapOut,version,"none",rowMetric,colMetric,job_id,invert,isClient,None,mn=mn,mx=mx)
+    util.createHeatmap(C,version,"none",rowMetric,colMetric,invert,isClient,False,False,False,mn=mn,mx=mx)
 
 #this file should always be imported by the server
 #running from the command line is only for testing

@@ -145,45 +145,32 @@ def writeRegularOutput(samSigVals,outFile,fullNames={}):
                     out.write('\t'+str(samSigVals[sam][sig]))
             out.write('\n')
 
-def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,jobID,invert,\
-                    isClient,nullFilename,inpHistFilename=None,mn=None,mx=None,tooltips=None,\
+def createHeatmap(C,version,zTransform,rowMetric,colMetric,invert,\
+                    isClient,showNull,showInput,showRDownload,mn,mx,tooltips=None,\
                     color=None,optionStr=''):
     """Calls the R script to cluster and create the heatmap
-        matrixFile is the location of the output
-        rPdfOutFile is where the R heatmap will be output
+        C is the set of constants
         zTransform ("matrix","none") determines if the output is replaced with its z-scores
         rowMetric, colMetric ("euclidean","pearson","none") determine how R clusters the output
     Then control is passed to make_heatmap, which generates the HighCharts heatmap
         invert controls whether or not the output is inverted
         fixed controls whether or not the axes are fixed
         isClient is a debug flag, always passed as False on the server
-        nullFilename is the location of the null distribution pdf
-        inpHistFilename is the location of the input distribution pdf
+        showNull is whether or not to show the null distribution
+        showInput is whether or not to show the input distribution
         mn,mx are the min and max of the color axes
         tooltips are the p-value hoverover tooltips
         color is the value for the color range
         optionStr is the string describing the options which were used to generate the signature
     """
-    if not isClient:
-        rTxtOutFile = '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_'+jobID+'/'+jobID+'.matrixForHC.txt'
-    else:
-        rTxtOutFile = '/home/mike/workspace/PellegriniResearch/scripts/scratch/rOutput.txt'
-    rscriptPath = "Rscript" if isClient\
-                else "/UCSC/Pathways-Auxiliary/UCLApathways-R-3.1.1/R-3.1.1/bin/Rscript"
-    heatsigPath = "/home/mike/workspace/PellegriniResearch/scripts/heatsigV4.R" if isClient\
-                else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatsigV4.R'
-
     #call R and stuff all output
     FNULL = open(os.devnull, 'w')
-    subprocess.call([rscriptPath,heatsigPath,matrixFile,rPdfOutFile,zTransform,\
-                    rowMetric,colMetric,rTxtOutFile],stdout=FNULL,stderr=FNULL)
+    subprocess.call([C.RSCRIPT,C.HEATSIG,C.COMP_OUTPUT,C.R_HEATMAP,zTransform,\
+                    rowMetric,colMetric,C.R_TXT],stdout=FNULL,stderr=FNULL)
 
     #copy the R output file into somewhere readable
-    #TODO: set directory of this properly
-    rDownloadableOut = "/home/mike/workspace/PellegriniResearch/scripts/scratch/rDownload.txt" if isClient\
-                else '/UCSC/Apache-2.2.11/htdocs-UCLApathways-pellegrini/submit/data/'+jobID+'.data.txt'
-    with open(rTxtOutFile) as f:
-        copyFile(f,rDownloadableOut)
+    with open(C.R_TXT) as f:
+        copyFile(f,C.R_DOWNLOAD)
 
     #only center around zero  for certain input types
     centerAroundZero = (zTransform=="matrix") or ("delta" in version)
@@ -198,19 +185,8 @@ def createHeatmap(matrixFile,rPdfOutFile,version,zTransform,rowMetric,colMetric,
             else None
     #whether or not to include the detailed output
     includeDetailed = version not in ['pearson','spearman','deconv']
-    #if we have a null filename, replace it with the html-accessable one
-    if nullFilename:
-        nullFilename="http://pathways-pellegrini.mcdb.ucla.edu/submit/img/" +\
-                            os.path.basename(nullFilename)
-    if inpHistFilename:
-        inpHistFilename="http://pathways-pellegrini.mcdb.ucla.edu/submit/img/" +\
-                            os.path.basename(inpHistFilename)
-    rDownloadableFilename = "http://pathways-pellegrini.mcdb.ucla.edu/submit/data/"+\
-                            os.path.basename(rDownloadableOut)
-    template = "/home/mike/workspace/PellegriniResearch/scripts/heatmapTemplate.html" if isClient else '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/heatmapTemplate.html'
-
     #pass control to make_heatmap
-    make_heatmap.generateCanvas(rTxtOutFile, out,template,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,rPdfOutFile,includeDetailed,nullFilename,inpHistFilename,rDownloadableFilename,tooltips,color,optionStr)
+    make_heatmap.generateCanvas(C,out,'Matrix Z-Score' if zTransform == 'matrix' else 'Value',invert,centerAroundZero,minVal,maxVal,includeDetailed,showNull,showInput,showRDownload,tooltips,color,optionStr)
 
 def readMatrix(f,filterAllZero=True,ordered=False):
     """accepts file of the form:

@@ -154,7 +154,7 @@ for (var i = 0; i < rawTooltips.length; i++){
                 if (tooltips.hasOwnProperty(this.point.x)){
                     return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
                         this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b><br>" +
-                        "p-value: <b>" + tooltips[this.point.y][this.point.x] + "</b>";
+                        "p-value: " + tooltips[this.point.y][this.point.x] + "</b>";
                 } else {
                     return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
                         this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b>";

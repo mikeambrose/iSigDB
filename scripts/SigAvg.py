@@ -89,7 +89,10 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
                 currentLoc = bisect.bisect_left(nullDist,samSigVal[sam][sig])
                 numGreaterThan = len(nullDist)-currentLoc
                 signame = sig if sig not in abbrevsDict else abbrevsDict[sig]
-                tooltips[sam][signame] = numGreaterThan/float(len(nullDist))
+                if 'delta' in version:
+                    tooltips[sam][signame] = "left-tail <b>{0}</b>; right-tail <b>{1}</b>".format(currentLoc/float(len(nullDist)),numGreaterThan/float(len(nullDist)))
+                else:
+                    tooltips[sam][signame] = "<b>{0}</b>".format(numGreaterThan/float(len(nullDist)))
                 if 'sig' in version:
                     #replace the value itself
                     samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))

@@ -11,7 +11,8 @@ baseConstants = {
     "DECOMP_SIGS": '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{jobID}/{jobID}.sigs.txt',
     "DECOMP_SAMS": '/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space/goTeles_tissueDeconvolutionV2_{jobID}/{jobID}.sams.txt',
     "DECOMP_SCRIPT_PATH": '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/decomp.R',
-    "ACCESIBLE_LINK": 'http://pathways-pellegrini.mcdb.ucla.edu/submit/'
+    "ACCESIBLE_LINK": 'http://pathways-pellegrini.mcdb.ucla.edu/submit/',
+    "MATRIX_GENE_DIR": '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
 }
 class Constants:
     def __init__(self,jobID):

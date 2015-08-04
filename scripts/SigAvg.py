@@ -97,7 +97,7 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
                 if 'sig' in version:
                     #replace the value itself
                     samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
-    else:
+    if 'null' not in version or if 'sig' in version:
         tooltips = None
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)
@@ -214,7 +214,7 @@ def generateHeatmap(inputFile,sigfile,abbrevs,n,version,zTransform,jobID,rowMetr
         nullVals = None
     tooltips = writeValues(sams,sigGenes,C.COMP_OUTPUT,version,abbrevsDict,av,nullVals)
     optionsUsed = util.getOptionsUsed(version,n,zTransform,rowMetric,colMetric,fileName)
-    util.createHeatmap(C,version,zTransform,rowMetric,colMetric,jobID,invert,isClient,computeNull,True,True,mn,mx,tooltips,color,optionsUsed)
+    util.createHeatmap(C,version,zTransform,rowMetric,colMetric,invert,isClient,computeNull,True,True,mn,mx,tooltips,color,optionsUsed)
         
 #----------------------------------------------------------------------------
 # main function call

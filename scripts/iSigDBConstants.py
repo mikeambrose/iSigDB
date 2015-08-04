@@ -11,7 +11,8 @@ baseConstants = {
     "DECOMP_SIGS": '/home/mike/workspace/PellegriniResearch/scripts/scratch/sigs.txt',
     "DECOMP_SAMS": '/home/mike/workspace/PellegriniResearch/scripts/scratch/sams.txt',
     "DECOMP_SCRIPT_PATH": '/home/mike/workspace/PellegriniResearch/scripts/decomp.R',
-    "ACCESIBLE_LINK": 'http://pathways-pellegrini.mcdb.ucla.edu/submit/'
+    "ACCESIBLE_LINK": 'http://pathways-pellegrini.mcdb.ucla.edu/submit/',
+    "MATRIX_GENE_DIR": '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'  
 }
 class Constants:
     def __init__(self,jobID):

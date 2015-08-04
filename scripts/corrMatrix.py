@@ -31,7 +31,7 @@ def corrRank(sigs,sams,strOutFile,version):
             samSigCoefficient[sam][sig] = fn(sigs[sig],sams[sam])
     util.writeRegularOutput(samSigCoefficient,strOutFile,{})
 
-def decomp(sigs,sams,job_id,C,genes):
+def decomp(sigs,sams,C,genes):
     """Runs the matrix decomposition on signatures/samples using DeconRNASeq
     sigs/sams/outFile same as in corrRank"""
     #first we write both matrices to a tab-delimited file
@@ -70,21 +70,19 @@ def getCommonGenes(candGenes,allSets):
             commonGenes.add(gene)
     return commonGenes
 
-def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
+def getSpearmanGenes(sams,matrix,C,compType,mName=None,n=50,high=True,low=False):
     """compType determines if all genes will be accessed or only the top genes
     if 'all' is passed in, computes the set of genes which are common to all samples and signatures
     if 'top' is passed in, takes the top n genes from each signature (as determined by the signature
     file) and computes the intersection of all those top genes, and then selects the subset of those
     which are present in all samples and signatures"""
     assert any([high,low])
-    #baseDir = '/UCSC/Pathways-Auxiliary/UCLApathways-Larry-Execs/SigByRank/Matrices/topGenes/'
-    baseDir = '/home/mike/workspace/PellegriniResearch/sigdir/MATRICES/topGenes/'
     samGenes = set(sams[sams.keys()[0]].keys())
     if compType=='all': #picks all genes in common
         return list(samGenes.intersection(set(matrix[matrix.keys()[0]].keys())))
     elif compType == 'cov':
         k = 1
-        with open('{0}var_{1}'.format(baseDir,mName)) as topGenes:
+        with open('{0}var_{1}'.format(C.MATRIX_GENE_DIR,mName)) as topGenes:
             candGenes = set()
             for line in topGenes:
                 if not line:    continue
@@ -97,9 +95,9 @@ def getSpearmanGenes(sams,matrix,compType,mName=None,n=50,high=True,low=False):
     #generates a set of candidate genes by picking the top n genes for each sig
     files = []
     if high:
-        files.append(baseDir+'high_'+mName)
+        files.append(C.MATRIX_GENE_DIR+'high_'+mName)
     if low:
-        files.append(baseDir+'low_'+mName)
+        files.append(C.MATRIX_GENE_DIR+'low_'+mName)
     if compType=='top': #picks the top n
         for fle in files:
             with open(fle) as sigGenes:
@@ -164,7 +162,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     matrix = util.readMatrix(selMatrix,True,False)
     sams = util.readMatrix(inputFile,True,True)
     #find set of genes
-    genes = getSpearmanGenes(sams,matrix,geneMetric,os.path.basename(selMatrix),geneVal,high=True,low=low)
+    genes = getSpearmanGenes(sams,matrix,C,geneMetric,os.path.basename(selMatrix),geneVal,high=True,low=low)
     print "Using {0} genes".format(len(genes))
     if len(genes) == 0:
         util.displayErrorMessage("There are no genes in common between your samples and the matrix selected. Make sure the first column in your input is genes and that they have standard gene names")
@@ -174,7 +172,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
         #run correlation on them
         corrRank(spearmanMatrix,spearmanSams,C.COMP_OUTPUT,version)
     else:
-        decomp(matrix,sams,jobID,C,genes)
+        decomp(matrix,sams,C,genes)
     #pass computation to R/make_heatmap
     util.createHeatmap(C,version,"none",rowMetric,colMetric,invert,isClient,False,False,False,mn=mn,mx=mx)
 

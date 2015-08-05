@@ -7,7 +7,7 @@ from optparse import OptionParser
 import math
 import iSigDBUtilities as util
 #TODO: uncomment this when on server
-#os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
 import matplotlib
 matplotlib.use('Agg')
 import nullmodel
@@ -44,7 +44,7 @@ def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
     logSams = OrderedDict()
     for sam in sams:
-        if any(sams[sam][gene] < 0):
+        if any(sams[sam][gene] < 0 for gene in sams[sam]):
             util.displayErrorMessage("Log of negative value")
         logSams[sam] = {gene:math.log10(sams[sam][gene]+1) for gene in sams[sam]}
     return logSams

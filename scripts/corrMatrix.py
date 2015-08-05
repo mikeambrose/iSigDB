@@ -174,7 +174,7 @@ def runCorrelation(inputFile,version,invert,mn,mx,rowMetric,colMetric,geneMetric
     else:
         decomp(matrix,sams,C,genes)
     #pass computation to R/make_heatmap
-    util.createHeatmap(C,version,"none",rowMetric,colMetric,invert,isClient,False,False,False,mn=mn,mx=mx)
+    util.createHeatmap(C,version,"none",rowMetric,colMetric,invert,isClient,False,False,False,mn=mn,mx=mx,optionStr='Heatmap')
 
 #this file should always be imported by the server
 #running from the command line is only for testing

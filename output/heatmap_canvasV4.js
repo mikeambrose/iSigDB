@@ -153,11 +153,11 @@ for (var i = 0; i < rawTooltips.length; i++){
             formatter: function () {
                 if (tooltips.hasOwnProperty(this.point.x)){
                     return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
-                        this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b><br>" +
-                        "p-value: " + tooltips[this.point.y][this.point.x] + "</b>";
+                        this.series.yAxis.categories[this.point.y]+"</b><br>Value: <b>" + this.point.value + "</b><br>" +
+                        "p-value: " + tooltips[this.point.y][this.point.x];
                 } else {
                     return "<b>"+this.series.xAxis.categories[this.point.x] + ', ' +
-                        this.series.yAxis.categories[this.point.y]+"</b><br>Raw value: <b>" + this.point.value + "</b>";
+                        this.series.yAxis.categories[this.point.y]+"</b><br>Value: <b>" + this.point.value + "</b>";
                 }
             },
             },

@@ -24,7 +24,7 @@ if form["uploadSettings"].value == 'server':
 else:
     #get the file from the regular upload
     userFile = form["matrix_file"].file
-    fileName = form["matrix_file"].name
+    fileName = form["matrix_file"].filename
     if not userFile:
         util.displayErrorMessage("No file uploaded",True)
 

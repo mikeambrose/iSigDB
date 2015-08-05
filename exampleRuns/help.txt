@@ -1,0 +1,13 @@
+Each run of the signature tool is done on the DermDB cut matrix, included here
+Each run of the matrix tool is done on the full DermDB matrix, included here with its top/bottom/variance files
+
+The command used to run each matrix is in command.txt (won't necessarily work if the directory isn't set up the same way, though)
+The output heatmap is chart.pdf
+The R output underlying the heatmap is in rOutput.txt
+
+
+
+If the ordering is different in the signatures, that's not bad - just means that something changed in the python implementation and the dictionary stored them in a different order (it's arbitrary)
+
+
+These were constructed based on the versions of the scripts on 8/5/15

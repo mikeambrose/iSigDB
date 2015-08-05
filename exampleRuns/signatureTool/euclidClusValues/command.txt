@@ -1,0 +1,1 @@
+python scripts/SigAvg.py --input exampleRuns/SkinDiseasesCut.txt --sigfile sigdir/SigGenes.txt --version '' --zTransform none --row_metric euclidean --col_metric euclidean --invert --n 50 --abbrev exampleRuns/abbrevs.txt --range None

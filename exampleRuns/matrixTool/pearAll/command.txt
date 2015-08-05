@@ -1,0 +1,1 @@
+pypy scripts/corrMatrix.py --version pearson --invert --row none --col none --gene all --gval 50 --matrix sigdir/MATRICES/SkinDiseases.txt --input exampleRuns/SkinDiseasesCut.txt --range -1,1

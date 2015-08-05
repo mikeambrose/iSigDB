@@ -7,7 +7,7 @@ from optparse import OptionParser
 import math
 import iSigDBUtilities as util
 #TODO: uncomment this when on server
-os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
+#os.environ["MPLCONFIGDIR"] = "/UCSC/Pathways-Auxiliary/UCLApathways-Scratch-Space"
 import matplotlib
 matplotlib.use('Agg')
 import nullmodel

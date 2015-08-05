@@ -69,7 +69,6 @@ Input species:&nbsp;<select name="species" id="species">
 <input type="checkbox" name="rank" id="rank"> Rank the input by sample instead of using values <br> <br>
 <input type="checkbox" name="log" id="log"> Log-transform the input (or ranks) <br> <br>
 <input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
-<input type="checkbox" name="sig" id="sig">Show significance (must uncheck 'scale', 'show difference' and check 'null', 'show average value')<br><br>
 
 Metric for sample clustering: &nbsp;
 <select id="row_metric" name="row_metric">
@@ -98,8 +97,10 @@ value="500">500</option><option value="1000">1000</option></select>
 <br> <br>
 <input type="button" name="showAdvanced" value="Advanced Options" onclick="toggleVisibility('advancedOptions')"> <br>
 <div id="advancedOptions" style="display:none">
+
+<input type="checkbox" name="sig" id="sig">Show significance<br><br>
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
-checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
+> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
 <br><br>
 <input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br><br>
 <input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>

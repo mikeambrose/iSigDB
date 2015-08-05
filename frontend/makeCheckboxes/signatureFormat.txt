@@ -367,9 +367,9 @@ Human
         WRS_Vascular_endothelial_cell
         TH_Th17
         TH_Th1_Harvard
-        TH_Th1_Rank_Relative
+        TH_Th1
         TH_Th2_Harvard
-        TH_Th2_Rank_Relative
+        TH_Th2
     Human Perturbation
         MacCyto_adPBMC_IL4_6h
         MacCyto_adPBMC_IL4_24h
@@ -403,10 +403,6 @@ Human
         VITD_adPBMC_1;25D_18h
         NHEK_IL26
         TH_Th17
-        TH_Th1_Harvard
-        TH_Th1_Rank_Relative
-        TH_Th2_Harvard
-        TH_Th2_Rank_Relative
         KC_NHEK_IFNG_24hA
         KC_NHEK_IFNG_24hB
         KC_NHEK_IL22_4d
@@ -416,7 +412,6 @@ Human
         KC_NHEK_IL17A+TNF1_24h
         KC_NHEK_IL17A+TNF10_24h
         KC_HaCaT_TNF10_4h
-        KC_NHEK_IFNG20_24h
         KC_NHEK_IL17A_24h
         KC_NHEK_IFNG10_24h
         GM_mono_GMCSF_3h

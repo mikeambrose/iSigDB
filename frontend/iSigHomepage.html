@@ -69,7 +69,6 @@ Input species:&nbsp;<select name="species" id="species">
 <input type="checkbox" name="rank" id="rank"> Rank the input by sample instead of using values <br> <br>
 <input type="checkbox" name="log" id="log"> Log-transform the input (or ranks) <br> <br>
 <input type="checkbox" name="delta" id="delta"> Show the difference across each row instead of the values <br> <br>
-<input type="checkbox" name="sig" id="sig">Show significance (must uncheck 'scale', 'show difference' and check 'null', 'show average value')<br><br>
 
 Metric for sample clustering: &nbsp;
 <select id="row_metric" name="row_metric">
@@ -98,8 +97,10 @@ value="500">500</option><option value="1000">1000</option></select>
 <br> <br>
 <input type="button" name="showAdvanced" value="Advanced Options" onclick="toggleVisibility('advancedOptions')"> <br>
 <div id="advancedOptions" style="display:none">
+
+<input type="checkbox" name="sig" id="sig">Show significance<br><br>
 <input type="checkbox" name="scale_columns" id="scale_columns" value="checked"
-checked> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
+> Scale heatmap <a href="#" class="tooltip"><img src="questionmark.png" width=15 height=15><span>Scaling a heatmap replaces output values with their z-scores taken across the entire matrix</span></a>
 <br><br>
 <input type="checkbox" name="invert" id="invert" value="checked" checked> Signatures on vertical axis <br><br>
 <input type="checkbox" name="scale" id="scale"> Set the color axes to range from <input type="number" name="mn" id="mn"> to <input type="number" name="mx" id="mx"> <br> <br>
@@ -498,9 +499,9 @@ Click on a category to select specific signatures within that category <br>
 </li><li id="WRS_Vascular_endothelial_cell">WRS_Vascular_endothelial_cell
 </li><li id="TH_Th17">TH_Th17
 </li><li id="TH_Th1_Harvard">TH_Th1_Harvard
-</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
+</li><li id="TH_Th1">TH_Th1
 </li><li id="TH_Th2_Harvard">TH_Th2_Harvard
-</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
+</li><li id="TH_Th2">TH_Th2
 </li></ul></li><li id="Human Perturbation">Human Perturbation
 <ul><li id="MacCyto_adPBMC_IL4_6h">MacCyto_adPBMC_IL4_6h
 </li><li id="MacCyto_adPBMC_IL4_24h">MacCyto_adPBMC_IL4_24h
@@ -534,10 +535,6 @@ Click on a category to select specific signatures within that category <br>
 </li><li id="VITD_adPBMC_1;25D_18h">VITD_adPBMC_1;25D_18h
 </li><li id="NHEK_IL26">NHEK_IL26
 </li><li id="TH_Th17">TH_Th17
-</li><li id="TH_Th1_Harvard">TH_Th1_Harvard
-</li><li id="TH_Th1_Rank_Relative">TH_Th1_Rank_Relative
-</li><li id="TH_Th2_Harvard">TH_Th2_Harvard
-</li><li id="TH_Th2_Rank_Relative">TH_Th2_Rank_Relative
 </li><li id="KC_NHEK_IFNG_24hA">KC_NHEK_IFNG_24hA
 </li><li id="KC_NHEK_IFNG_24hB">KC_NHEK_IFNG_24hB
 </li><li id="KC_NHEK_IL22_4d">KC_NHEK_IL22_4d
@@ -547,7 +544,6 @@ Click on a category to select specific signatures within that category <br>
 </li><li id="KC_NHEK_IL17A+TNF1_24h">KC_NHEK_IL17A+TNF1_24h
 </li><li id="KC_NHEK_IL17A+TNF10_24h">KC_NHEK_IL17A+TNF10_24h
 </li><li id="KC_HaCaT_TNF10_4h">KC_HaCaT_TNF10_4h
-</li><li id="KC_NHEK_IFNG20_24h">KC_NHEK_IFNG20_24h
 </li><li id="KC_NHEK_IL17A_24h">KC_NHEK_IL17A_24h
 </li><li id="KC_NHEK_IFNG10_24h">KC_NHEK_IFNG10_24h
 </li><li id="GM_mono_GMCSF_3h">GM_mono_GMCSF_3h

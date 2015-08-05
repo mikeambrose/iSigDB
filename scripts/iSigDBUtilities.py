@@ -231,7 +231,6 @@ def getSigDict(dirSigs,selSigs):
     sigDict = {}
     for sigPath in allSigs:
         _,sig = os.path.split(sigPath)
-        #removing non-pms
         sig =  sig.split('--')[0]
         if sig not in selSigs:
             continue

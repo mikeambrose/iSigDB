@@ -44,6 +44,8 @@ def logall(sams):
     """for each sample, replace the gene's value with the log of its value"""
     logSams = OrderedDict()
     for sam in sams:
+        if any(sams[sam][gene] < 0):
+            util.displayErrorMessage("Log of negative value")
         logSams[sam] = {gene:math.log10(sams[sam][gene]+1) for gene in sams[sam]}
     return logSams
 
@@ -97,7 +99,7 @@ def writeValues(sams,sigGenes,compOutput,version,abbrevsDict,av=True,nullVals=No
                 if 'sig' in version:
                     #replace the value itself
                     samSigVal[sam][sig] = numGreaterThan/float(len(nullDist))
-    if 'null' not in version or if 'sig' in version:
+    if 'null' not in version or 'sig' in version:
         tooltips = None
     util.writeRegularOutput(samSigVal,compOutput,abbrevsDict)
     util.writeDetailedOutput(sigGenes,sams,compOutput+'.full.txt',abbrevsDict)

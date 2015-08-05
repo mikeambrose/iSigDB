@@ -45,10 +45,6 @@ def generateCanvas(C,outFile,legendLabel='',invertHeatmap=True,centerAroundZero=
     else:
         base_loc = ''
     replacements["baseloc"] = base_loc
-    if optionStr != '':
-        replacements["options"] = "Selected options: {0}<br>".format(optionStr)
-    else:
-        replacements["options"] = ''
     #add links and hidden file location
     baseFile = 'http://pathways-pellegrini.mcdb.ucla.edu/submit/img/' + os.path.basename(C.R_HEATMAP)
     seed = baseFile[-30:-12]
